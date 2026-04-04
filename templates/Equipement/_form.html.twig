@@ -24,5 +24,10 @@
         <div style="color: #e74c3c; font-size: 0.85rem; margin-top: 0.3rem;">{{ form_errors(form.disponibilite) }}</div>
     </div>
 
-    <button class="btn btn-primary" style="width: 100%; margin-top: 1rem;">{{ button_label|default('Enregistrer') }}</button>
+    <div style="display: flex; justify-content: flex-end; gap: 1rem; margin-top: 2.5rem;">
+        <a href="{{ path('app_equipement_index') }}" class="top-btn btn-outline">Annuler</a>
+        <button class="hero-btn-primary" style="border: none; font-family: inherit; font-size: 1rem; cursor: pointer;">
+            <i class="fa-solid fa-save"></i> {{ button_label|default('Enregistrer') }}
+        </button>
+    </div>
 {{ form_end(form) }}

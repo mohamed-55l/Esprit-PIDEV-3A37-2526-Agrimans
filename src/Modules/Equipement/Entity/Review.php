@@ -5,6 +5,7 @@ namespace App\Modules\Equipement\Entity;
 use App\Modules\Equipement\Repository\ReviewRepository;
 use Doctrine\DBAL\Types\Types;
 use Doctrine\ORM\Mapping as ORM;
+use Symfony\Component\Validator\Constraints as Assert;
 
 #[ORM\Entity(repositoryClass: ReviewRepository::class)]
 #[ORM\Table(name: 'review')]
@@ -15,10 +16,14 @@ class Review
     #[ORM\Column(type: 'integer')]
     private ?int $id = null;
 
-    #[ORM\Column(type: Types::TEXT, nullable: true)]
-    private ?string $commentaire = null;
+        #[ORM\Column(type: Types::TEXT, nullable: true)]
+        #[Assert\NotBlank(message: "Le commentaire ne peut pas être vide.")]
+        #[Assert\Length(min: 10, minMessage: "Votre commentaire doit faire au moins {{ limit }} caractères.")]
+        private ?string $commentaire = null;
 
     #[ORM\Column(type: 'integer', nullable: true)]
+    #[Assert\NotNull(message: "Veuillez attribuer une note.")]
+    #[Assert\Range(min: 1, max: 5, notInRangeMessage: "La note doit être comprise entre 1 et 5.")]
     private ?int $note = null;
 
     #[ORM\Column(name: 'date_review', type: Types::DATE_MUTABLE, nullable: true)]
@@ -26,6 +31,7 @@ class Review
 
     #[ORM\ManyToOne(targetEntity: Equipement::class)]
     #[ORM\JoinColumn(name: 'equipement_id', referencedColumnName: 'id', onDelete: 'CASCADE')]
+    #[Assert\NotNull(message: "Veuillez sélectionner un équipement.")]
     private ?Equipement $equipement = null;
 
     #[ORM\Column(name: 'user_id', type: 'integer', nullable: true)]
