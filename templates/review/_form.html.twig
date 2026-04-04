@@ -1,0 +1,28 @@
+{{ form_start(form, {'attr': {'class': 'form-group'}}) }}
+    
+    <div style="margin-bottom: 1.5rem;">
+        {{ form_label(form.equipement) }}
+        {{ form_widget(form.equipement) }}
+        <div style="color: #ff6b6b; font-size: 0.85rem; margin-top: 0.3rem;">{{ form_errors(form.equipement) }}</div>
+    </div>
+
+    <div style="margin-bottom: 1.5rem;">
+        {{ form_label(form.note) }}
+        {{ form_widget(form.note) }}
+        <div style="color: #ff6b6b; font-size: 0.85rem; margin-top: 0.3rem;">{{ form_errors(form.note) }}</div>
+    </div>
+
+    <div style="margin-bottom: 1.5rem;">
+        {{ form_label(form.commentaire) }}
+        {{ form_widget(form.commentaire) }}
+        <div style="color: #ff6b6b; font-size: 0.85rem; margin-top: 0.3rem;">{{ form_errors(form.commentaire) }}</div>
+    </div>
+
+    <div style="display: flex; justify-content: flex-end; gap: 1rem; margin-top: 2.5rem;">
+        <a href="{{ path('app_review_index') }}" class="top-btn btn-outline">Annuler</a>
+        <button class="hero-btn-primary" style="border: none; font-family: inherit; font-size: 1rem; cursor: pointer;">
+            <i class="fa-solid fa-save"></i> {{ button_label|default('Enregistrer') }}
+        </button>
+    </div>
+
+{{ form_end(form) }}

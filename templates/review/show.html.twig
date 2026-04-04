@@ -1,0 +1,47 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}Détails de l'évaluation{% endblock %}
+
+{% block body %}
+<section class="content-section" style="margin-top: 2rem;">
+    <div class="glass-card" style="max-width: 800px; margin: 0 auto;">
+        
+        <div style="display: flex; justify-content: space-between; align-items: flex-start; margin-bottom: 2rem; border-bottom: 1px solid rgba(255,255,255,0.1); padding-bottom: 1.5rem;">
+            <div>
+                <h1 style="font-size: 1.8rem; margin-bottom: 0.3rem;">Avis #{{ review.id }}</h1>
+                <p style="color: rgba(255,255,255,0.6);">Posté le {{ review.dateReview ? review.dateReview|date('d/m/Y') : 'N/A' }}</p>
+            </div>
+            <div style="text-align: right;">
+                <div style="color: #f1c40f; font-size: 1.5rem; margin-bottom: 0.5rem;">
+                    {% for i in 1..5 %}
+                        {% if review.note >= i %}
+                            <i class="fa-solid fa-star"></i>
+                        {% else %}
+                            <i class="fa-regular fa-star" style="color: rgba(255,255,255,0.2);"></i>
+                        {% endif %}
+                    {% endfor %}
+                </div>
+                <span class="badge badge-warning"><i class="fa-solid fa-user"></i> Utilisateur ID: {{ review.userId }}</span>
+            </div>
+        </div>
+
+        <div style="margin-bottom: 2.5rem;">
+            <h3 style="color: var(--light-green); margin-bottom: 0.5rem;"><i class="fa-solid fa-tractor"></i> Équipement concerne</h3>
+            <p style="font-size: 1.1rem;"><strong>{{ review.equipement ? review.equipement.nom : 'Non spécifié' }}</strong></p>
+        </div>
+
+        <div style="margin-bottom: 2.5rem; background: rgba(0,0,0,0.2); padding: 1.5rem; border-radius: 12px; border-left: 4px solid var(--light-green);">
+            <p style="font-size: 1.1rem; line-height: 1.7; font-style: italic;">
+                "{{ review.commentaire ?: 'Aucun commentaire.' }}"
+            </p>
+        </div>
+
+        <div style="display: flex; gap: 1rem;">
+            <a href="{{ path('app_review_index') }}" class="btn btn-outline"><i class="fa-solid fa-arrow-left"></i> Retour à la liste</a>
+            <a href="{{ path('app_review_edit', {'id': review.id}) }}" class="btn btn-primary"><i class="fa-solid fa-pen"></i> Éditer</a>
+            {{ include('review/_delete_form.html.twig') }}
+        </div>
+
+    </div>
+</section>
+{% endblock %}

@@ -44,9 +44,10 @@
                                 <span class="badge badge-warning"><i class="fa-solid fa-wrench"></i> {{ equipement.disponibilite }}</span>
                             {% endif %}
                         </td>
-                        <td>
-                            <a href="{{ path('app_equipement_show', {'id': equipement.id}) }}" class="btn btn-secondary"><i class="fa-solid fa-eye"></i></a>
-                            <a href="{{ path('app_equipement_edit', {'id': equipement.id}) }}" class="btn btn-primary" style="margin-left: 0.5rem;"><i class="fa-solid fa-pen"></i></a>
+                        <td style="display:flex; justify-content: flex-end;">
+                            <a href="{{ path('app_equipement_show', {'id': equipement.id}) }}" class="btn btn-secondary" title="Détails"><i class="fa-solid fa-eye"></i></a>
+                            <a href="{{ path('app_equipement_edit', {'id': equipement.id}) }}" class="btn btn-primary" style="margin-left: 0.5rem;" title="Éditer"><i class="fa-solid fa-pen"></i></a>
+                            <a href="{{ path('app_review_new', {'eq_id': equipement.id}) }}" class="btn" style="background-color: #f1c40f; color: #1C2D21; margin-left: 0.5rem;" title="Ajouter un avis"><i class="fa-solid fa-star"></i></a>
                         </td>
                     </tr>
                 {% else %}

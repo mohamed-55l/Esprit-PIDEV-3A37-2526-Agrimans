@@ -1,0 +1,6 @@
+<form method="post" action="{{ path('app_review_delete', {'id': review.id}) }}" onsubmit="return confirm('Êtes-vous sûr de vouloir supprimer cette évaluation ?');" style="display: inline-block;">
+    <input type="hidden" name="_token" value="{{ csrf_token('delete' ~ review.id) }}">
+    <button class="btn btn-outline" style="border-color: #ff6b6b; color: #ff6b6b; cursor: pointer;">
+        <i class="fa-solid fa-trash"></i> Supprimer
+    </button>
+</form>
