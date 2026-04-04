@@ -1,0 +1,134 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}Agrimans - Accueil{% endblock %}
+
+{% block body %}
+    <!-- Hero Section (Adafeed Style) -->
+    <section class="hero-section">
+        <div class="hero-content">
+            <h1 class="hero-title">Gérez votre ferme<br>modernement.</h1>
+            <p class="hero-subtitle">
+                Agrimans centralise vos équipements, vos champs, la météo en temps réel et votre logistique sur une seule plateforme intelligente.
+            </p>
+            <div class="hero-actions">
+                <a href="{{ path('app_equipement_index') }}" class="hero-btn-primary">
+                    Accéder aux Ressources
+                </a>
+                <a href="#" class="hero-btn-primary btn-outline" style="background:transparent; color:white;">
+                    Explorer la carte
+                </a>
+            </div>
+        </div>
+        
+        <div class="hero-image-wrapper">
+            <img src="{{ asset('images/lucid-origin_Vast_wheat_fields_at_golden_sunset_green_and_yellow_crops_tractor_working_in_bac-0.jpg') }}" alt="Agrimans champs et tracteurs">
+        </div>
+    </section>
+
+    <!-- Features Overview Section -->
+    <section class="features-section">
+        <div class="section-header animate-on-scroll">
+            <h2 class="section-title">L'écosystème Agrimans</h2>
+            <p class="section-subtitle">Découvrez une suite d'outils puissants conçus pour optimiser chaque aspect de votre exploitation agricole.</p>
+        </div>
+
+        <div class="features-grid">
+            
+            <!-- Feature 1: Equipement -->
+            <div class="feature-card animate-on-scroll" style="transition-delay: 0.1s;">
+                <div class="feature-image-container">
+                    <!-- Image tracteur existante ou une autre variante -->
+                    <img src="{{ asset('images/lucid-origin_Vast_wheat_fields_at_golden_sunset_green_and_yellow_crops_tractor_working_in_bac-0 (1).jpg') }}" alt="Gestion Équipements">
+                </div>
+                <div class="feature-icon-wrapper">
+                    <i class="fa-solid fa-tractor feature-icon"></i>
+                    <h3 class="feature-title">Parc Matériel & GPS</h3>
+                </div>
+                <p class="feature-desc">
+                    Suivez en temps réel la position de vos tracteurs et équipements. Planifiez les maintenances, assignez les ressources et gérez les garages intelligemment.
+                </p>
+                <a href="{{ path('app_equipement_index') }}" class="feature-link">Gérer le matériel <i class="fa-solid fa-arrow-right" style="margin-left: 5px; font-size:0.8rem;"></i></a>
+            </div>
+
+            <!-- Feature 2: Domaine & Cultures -->
+            <div class="feature-card animate-on-scroll" style="transition-delay: 0.2s;">
+                <div class="feature-image-container">
+                    <img src="{{ asset('images/lucid-origin_Vast_agricultural_crop_fields_with_perfectly_straight_rows_stretching_to_the_hor-0.jpg') }}" alt="Cultures">
+                </div>
+                <div class="feature-icon-wrapper">
+                    <i class="fa-solid fa-seedling feature-icon"></i>
+                    <h3 class="feature-title">Domaine & Cultures</h3>
+                </div>
+                <p class="feature-desc">
+                    Cartographiez vos parcelles et analysez les sols. Suivez les cycles de plantation, prévoyez les récoltes et adaptez-vous aux bulletins météorologiques.
+                </p>
+                <a href="#" class="feature-link">Explorer les parcelles <i class="fa-solid fa-arrow-right" style="margin-left: 5px; font-size:0.8rem;"></i></a>
+            </div>
+
+            <!-- Feature 3: Elevage -->
+            <div class="feature-card animate-on-scroll" style="transition-delay: 0.3s;">
+                <div class="feature-image-container">
+                    <img src="{{ asset('images/lucid-origin_Beautiful_farm_landscape_green_pastures_barn_cows_grazing_vegetable_garden_blue_-0.jpg') }}" alt="Elevage">
+                </div>
+                <div class="feature-icon-wrapper">
+                    <i class="fa-solid fa-cow feature-icon"></i>
+                    <h3 class="feature-title">Élevage Domestique</h3>
+                </div>
+                <p class="feature-desc">
+                    Maintenez un registre précis de vos animaux. Suivez leur état de santé, leur évolution de poids et programmez leurs examens vétérinaires continus.
+                </p>
+                <a href="#" class="feature-link">Voir le cheptel <i class="fa-solid fa-arrow-right" style="margin-left: 5px; font-size:0.8rem;"></i></a>
+            </div>
+
+            <!-- Feature 4: Marketplace -->
+            <div class="feature-card animate-on-scroll" style="transition-delay: 0.4s;">
+                <div class="feature-image-container">
+                    <img src="{{ asset('images/lucid-origin_Colorful_farmers_market_outdoor_fresh_vegetables_fruits_wooden_stalls_green_natu-0.jpg') }}" alt="Marketplace">
+                </div>
+                <div class="feature-icon-wrapper">
+                    <i class="fa-solid fa-store feature-icon"></i>
+                    <h3 class="feature-title">Marketplace B2B</h3>
+                </div>
+                <p class="feature-desc">
+                    Achetez des semences, vendez vos récoltes et participez à un marché agricole dynamique. Pilotez vos commandes et bénéficiez de circuits courts sécurisés.
+                </p>
+                <a href="#" class="feature-link">Accéder à la boutique <i class="fa-solid fa-arrow-right" style="margin-left: 5px; font-size:0.8rem;"></i></a>
+            </div>
+
+        </div>
+    </section>
+
+    <!-- Mini CTA Section -->
+    <section class="cta-section animate-on-scroll">
+        <h2 class="cta-title">Prêt à moderniser votre exploitation ?</h2>
+        <p style="color: rgba(255,255,255,0.7); margin-bottom: 2rem;">Rejoignez la plateforme Agrimans et prenez le contrôle total de vos ressources grâce à un assistant intelligent intégré.</p>
+        <a href="#" class="hero-btn-primary" style="padding: 1rem 2.5rem; font-size: 1.1rem;">
+            Démarrer l'Assitant IA <i class="fa-solid fa-robot" style="margin-left:8px;"></i>
+        </a>
+    </section>
+
+    <!-- Script that powers the scroll animations -->
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            const observerOptions = {
+                root: null,
+                rootMargin: '0px',
+                threshold: 0.15
+            };
+
+            const observer = new IntersectionObserver((entries, observer) => {
+                entries.forEach(entry => {
+                    if (entry.isIntersecting) {
+                        entry.target.classList.add('visible');
+                        // Optional: stop observing once it has become visible
+                        observer.unobserve(entry.target);
+                    }
+                });
+            }, observerOptions);
+
+            const animatedElements = document.querySelectorAll('.animate-on-scroll');
+            animatedElements.forEach(el => observer.observe(el));
+        });
+    </script>
+
+{% endblock %}

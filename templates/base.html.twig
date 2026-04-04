@@ -1,24 +1,85 @@
 <!DOCTYPE html>
-<html>
+<html lang="fr">
     <head>
         <meta charset="UTF-8">
-        <title>{% block title %}Welcome!{% endblock %}</title>
-        <link rel="icon" href="data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 128 128%22><text y=%221.2em%22 font-size=%2296%22>⚫️</text><text y=%221.3em%22 x=%220.2em%22 font-size=%2276%22 fill=%22%23fff%22>sf</text></svg>">
-        {% block stylesheets %}
-        {% endblock %}
-
-        {% block javascripts %}
-            {% block importmap %}{{ importmap('app') }}{% endblock %}
-        {% endblock %}
-
-        {% set frankenphpHotReload = app.request.server.get('FRANKENPHP_HOT_RELOAD') %}
-        {% if frankenphpHotReload %}
-        <meta name="frankenphp-hot-reload:url" content="{{ frankenphpHotReload }}">
-        <script src="https://cdn.jsdelivr.net/npm/idiomorph"></script>
-        <script src="https://cdn.jsdelivr.net/npm/frankenphp-hot-reload/+esm" type="module"></script>
-        {% endif %}
+        <meta name="viewport" content="width=device-width, initial-scale=1.0">
+        <title>{% block title %}Agrimans - Hub{% endblock %}</title>
+        
+        <link rel="preconnect" href="https://fonts.googleapis.com">
+        <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+        <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+        
+        <!-- Icons (utilisation d'une librairie simple pour les futurs liens) -->
+        <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+        
+        <link rel="stylesheet" href="{{ asset('css/style.css') }}">
+        
+        {% block stylesheets %}{% endblock %}
+        {% block javascripts %}{% endblock %}
     </head>
     <body>
-        {% block body %}{% endblock %}
+        
+        <div class="app-wrapper">
+            <nav class="navbar">
+                <a href="{{ path('app_home') }}" class="logo">
+                    <svg width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                        <circle cx="12" cy="12" r="10" stroke="#7DBF6C" stroke-width="4"/>
+                        <path d="M12 6C15.3137 6 18 8.68629 18 12" stroke="#F0E8D8" stroke-width="4" stroke-linecap="round"/>
+                    </svg>
+                    Agrimans
+                </a>
+                
+                <!-- Titres génériques de navigation avec Dropdowns (Menus déroulants) -->
+                <div class="nav-links">
+                    
+                    <div class="dropdown">
+                        <a href="{{ path('app_home') }}"><i class="fa-solid fa-gauge-high"></i> Tableau de bord</a>
+                        <div class="dropdown-content">
+                            <a href="#"><i class="fa-solid fa-chart-line"></i> Statistiques du domaine</a>
+                            <a href="#"><i class="fa-solid fa-cloud-sun"></i> Météo en temps réel</a>
+                            <a href="#"><i class="fa-solid fa-robot"></i> Smart Assistant (Chatbot)</a>
+                        </div>
+                    </div>
+
+                    <div class="dropdown">
+                        <a href="#" style="color: #7DBF6C; cursor:default;"><i class="fa-solid fa-tractor"></i> Ressources Agro</a>
+                        <div class="dropdown-content">
+                            <a href="{{ path('app_equipement_index') }}"><i class="fa-solid fa-toolbox"></i> Stock Équipements</a>
+                            <a href="#"><i class="fa-solid fa-map-location-dot"></i> Suivi GPS & Garages</a>
+                            <a href="#"><i class="fa-solid fa-tasks"></i> Demandes & Assignements</a>
+                            <a href="#"><i class="fa-solid fa-star"></i> Avis & Évaluations</a>
+                        </div>
+                    </div>
+
+                    <div class="dropdown">
+                        <a href="#" style="cursor:default;"><i class="fa-solid fa-leaf"></i> Domaine & Élevage</a>
+                        <div class="dropdown-content">
+                            <a href="#"><i class="fa-solid fa-map"></i> Gestion des Parcelles</a>
+                            <a href="#"><i class="fa-solid fa-seedling"></i> Suivi des Cultures</a>
+                            <a href="#"><i class="fa-solid fa-cow"></i> Gestion des Animaux</a>
+                        </div>
+                    </div>
+
+                    <div class="dropdown">
+                        <a href="#" style="cursor:default;"><i class="fa-solid fa-store"></i> Marketplace</a>
+                        <div class="dropdown-content">
+                            <a href="#"><i class="fa-solid fa-cart-shopping"></i> Explorer la Boutique</a>
+                            <a href="#"><i class="fa-solid fa-bag-shopping"></i> Mon Panier & Commandes</a>
+                            <a href="#"><i class="fa-solid fa-box-open"></i> Gérer mes Produits</a>
+                        </div>
+                    </div>
+                </div>
+
+                
+                <div class="nav-actions">
+                    <a href="#" class="top-btn btn-outline"><i class="fa-solid fa-user"></i> Espace Profil</a>
+                </div>
+            </nav>
+
+            <main>
+                {% block body %}{% endblock %}
+            </main>
+        </div>
+        
     </body>
 </html>

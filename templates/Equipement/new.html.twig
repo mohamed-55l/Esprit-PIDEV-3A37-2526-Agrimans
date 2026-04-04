@@ -1,11 +1,15 @@
 {% extends 'base.html.twig' %}
 
-{% block title %}New Equipement{% endblock %}
+{% block title %}Ajouter un Équipement{% endblock %}
 
 {% block body %}
-    <h1>Create new Equipement</h1>
+    <div style="max-width: 600px; margin: 0 auto;" class="glass-card">
+        <h1 style="text-align:center;">Nouvel Équipement</h1>
+        
+        {{ include('Equipement/_form.html.twig') }}
 
-    {{ include('Equipement/_form.html.twig') }}
-
-    <a href="{{ path('app_equipement_index') }}">back to list</a>
+        <div style="margin-top: 2rem; text-align: center;">
+            <a href="{{ path('app_equipement_index') }}" style="color: var(--dark-green); text-decoration: underline;">Retour à la liste</a>
+        </div>
+    </div>
 {% endblock %}

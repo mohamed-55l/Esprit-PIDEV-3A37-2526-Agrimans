@@ -1,42 +1,48 @@
 {% extends 'base.html.twig' %}
 
-{% block title %}Equipement{% endblock %}
+{% block title %}Détails de l'Équipement{% endblock %}
 
 {% block body %}
-    <h1>Equipement</h1>
+    <div style="max-width: 700px; margin: 0 auto;" class="glass-card">
+        <h1>Détails : {{ equipement.nom }}</h1>
 
-    <table class="table">
-        <tbody>
-            <tr>
-                <th>Id</th>
-                <td>{{ equipement.id }}</td>
-            </tr>
-            <tr>
-                <th>Nom</th>
-                <td>{{ equipement.nom }}</td>
-            </tr>
-            <tr>
-                <th>Type</th>
-                <td>{{ equipement.type }}</td>
-            </tr>
-            <tr>
-                <th>Prix</th>
-                <td>{{ equipement.prix }}</td>
-            </tr>
-            <tr>
-                <th>Disponibilite</th>
-                <td>{{ equipement.disponibilite }}</td>
-            </tr>
-            <tr>
-                <th>UserId</th>
-                <td>{{ equipement.userId }}</td>
-            </tr>
-        </tbody>
-    </table>
+        <table class="styled-table" style="margin-bottom: 2rem;">
+            <tbody>
+                <tr>
+                    <th>Ref ID</th>
+                    <td>{{ equipement.id }}</td>
+                </tr>
+                <tr>
+                    <th>Nom</th>
+                    <td><strong>{{ equipement.nom }}</strong></td>
+                </tr>
+                <tr>
+                    <th>Type / Catégorie</th>
+                    <td>{{ equipement.type }}</td>
+                </tr>
+                <tr>
+                    <th>Prix</th>
+                    <td><span style="font-size:1.2rem; color: var(--primary-color); font-weight: bold;">{{ equipement.prix|number_format(2, ',', ' ') }} DT</span></td>
+                </tr>
+                <tr>
+                    <th>Disponibilité</th>
+                    <td>
+                        {% if equipement.disponibilite == 'Disponible' %}
+                            <span class="badge badge-success">{{ equipement.disponibilite }}</span>
+                        {% elseif equipement.disponibilite == 'Indisponible' %}
+                            <span class="badge badge-danger">{{ equipement.disponibilite }}</span>
+                        {% else %}
+                            <span class="badge badge-warning">{{ equipement.disponibilite }}</span>
+                        {% endif %}
+                    </td>
+                </tr>
+            </tbody>
+        </table>
 
-    <a href="{{ path('app_equipement_index') }}">back to list</a>
-
-    <a href="{{ path('app_equipement_edit', {'id': equipement.id}) }}">edit</a>
-
-    {{ include('Equipement/_delete_form.html.twig') }}
+        <div style="display: flex; gap: 1rem;">
+            <a href="{{ path('app_equipement_index') }}" class="btn btn-secondary">Retour à la liste</a>
+            <a href="{{ path('app_equipement_edit', {'id': equipement.id}) }}" class="btn btn-primary">Éditer</a>
+            {{ include('Equipement/_delete_form.html.twig') }}
+        </div>
+    </div>
 {% endblock %}
