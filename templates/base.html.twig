@@ -19,7 +19,6 @@
     </head>
     <body>
         
-        <div class="app-wrapper">
             <nav class="navbar">
                 <a href="{{ path('app_home') }}" class="logo">
                     <svg width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
@@ -42,9 +41,9 @@
                     </div>
 
                     <div class="dropdown">
-                        <a href="#" style="color: #7DBF6C; cursor:default;"><i class="fa-solid fa-tractor"></i> Ressources Agro</a>
+                        <a href="#" style="color: #7DBF6C; cursor:default;"><i class="fa-solid fa-tractor"></i> Ressources agro</a>
                         <div class="dropdown-content">
-                            <a href="{{ path('app_equipement_index') }}"><i class="fa-solid fa-toolbox"></i> Stock Équipements</a>
+                            <a href="{{ path('app_equipement_index') }}"><i class="fa-solid fa-toolbox"></i> Stock équipements</a>
                             <a href="#"><i class="fa-solid fa-map-location-dot"></i> Suivi GPS & Garages</a>
                             <a href="#"><i class="fa-solid fa-tasks"></i> Demandes & Assignements</a>
                             <a href="{{ path('app_review_index') }}"><i class="fa-solid fa-star"></i> Avis & Évaluations</a>
@@ -52,7 +51,7 @@
                     </div>
 
                     <div class="dropdown">
-                        <a href="#" style="cursor:default;"><i class="fa-solid fa-leaf"></i> Domaine & Élevage</a>
+                        <a href="#" style="cursor:default;"><i class="fa-solid fa-leaf"></i> Domaine & élevage</a>
                         <div class="dropdown-content">
                             <a href="#"><i class="fa-solid fa-map"></i> Gestion des Parcelles</a>
                             <a href="#"><i class="fa-solid fa-seedling"></i> Suivi des Cultures</a>
@@ -72,10 +71,11 @@
 
                 
                 <div class="nav-actions">
-                    <a href="#" class="top-btn btn-outline"><i class="fa-solid fa-user"></i> Espace Profil</a>
+                    <a href="#" class="top-btn btn-outline"><i class="fa-solid fa-user"></i> Espace profil</a>
                 </div>
             </nav>
 
+        <div class="app-wrapper">
             <main>
                 {% block body %}{% endblock %}
             </main>
