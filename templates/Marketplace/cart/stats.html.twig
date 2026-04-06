@@ -1,0 +1,73 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}Statistiques Marketplace{% endblock %}
+
+{% block body %}
+    <section class="content-section" style="margin-top: 2rem;">
+        <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 2rem;">
+            <div>
+                <h2 style="font-size: 2rem; margin-bottom: 0.5rem;"><i class="fa-solid fa-chart-line"></i> Statistiques Marketplace</h2>
+                <p style="color: rgba(255,255,255,0.7);">Vue d'ensemble des ventes et performances.</p>
+            </div>
+            <a href="{{ path('app_marketplace_index') }}" class="btn btn-secondary">
+                <i class="fa-solid fa-arrow-left"></i> Retour Boutique
+            </a>
+        </div>
+
+        {# KPI Cards #}
+        <div style="display: grid; grid-template-columns: repeat(2, 1fr); gap: 1.5rem; margin-bottom: 2rem;">
+            <div class="glass-card" style="padding: 2rem; text-align: center;">
+                <i class="fa-solid fa-coins" style="font-size: 2rem; color: #f1c40f; margin-bottom: 0.5rem;"></i>
+                <h3 style="font-size: 2rem; color: var(--primary-color);">{{ totalSales|number_format(2, ',', ' ') }} DT</h3>
+                <p style="color: rgba(255,255,255,0.6);">Ventes Totales</p>
+            </div>
+            <div class="glass-card" style="padding: 2rem; text-align: center;">
+                <i class="fa-solid fa-receipt" style="font-size: 2rem; color: #3498db; margin-bottom: 0.5rem;"></i>
+                <h3 style="font-size: 2rem; color: var(--primary-color);">{{ totalOrders }}</h3>
+                <p style="color: rgba(255,255,255,0.6);">Commandes Totales</p>
+            </div>
+        </div>
+
+        {# Top Selling Products #}
+        <div class="glass-card" style="padding: 1.5rem;">
+            <h3 style="margin-bottom: 1rem;"><i class="fa-solid fa-trophy" style="color: #f1c40f;"></i> Top Produits Vendus</h3>
+
+            {% if topProducts|length > 0 %}
+                <div class="table-wrapper">
+                    <table class="styled-table">
+                        <thead>
+                            <tr>
+                                <th>#</th>
+                                <th>Produit</th>
+                                <th>Quantité vendue</th>
+                                <th>Revenu total</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                        {% for stat in topProducts %}
+                            <tr>
+                                <td>
+                                    {% if loop.index == 1 %}
+                                        <i class="fa-solid fa-medal" style="color: #f1c40f;"></i>
+                                    {% elseif loop.index == 2 %}
+                                        <i class="fa-solid fa-medal" style="color: #bdc3c7;"></i>
+                                    {% elseif loop.index == 3 %}
+                                        <i class="fa-solid fa-medal" style="color: #e67e22;"></i>
+                                    {% else %}
+                                        {{ loop.index }}
+                                    {% endif %}
+                                </td>
+                                <td><strong>{{ stat.productName }}</strong></td>
+                                <td>{{ stat.totalQuantitySold }} kg</td>
+                                <td style="font-weight: 600; color: var(--primary-color);">{{ stat.totalRevenue|number_format(2, ',', ' ') }} DT</td>
+                            </tr>
+                        {% endfor %}
+                        </tbody>
+                    </table>
+                </div>
+            {% else %}
+                <p style="text-align: center; color: rgba(255,255,255,0.5); padding: 2rem;">Aucune vente enregistrée.</p>
+            {% endif %}
+        </div>
+    </section>
+{% endblock %}
