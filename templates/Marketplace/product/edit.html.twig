@@ -1,0 +1,22 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}Modifier Produit{% endblock %}
+
+{% block body %}
+    <div style="max-width: 600px; margin: 0 auto;" class="glass-card">
+        <h1 style="text-align:center;"><i class="fa-solid fa-pen"></i> Modifier #{{ product.id }}</h1>
+
+        {{ include('Marketplace/product/_form.html.twig', {'button_label': 'Mettre à jour'}) }}
+
+        <div style="margin-top: 2rem; display: flex; justify-content: space-between; align-items: center;">
+            <a href="{{ path('app_marketplace_my_products') }}" style="color: var(--dark-green); text-decoration: underline;">Retour à mes produits</a>
+
+            <form method="post" action="{{ path('app_marketplace_product_delete', {'id': product.id}) }}" onsubmit="return confirm('Supprimer ce produit ?');">
+                <input type="hidden" name="_token" value="{{ csrf_token('delete' ~ product.id) }}">
+                <button class="btn" style="background: rgba(231,76,60,0.2); color: #e74c3c; border: 1px solid #e74c3c;">
+                    <i class="fa-solid fa-trash"></i> Supprimer
+                </button>
+            </form>
+        </div>
+    </div>
+{% endblock %}
