@@ -1,0 +1,17 @@
+{{ form_start(form) }}
+<div style="display:grid; grid-template-columns:1fr 1fr; gap:1rem;">
+    <div>{{ form_row(form.name) }}</div>
+    <div>{{ form_row(form.type) }}</div>
+    <div>{{ form_row(form.breed) }}</div>
+    <div>{{ form_row(form.age) }}</div>
+    <div>{{ form_row(form.weight) }}</div>
+    <div>{{ form_row(form.healthStatus) }}</div>
+    <div>{{ form_row(form.productionType) }}</div>
+    <div>{{ form_row(form.isActive) }}</div>
+</div>
+<div style="margin-top:1rem;">
+    <button type="submit" class="hero-btn-primary" style="font-size:0.9rem;">
+        <i class="fa-solid fa-floppy-disk"></i> Enregistrer
+    </button>
+</div>
+{{ form_end(form) }}
