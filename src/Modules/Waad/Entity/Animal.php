@@ -7,6 +7,7 @@ use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\Common\Collections\Collection;
 use Doctrine\DBAL\Types\Types;
 use Doctrine\ORM\Mapping as ORM;
+use Symfony\Component\Validator\Constraints as Assert;
 
 #[ORM\Entity(repositoryClass: AnimalRepository::class)]
 #[ORM\Table(name: 'animal')]
@@ -18,22 +19,31 @@ class Animal
     private ?int $id = null;
 
     #[ORM\Column(length: 255)]
+    #[Assert\NotBlank(message: "Le nom est obligatoire.")]
+    #[Assert\Length(min: 2, max: 255, minMessage: "Le nom doit comporter au moins {{ limit }} caractères.", maxMessage: "Le nom ne peut pas dépasser {{ limit }} caractères.")]
     private ?string $name = null;
 
     #[ORM\Column(length: 100)]
+    #[Assert\NotBlank(message: "Le type est obligatoire.")]
+    #[Assert\Length(max: 100, maxMessage: "Le type ne peut pas dépasser {{ limit }} caractères.")]
     private ?string $type = null;
 
     #[ORM\Column(length: 100, nullable: true)]
+    #[Assert\Length(max: 100, maxMessage: "La race ne peut pas dépasser {{ limit }} caractères.")]
     private ?string $breed = null;
 
     #[ORM\Column(nullable: true)]
+    #[Assert\PositiveOrZero(message: "L'âge doit être un nombre positif ou zéro.")]
+    #[Assert\LessThanOrEqual(value: 100, message: "L'âge ne peut pas dépasser 100 ans.")]
     private ?int $age = null;
 
     /** Stored as string to preserve DECIMAL precision; cast to float when needed. */
     #[ORM\Column(type: Types::DECIMAL, precision: 8, scale: 2, nullable: true)]
+    #[Assert\PositiveOrZero(message: "Le poids doit être un nombre positif ou zéro.")]
     private ?string $weight = null;
 
     #[ORM\Column(length: 50, nullable: true)]
+    #[Assert\Choice(choices: ['healthy', 'sick', 'recovering'], message: "Statut de santé invalide.")]
     private ?string $healthStatus = null;
 
     #[ORM\Column(type: Types::DATETIME_MUTABLE, nullable: true)]
@@ -43,6 +53,7 @@ class Animal
     private bool $isActive = true;
 
     #[ORM\Column(length: 50, nullable: true)]
+    #[Assert\Choice(choices: ['milk', 'meat', 'eggs', 'wool'], message: "Type de production invalide.")]
     private ?string $productionType = null;
 
     #[ORM\OneToMany(mappedBy: 'animal', targetEntity: AnimalNourriture::class, cascade: ['remove'], orphanRemoval: true)]

@@ -7,6 +7,7 @@ use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\Common\Collections\Collection;
 use Doctrine\DBAL\Types\Types;
 use Doctrine\ORM\Mapping as ORM;
+use Symfony\Component\Validator\Constraints as Assert;
 
 #[ORM\Entity(repositoryClass: NourritureRepository::class)]
 #[ORM\Table(name: 'nourriture')]
@@ -18,29 +19,40 @@ class Nourriture
     private ?int $id = null;
 
     #[ORM\Column(length: 255)]
+    #[Assert\NotBlank(message: "Le nom est obligatoire.")]
+    #[Assert\Length(min: 2, max: 255, minMessage: "Le nom doit comporter au moins {{ limit }} caractères.", maxMessage: "Le nom ne peut pas dépasser {{ limit }} caractères.")]
     private ?string $name = null;
 
     #[ORM\Column(length: 100)]
+    #[Assert\NotBlank(message: "Le type est obligatoire.")]
+    #[Assert\Length(max: 100, maxMessage: "Le type ne peut pas dépasser {{ limit }} caractères.")]
     private ?string $type = null;
 
     /** Stored as string to preserve DECIMAL precision; cast to float when needed. */
     #[ORM\Column(type: Types::DECIMAL, precision: 10, scale: 2)]
+    #[Assert\NotBlank(message: "La quantité est obligatoire.")]
+    #[Assert\Positive(message: "La quantité doit être un nombre positif.")]
     private ?string $quantity = null;
 
     #[ORM\Column(length: 50, nullable: true)]
+    #[Assert\Length(max: 50, maxMessage: "L'unité ne peut pas dépasser {{ limit }} caractères.")]
     private ?string $unit = null;
 
     #[ORM\Column(length: 255, nullable: true)]
+    #[Assert\Length(max: 255, maxMessage: "La valeur nutritive ne peut pas dépasser {{ limit }} caractères.")]
     private ?string $nutritionalValue = null;
 
     #[ORM\Column(type: Types::DATETIME_MUTABLE, nullable: true)]
+    #[Assert\GreaterThan("today", message: "La date d'expiration doit être dans le futur.")]
     private ?\DateTimeInterface $expiryDate = null;
 
     #[ORM\Column(length: 255, nullable: true)]
+    #[Assert\Length(max: 255, maxMessage: "Le fournisseur ne peut pas dépasser {{ limit }} caractères.")]
     private ?string $supplier = null;
 
     /** Stored as string to preserve DECIMAL precision; cast to float when needed. */
     #[ORM\Column(type: Types::DECIMAL, precision: 10, scale: 2, nullable: true)]
+    #[Assert\PositiveOrZero(message: "Le coût doit être un nombre positif ou zéro.")]
     private ?string $cost = null;
 
     #[ORM\Column(type: Types::DATETIME_MUTABLE, nullable: true)]
