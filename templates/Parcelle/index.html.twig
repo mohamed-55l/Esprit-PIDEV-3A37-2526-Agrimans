@@ -3,15 +3,18 @@
 {% block title %}Parcelle index{% endblock %}
 
 {% block body %}
-    <h1>Parcelle index</h1>
+    <div class="content-section">
+        <div class="page-header">
+            <h1>Liste des parcelles</h1>
+            <div class="page-actions">
+                <a href="{{ path('app_parcelle_new') }}" class="btn btn-primary">Ajouter parcelle</a>
+            </div>
+        </div>
 
-    <div style="margin-bottom: 1rem;">
-        <a href="{{ path('app_parcelle_new') }}" class="btn btn-primary">Ajouter une parcelle</a>
-    </div>
-
-    <table class="table">
-        <thead>
-            <tr>
+        <div class="table-responsive">
+            <table class="table">
+                <thead>
+                    <tr>
                 <th>Id</th>
                 <th>Nom</th>
                 <th>Superficie</th>
@@ -50,6 +53,6 @@
         {% endfor %}
         </tbody>
     </table>
-
-    <a href="{{ path('app_parcelle_new') }}" class="btn">Ajouter une parcelle</a>
+        </div>
+    </div>
 {% endblock %}

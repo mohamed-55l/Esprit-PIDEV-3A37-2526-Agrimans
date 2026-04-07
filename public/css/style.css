@@ -18,7 +18,7 @@
 }
 
 body {
-    background-color: var(--light-green); /* Outer mockup background */
+    background: radial-gradient(circle at top, rgba(125, 191, 108, 0.16), rgba(10, 15, 12, 0.96));
     color: var(--white);
     line-height: 1.6;
     display: flex;
@@ -26,21 +26,128 @@ body {
     justify-content: flex-start;
     align-items: center;
     min-height: 100vh;
-    padding: 10rem 2rem 2rem 2rem; /* Huge top padding to clear the massive fixed navbar */
+    padding: 7rem 1.5rem 2rem 1.5rem;
 }
 
 /* Adafeed Inspired App Container */
 .app-wrapper {
-    background-color: var(--dark-green);
+    background-color: rgba(22, 33, 25, 0.98);
     width: 100%;
     max-width: 1400px;
-    border-radius: var(--border-radius);
-    padding: 2.5rem;
+    border-radius: 32px;
+    padding: 2rem;
     box-shadow: var(--card-shadow);
     overflow: hidden;
     position: relative;
-    /* Apparition smooth */
-    animation: fadeScaleIn 1s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+    animation: fadeScaleIn 0.9s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+}
+
+.content-section {
+    background: rgba(255, 255, 255, 0.05);
+    border-radius: 24px;
+    padding: 2rem;
+    border: 1px solid rgba(255, 255, 255, 0.08);
+    margin-bottom: 1.5rem;
+}
+
+.page-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    gap: 1rem;
+    flex-wrap: wrap;
+    margin-bottom: 1.8rem;
+}
+
+.page-header h1 {
+    margin: 0;
+    font-size: 2.2rem;
+    letter-spacing: -0.5px;
+    color: var(--white);
+}
+
+.page-actions {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.8rem;
+}
+
+.table-responsive {
+    overflow-x: auto;
+}
+
+.table,
+.table th,
+.table td {
+    background: transparent !important;
+    color: var(--white) !important;
+    border-color: rgba(255, 255, 255, 0.12) !important;
+}
+
+.table thead th {
+    background-color: rgba(255, 255, 255, 0.08) !important;
+    color: var(--white) !important;
+    border-bottom: 1px solid rgba(255, 255, 255, 0.15) !important;
+}
+
+.table tbody tr {
+    border-bottom: 1px solid rgba(255, 255, 255, 0.08) !important;
+    transition: background-color 0.2s ease;
+}
+
+.table tbody tr:hover {
+    background-color: rgba(255, 255, 255, 0.06) !important;
+}
+
+.table th,
+.table td {
+    padding: 1rem 1.2rem !important;
+}
+
+.table-responsive::-webkit-scrollbar {
+    height: 8px;
+}
+
+.table-responsive::-webkit-scrollbar-thumb {
+    background: rgba(255,255,255,0.18);
+    border-radius: 20px;
+}
+
+.table-responsive::-webkit-scrollbar-track {
+    background: rgba(255,255,255,0.04);
+}
+
+.form-section {
+    background: rgba(255, 255, 255, 0.04);
+    border-radius: 24px;
+    border: 1px solid rgba(255,255,255,0.08);
+    padding: 2rem;
+    margin-bottom: 1.5rem;
+}
+
+.form-section .form-group {
+    margin-bottom: 1.2rem;
+}
+
+.form-section button {
+    margin-top: 1rem;
+}
+
+.btn {
+    padding: 0.55rem 1rem;
+}
+
+.btn-secondary {
+    background: rgba(25, 139, 97, 0.95);
+}
+
+.btn-danger {
+    background: rgba(231, 76, 60, 0.95);
+}
+
+.btn-primary {
+    background: var(--light-green);
+    color: var(--dark-green);
 }
 
 /* Navbar - Edge-to-Edge Dominant Header */

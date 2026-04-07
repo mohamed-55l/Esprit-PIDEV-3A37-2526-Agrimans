@@ -5,13 +5,20 @@ namespace App\Modules\Parcelle\Entity;
 use Doctrine\ORM\Mapping as ORM;
 use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\Common\Collections\Collection;
+use Symfony\Component\Validator\Constraints as Assert;
 
 use App\Modules\Parcelle\Repository\ParcelleRepository;
 use App\Entity\User;
 use App\Entity\Culture;
 
+use App\Validator\ValidCoordinates;
+
+use App\Validator\CulturesSuperficieValid;
+
 #[ORM\Entity(repositoryClass: ParcelleRepository::class)]
 #[ORM\Table(name: 'parcelle')]
+#[ValidCoordinates]
+#[CulturesSuperficieValid]
 class Parcelle
 {
     #[ORM\Id]
@@ -31,6 +38,17 @@ class Parcelle
     }
 
     #[ORM\Column(type: 'string', nullable: false)]
+    #[Assert\NotBlank(message: 'Le nom de la parcelle est obligatoire.')]
+    #[Assert\Length(
+        min: 3,
+        max: 100,
+        minMessage: 'Le nom doit contenir au moins {{ limit }} caractères.',
+        maxMessage: 'Le nom doit contenir au plus {{ limit }} caractères.'
+    )]
+    #[Assert\Regex(
+        pattern: '/^[\p{Lu}][\p{L}\p{M}\'’\-]*.*$/u',
+        message: 'Le premier mot du nom doit commencer par une majuscule.'
+    )]
     private ?string $nom = null;
 
     public function getNom(): ?string
@@ -44,7 +62,14 @@ class Parcelle
         return $this;
     }
 
-    #[ORM\Column(type: 'decimal', nullable: false)]
+    #[ORM\Column(type: 'float', nullable: false)]
+    #[Assert\NotBlank(message: 'La superficie est obligatoire.')]
+    #[Assert\Positive(message: 'La superficie doit être un nombre positif.')]
+    #[Assert\Range(
+        min: 0.01,
+        max: 1000,
+        notInRangeMessage: 'La superficie doit être entre {{ min }} et {{ max }} hectares.'
+    )]
     private ?float $superficie = null;
 
     public function getSuperficie(): ?float
@@ -73,6 +98,10 @@ class Parcelle
     }
 
     #[ORM\Column(type: 'string', nullable: true)]
+    #[Assert\Length(
+        max: 50,
+        maxMessage: 'Le type de sol ne peut pas dépasser {{ limit }} caractères.'
+    )]
     public ?string $type_sol = null;
 
     public function getType_sol(): ?string
@@ -101,7 +130,12 @@ class Parcelle
         return $this;
     }
 
-    #[ORM\Column(type: 'decimal', nullable: true)]
+    #[ORM\Column(type: 'float', nullable: true)]
+    #[Assert\Range(
+        min: -90,
+        max: 90,
+        notInRangeMessage: 'La latitude doit être entre {{ min }} et {{ max }} degrés.'
+    )]
     private ?float $latitude = null;
 
     public function getLatitude(): ?float
@@ -115,7 +149,12 @@ class Parcelle
         return $this;
     }
 
-    #[ORM\Column(type: 'decimal', nullable: true)]
+    #[ORM\Column(type: 'float', nullable: true)]
+    #[Assert\Range(
+        min: -180,
+        max: 180,
+        notInRangeMessage: 'La longitude doit être entre {{ min }} et {{ max }} degrés.'
+    )]
     private ?float $longitude = null;
 
     public function getLongitude(): ?float
@@ -132,14 +171,16 @@ class Parcelle
     #[ORM\OneToMany(targetEntity: 'App\Modules\Parcelle\Entity\Culture', mappedBy: 'parcelle')]
     private Collection $cultures;
 
+    public function __construct()
+    {
+        $this->cultures = new ArrayCollection();
+    }
+
     /**
      * @return Collection<int, Culture>
      */
     public function getCultures(): Collection
     {
-        if (!$this->cultures instanceof Collection) {
-            $this->cultures = new ArrayCollection();
-        }
         return $this->cultures;
     }
 

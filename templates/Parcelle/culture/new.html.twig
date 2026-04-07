@@ -3,9 +3,14 @@
 {% block title %}New Culture{% endblock %}
 
 {% block body %}
-    <h1>Create new Culture</h1>
+    <div class="content-section form-section">
+        <div class="page-header">
+            <h1>Créer une nouvelle culture</h1>
+            <div class="page-actions">
+                <a href="{{ path('app_culture_index') }}" class="btn btn-secondary">Retour à la liste</a>
+            </div>
+        </div>
 
-    {{ include('Parcelle/culture/_form.html.twig') }}
-
-    <a href="{{ path('app_culture_index') }}" class="btn btn-secondary">back to list</a>
+        {{ include('Parcelle/culture/_form.html.twig') }}
+    </div>
 {% endblock %}

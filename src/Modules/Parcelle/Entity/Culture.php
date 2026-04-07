@@ -5,6 +5,7 @@ namespace App\Modules\Parcelle\Entity;
 use Doctrine\ORM\Mapping as ORM;
 use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\Common\Collections\Collection;
+use Symfony\Component\Validator\Constraints as Assert;
 
 use App\Modules\Parcelle\Repository\CultureRepository;
 
@@ -29,6 +30,17 @@ class Culture
     }
 
     #[ORM\Column(type: 'string', nullable: false)]
+    #[Assert\NotBlank(message: 'Le nom de la culture est obligatoire.')]
+    #[Assert\Length(
+        min: 2,
+        max: 100,
+        minMessage: 'Le nom doit contenir au moins {{ limit }} caractères.',
+        maxMessage: 'Le nom doit contenir au plus {{ limit }} caractères.'
+    )]
+    #[Assert\Regex(
+        pattern: '/^[\p{Lu}][\p{L}\p{M}\'’\-]*.*$/u',
+        message: 'Le premier mot du nom doit commencer par une majuscule.'
+    )]
     private ?string $nom = null;
 
     public function getNom(): ?string
@@ -43,6 +55,10 @@ class Culture
     }
 
     #[ORM\Column(type: 'string', nullable: true)]
+    #[Assert\Length(
+        max: 100,
+        maxMessage: 'Le type de culture ne peut pas dépasser {{ limit }} caractères.'
+    )]
     private ?string $type_culture = null;
 
     public function getTypeCulture(): ?string
@@ -67,6 +83,10 @@ class Culture
     }
 
     #[ORM\Column(type: 'date', nullable: true)]
+    #[Assert\LessThanOrEqual(
+        value: 'today',
+        message: 'La date de plantation ne peut pas être dans le futur.'
+    )]
     private ?\DateTimeInterface $date_plantation = null;
 
     public function getDatePlantation(): ?\DateTimeInterface
@@ -91,6 +111,10 @@ class Culture
     }
 
     #[ORM\Column(type: 'date', nullable: true)]
+    #[Assert\GreaterThan(
+        propertyPath: 'date_plantation',
+        message: 'La date de récolte prévue doit être après la date de plantation.'
+    )]
     private ?\DateTimeInterface $date_recolte_prevue = null;
 
     public function getDateRecoltePrevue(): ?\DateTimeInterface
@@ -115,6 +139,10 @@ class Culture
     }
 
     #[ORM\Column(type: 'string', nullable: true)]
+    #[Assert\Length(
+        max: 100,
+        maxMessage: 'L\'état de la culture ne peut pas dépasser {{ limit }} caractères.'
+    )]
     private ?string $etat_culture = null;
 
     public function getEtatCulture(): ?string
@@ -140,6 +168,7 @@ class Culture
 
     #[ORM\ManyToOne(targetEntity: Parcelle::class, inversedBy: 'cultures')]
     #[ORM\JoinColumn(name: 'parcelle_id', referencedColumnName: 'id_parcelle')]
+    #[Assert\NotNull(message: 'La parcelle est obligatoire.')]
     private ?Parcelle $parcelle = null;
 
     public function getParcelle(): ?Parcelle

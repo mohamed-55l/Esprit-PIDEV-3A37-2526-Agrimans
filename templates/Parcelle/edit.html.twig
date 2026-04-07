@@ -3,14 +3,19 @@
 {% block title %}Edit Parcelle{% endblock %}
 
 {% block body %}
-    <h1>Edit Parcelle</h1>
+    <div class="content-section form-section">
+        <div class="page-header">
+            <h1>Modifier la parcelle</h1>
+            <div class="page-actions">
+                <a href="{{ path('app_parcelle_index') }}" class="btn btn-secondary">Retour à la liste</a>
+                <a href="{{ path('app_parcelle_new') }}" class="btn btn-primary">Nouvelle parcelle</a>
+            </div>
+        </div>
 
-    {{ include('Parcelle/_form.html.twig') }}
-
-    <div style="margin-top: 1rem; display:flex; gap:0.75rem; flex-wrap:wrap; align-items:center;">
-        <a href="{{ path('app_parcelle_index') }}" class="btn btn-secondary">back to list</a>
-        <a href="{{ path('app_parcelle_new') }}" class="btn btn-primary">Ajouter une parcelle</a>
+        {{ include('Parcelle/_form.html.twig') }}
     </div>
 
-    {{ include('Parcelle/_delete_form.html.twig') }}
+    <div class="content-section">
+        {{ include('Parcelle/_delete_form.html.twig') }}
+    </div>
 {% endblock %}

@@ -3,9 +3,14 @@
 {% block title %}New Parcelle{% endblock %}
 
 {% block body %}
-    <h1>Create new Parcelle</h1>
+    <div class="content-section form-section">
+        <div class="page-header">
+            <h1>Créer une nouvelle parcelle</h1>
+            <div class="page-actions">
+                <a href="{{ path('app_parcelle_index') }}" class="btn btn-secondary">Retour à la liste</a>
+            </div>
+        </div>
 
-    {{ include('Parcelle/_form.html.twig') }}
-
-    <a href="{{ path('app_parcelle_index') }}" class="btn btn-secondary">back to list</a>
+        {{ include('Parcelle/_form.html.twig') }}
+    </div>
 {% endblock %}

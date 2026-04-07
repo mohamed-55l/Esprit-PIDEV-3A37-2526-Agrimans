@@ -18,37 +18,41 @@ class ParcelleType extends AbstractType
         $builder
             ->add('nom', TextType::class, [
                 'label' => 'Nom de la parcelle',
-                'attr' => ['placeholder' => 'Ex: Parcelle A'],
+                'required' => true,
+                'attr' => ['placeholder' => 'Ex: Parcelle A', 'class' => 'form-control'],
             ])
             ->add('superficie', NumberType::class, [
                 'label' => 'Superficie (en hectares)',
-                'attr' => ['placeholder' => 'Ex: 5.5'],
+                'required' => true,
+                'attr' => ['placeholder' => 'Ex: 5.5', 'class' => 'form-control'],
             ])
             ->add('localisation', TextType::class, [
                 'label' => 'Localisation',
                 'required' => false,
-                'attr' => ['placeholder' => 'Ex: Tunis, Ariana'],
+                'attr' => ['placeholder' => 'Ex: Tunis, Ariana', 'class' => 'form-control'],
             ])
             ->add('type_sol', TextType::class, [
                 'label' => 'Type de sol',
                 'required' => false,
-                'attr' => ['placeholder' => 'Ex: Argileux, Sableux'],
+                'attr' => ['placeholder' => 'Ex: Argileux, Sableux', 'class' => 'form-control'],
             ])
             ->add('latitude', NumberType::class, [
                 'label' => 'Latitude',
                 'required' => false,
-                'attr' => ['placeholder' => 'Ex: 36.8065'],
+                'attr' => ['placeholder' => 'Ex: 36.8065', 'class' => 'form-control'],
             ])
             ->add('longitude', NumberType::class, [
                 'label' => 'Longitude',
                 'required' => false,
-                'attr' => ['placeholder' => 'Ex: 10.1815'],
+                'attr' => ['placeholder' => 'Ex: 10.1815', 'class' => 'form-control'],
             ])
             ->add('user', EntityType::class, [
                 'class' => User::class,
-                'choice_label' => 'email', // or whatever field to display
+                'choice_label' => 'email',
                 'label' => 'Utilisateur',
+                'required' => true,
                 'placeholder' => 'Sélectionner un utilisateur',
+                'attr' => ['class' => 'form-control'],
             ]);
     }
 
