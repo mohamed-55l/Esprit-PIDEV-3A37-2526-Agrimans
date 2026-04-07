@@ -16,15 +16,26 @@
         
         {% block stylesheets %}{% endblock %}
         {% block javascripts %}{% endblock %}
+        <script>
+            document.addEventListener('DOMContentLoaded', function() {
+                const navbar = document.querySelector('.navbar');
+                if (!navbar) return;
+                const shrinkThreshold = 60;
+                window.addEventListener('scroll', function() {
+                    if (window.scrollY > shrinkThreshold) {
+                        navbar.classList.add('shrink');
+                    } else {
+                        navbar.classList.remove('shrink');
+                    }
+                }, { passive: true });
+            });
+        </script>
     </head>
     <body>
         
             <nav class="navbar">
-                <a href="{{ path('app_home') }}" class="logo">
-                    <svg width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
-                        <circle cx="12" cy="12" r="10" stroke="#7DBF6C" stroke-width="4"/>
-                        <path d="M12 6C15.3137 6 18 8.68629 18 12" stroke="#F0E8D8" stroke-width="4" stroke-linecap="round"/>
-                    </svg>
+                <a href="{{ path('app_home') }}" class="logo" style="text-transform: uppercase; color: #198B61;">
+                    <img src="{{ asset('images/FullLogo_Transparent_NoBuffer (1).png') }}" alt="Agrimans Logo" style="height: 40px; width: auto; margin-right: 10px;">
                     Agrimans
                 </a>
                 

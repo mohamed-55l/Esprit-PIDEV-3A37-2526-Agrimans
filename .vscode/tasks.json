@@ -1,0 +1,113 @@
+{
+	"version": "2.0.0",
+	"tasks": [
+		{
+			"label": "Stage changes",
+			"type": "shell",
+			"command": "git add .",
+			"args": [],
+			"isBackground": false,
+			"problemMatcher": [],
+			"group": ""
+		},
+		{
+			"label": "Commit changes",
+			"type": "shell",
+			"command": "git commit -m \"Update navbar with logo, shrink effect, and consistent green colors for back links\"",
+			"args": [],
+			"isBackground": false,
+			"problemMatcher": [],
+			"group": ""
+		},
+		{
+			"label": "Commit changes",
+			"type": "shell",
+			"command": "git commit -m 'Update navbar with logo, shrink effect, and consistent green colors for back links'",
+			"args": [],
+			"isBackground": false,
+			"problemMatcher": [],
+			"group": ""
+		},
+		{
+			"label": "Commit changes",
+			"type": "shell",
+			"command": "git commit --message=\"Update navbar with logo, shrink effect, and consistent green colors for back links\"",
+			"args": [],
+			"isBackground": false,
+			"problemMatcher": [],
+			"group": ""
+		},
+		{
+			"label": "Check git status",
+			"type": "shell",
+			"command": "git status",
+			"args": [],
+			"isBackground": false,
+			"problemMatcher": [],
+			"group": ""
+		},
+		{
+			"label": "Commit changes",
+			"type": "shell",
+			"command": "git commit -m updates",
+			"args": [],
+			"isBackground": false,
+			"problemMatcher": [],
+			"group": ""
+		},
+		{
+			"label": "Push to equipement branch",
+			"type": "shell",
+			"command": "git push origin equipement",
+			"args": [],
+			"isBackground": false,
+			"problemMatcher": [],
+			"group": ""
+		},
+		{
+			"label": "Switch to main branch",
+			"type": "shell",
+			"command": "git checkout main",
+			"args": [],
+			"isBackground": false,
+			"problemMatcher": [],
+			"group": ""
+		},
+		{
+			"label": "Commit changes",
+			"type": "shell",
+			"command": "git commit -mupdate",
+			"args": [],
+			"isBackground": false,
+			"problemMatcher": [],
+			"group": ""
+		},
+		{
+			"label": "Commit changes",
+			"type": "shell",
+			"command": "git commit -m 'update'",
+			"args": [],
+			"isBackground": false,
+			"problemMatcher": [],
+			"group": ""
+		},
+		{
+			"label": "List branches",
+			"type": "shell",
+			"command": "git branch -a",
+			"args": [],
+			"isBackground": false,
+			"problemMatcher": [],
+			"group": ""
+		},
+		{
+			"label": "Push to main branch",
+			"type": "shell",
+			"command": "git push origin main",
+			"args": [],
+			"isBackground": false,
+			"problemMatcher": [],
+			"group": ""
+		}
+	]
+}
