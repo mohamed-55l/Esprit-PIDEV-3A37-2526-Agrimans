@@ -425,8 +425,7 @@ body {
 
 .btn-primary { background: var(--light-green); color: var(--dark-green); }
 .btn-secondary { background: #198B61; color: white; border: none; }
-
-/* Forms Adapted to Dark Theme */
+    .btn-danger { background: #e74c3c; color: white; border: none; }
 .glass-card {
     background: rgba(255, 255, 255, 0.05);
     border-radius: 20px;

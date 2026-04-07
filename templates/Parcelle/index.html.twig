@@ -5,6 +5,10 @@
 {% block body %}
     <h1>Parcelle index</h1>
 
+    <div style="margin-bottom: 1rem;">
+        <a href="{{ path('app_parcelle_new') }}" class="btn btn-primary">Ajouter une parcelle</a>
+    </div>
+
     <table class="table">
         <thead>
             <tr>
@@ -31,8 +35,12 @@
                 <td>{{ parcelle.longitude }}</td>
                 <td>{{ parcelle.user ? parcelle.user.email : '' }}</td>
                 <td>
-                    <a href="{{ path('app_parcelle_show', {'id': parcelle.id}) }}">show</a>
-                    <a href="{{ path('app_parcelle_edit', {'id': parcelle.id}) }}">edit</a>
+                    <a href="{{ path('app_parcelle_show', {'id': parcelle.id}) }}" class="btn btn-secondary">Voir</a>
+                    <a href="{{ path('app_parcelle_edit', {'id': parcelle.id}) }}" class="btn btn-primary">Modifier</a>
+                    <form method="post" action="{{ path('app_parcelle_delete', {'id': parcelle.id}) }}" style="display:inline-block; margin:0;" onsubmit="return confirm('Supprimer cette parcelle ?');">
+                        <input type="hidden" name="_token" value="{{ csrf_token('delete' ~ parcelle.id) }}">
+                        <button class="btn btn-danger">Supprimer</button>
+                    </form>
                 </td>
             </tr>
         {% else %}
@@ -43,5 +51,5 @@
         </tbody>
     </table>
 
-    <a href="{{ path('app_parcelle_new') }}">Create new</a>
+    <a href="{{ path('app_parcelle_new') }}" class="btn">Ajouter une parcelle</a>
 {% endblock %}
