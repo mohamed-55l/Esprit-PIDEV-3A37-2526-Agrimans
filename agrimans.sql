@@ -3,7 +3,7 @@
 -- https://www.phpmyadmin.net/
 --
 -- Hôte : 127.0.0.1
--- Généré le : sam. 04 avr. 2026 à 01:39
+-- Généré le : mar. 07 avr. 2026 à 10:06
 -- Version du serveur : 10.4.32-MariaDB
 -- Version de PHP : 8.1.25
 
@@ -47,6 +47,24 @@ INSERT INTO `animal` (`id`, `nom`, `espece`, `race`, `poids`, `etatSante`, `user
 -- --------------------------------------------------------
 
 --
+-- Structure de la table `carts`
+--
+
+CREATE TABLE `carts` (
+  `id` int(11) NOT NULL,
+  `buyer_id` int(11) NOT NULL
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
+
+--
+-- Déchargement des données de la table `carts`
+--
+
+INSERT INTO `carts` (`id`, `buyer_id`) VALUES
+(1, 1);
+
+-- --------------------------------------------------------
+
+--
 -- Structure de la table `cart_item`
 --
 
@@ -55,6 +73,20 @@ CREATE TABLE `cart_item` (
   `user_id` int(11) NOT NULL,
   `product_id` int(11) NOT NULL,
   `quantity` float NOT NULL DEFAULT 1,
+  `added_at` timestamp NOT NULL DEFAULT current_timestamp()
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
+
+-- --------------------------------------------------------
+
+--
+-- Structure de la table `cart_items`
+--
+
+CREATE TABLE `cart_items` (
+  `id` int(11) NOT NULL,
+  `cart_id` int(11) NOT NULL,
+  `product_id` int(11) NOT NULL,
+  `quantity` int(11) NOT NULL,
   `added_at` timestamp NOT NULL DEFAULT current_timestamp()
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 
@@ -118,11 +150,8 @@ CREATE TABLE `demande` (
 --
 
 INSERT INTO `demande` (`id`, `agriculteur_id`, `equipement_id`, `nom_equipement`, `type_demande`, `quantite`, `description`, `commentaire`, `date_demande`, `statut`, `reponse_chef`, `date_traitement`) VALUES
-(1, 2, 5, NULL, 'EQUIPEMENT_EXISTANT', 1, 'dfrgthyju', 'dfrgthyju', '2026-03-01 23:40:30', 'EN_ATTENTE', NULL, NULL),
 (2, 3, 30, 'ijhbhj', 'EQUIPEMENT_EXISTANT', 0, 'tdfvc', 'tdfvc', '2026-03-01 23:56:38', 'ACCEPTE', 'test', '2026-03-05 11:42:31'),
-(3, 3, 5, NULL, NULL, 1, NULL, 'Demande pour: landiniii', '2026-03-02 00:50:30', 'EN_ATTENTE', NULL, NULL),
-(11, 4, 38, 'ffffff', 'EQUIPEMENT_EXISTANT', 4, NULL, 'hjklm', '2026-03-26 21:34:46', 'EN_ATTENTE', NULL, NULL),
-(12, 4, 5, 'landiniii', 'EQUIPEMENT_EXISTANT', 1, NULL, 'ghjk;,nbhjk', '2026-03-26 21:36:13', 'EN_ATTENTE', NULL, NULL);
+(11, 4, 38, 'ffffff', 'EQUIPEMENT_EXISTANT', 4, NULL, 'hjklm', '2026-03-26 21:34:46', 'EN_ATTENTE', NULL, NULL);
 
 -- --------------------------------------------------------
 
@@ -156,23 +185,23 @@ CREATE TABLE `equipement` (
 --
 
 INSERT INTO `equipement` (`id`, `nom`, `type`, `prix`, `disponibilite`, `user_id`) VALUES
-(4, 'pompe', 'Outil', 5500, 'Indisponible', 3),
-(5, 'landiniii', 'tracteur', 6300, 'Disponible', 3),
 (17, 'testttcgvh bjn,;', 'tracteur', -10, 'En maintenance', NULL),
-(18, 'Test Machine', 'Test', 100, 'Disponible', NULL),
+(18, 'Test Machine', 'Test', 100, 'Indisponible', NULL),
 (19, 'Test Machine', 'Test', 100, 'Disponible', NULL),
 (26, 'Test Machine', 'Test', 100, 'Disponible', 1),
 (27, 'Test Machine', 'Test', 100, 'Disponible', 1),
 (28, 'Test Machine', 'Test', 100, 'Disponible', 1),
 (29, 'Test Machine', 'Test', 100, 'Disponible', 1),
-(30, 'ijhbhj', 'jjjj', 7777, 'Non disponible', 3),
+(30, 'ijhbhj', 'jjjj', 7777, 'Indisponible', 3),
 (31, 'pppp', 'mmmm', 777, 'Disponible', 1),
 (33, 'Test Machine', 'Test', 100, 'Disponible', 1),
 (34, 'Test Machinee', 'Test', 100, 'Disponible', 1),
 (35, 'Test Machine', 'Test', 100, 'Disponible', 1),
 (36, 'rtere', 'yhjkl', 525, 'En maintenance', 1),
-(37, 'llllll', 'ttttt', 111111, 'En maintenance', 1),
-(38, 'ffffff', 'nnnnnn', 55555, 'Disponible', 1);
+(37, 'llllll', 'tttttttttttttt', 111111, 'En maintenance', 1),
+(38, 'ffffff', 'nnnnnn', 55555, 'Disponible', 1),
+(41, '888', '888', 10, 'Disponible', NULL),
+(42, 'tracteuuuuuur', 'tracteuuuur', 100000000, 'Indisponible', NULL);
 
 -- --------------------------------------------------------
 
@@ -193,7 +222,6 @@ CREATE TABLE `equipement_geo` (
 --
 
 INSERT INTO `equipement_geo` (`equipement_id`, `garage_id`, `position_gps`, `statut_garage`, `derniere_localisation`) VALUES
-(4, 6, NULL, 'DANS_GARAGE', '2026-03-26 14:26:33'),
 (35, 6, NULL, 'EN_DEPLACEMENT', '2026-03-05 00:42:14');
 
 -- --------------------------------------------------------
@@ -301,6 +329,49 @@ CREATE TABLE `product` (
 -- --------------------------------------------------------
 
 --
+-- Structure de la table `products`
+--
+
+CREATE TABLE `products` (
+  `id` int(11) NOT NULL,
+  `name` varchar(255) NOT NULL,
+  `description` longtext DEFAULT NULL,
+  `price` float NOT NULL,
+  `quantity` int(11) NOT NULL,
+  `image` varchar(255) DEFAULT NULL,
+  `seller_id` int(11) DEFAULT NULL,
+  `category` varchar(50) NOT NULL,
+  `supplier` varchar(255) DEFAULT NULL,
+  `expiry_date` date DEFAULT NULL
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
+
+--
+-- Déchargement des données de la table `products`
+--
+
+INSERT INTO `products` (`id`, `name`, `description`, `price`, `quantity`, `image`, `seller_id`, `category`, `supplier`, `expiry_date`) VALUES
+(1, 'test', 'test', 17, 17, NULL, 1, 'FRUITS', 'mohamed', '2028-12-09'),
+(2, 'test', 'test', 17, 17, NULL, 1, 'FRUITS', 'mohamed', '2028-12-09');
+
+-- --------------------------------------------------------
+
+--
+-- Structure de la table `ratings`
+--
+
+CREATE TABLE `ratings` (
+  `id` int(11) NOT NULL,
+  `product_id` int(11) NOT NULL,
+  `user_id` int(11) DEFAULT NULL,
+  `rating` int(11) NOT NULL,
+  `comment` text DEFAULT NULL,
+  `price_category` varchar(20) DEFAULT NULL,
+  `created_at` datetime NOT NULL
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
+
+-- --------------------------------------------------------
+
+--
 -- Structure de la table `review`
 --
 
@@ -318,11 +389,9 @@ CREATE TABLE `review` (
 --
 
 INSERT INTO `review` (`id`, `commentaire`, `note`, `date_review`, `equipement_id`, `user_id`) VALUES
-(8, 'jhhbhhb', 4, '2026-03-01', 5, 1),
-(9, 'bonne equipement', 5, '2026-03-02', 5, 3),
-(10, 'bjrnkg', 5, '2026-03-02', 29, 1),
-(12, 'beaucoup des problemes', 1, '2026-03-05', 5, 3),
-(16, 'poiugfdcvb', 3, '2026-03-26', 38, 4);
+(10, 'jjjjjjjjjjjjj', 5, '2026-03-02', 29, 1),
+(16, 'poiugfdcvb', 3, '2026-03-26', 38, 4),
+(17, NULL, 3, '2026-04-05', 35, 1);
 
 -- --------------------------------------------------------
 
@@ -400,11 +469,26 @@ ALTER TABLE `animal`
   ADD KEY `fk_animal_user` (`userId`);
 
 --
+-- Index pour la table `carts`
+--
+ALTER TABLE `carts`
+  ADD PRIMARY KEY (`id`),
+  ADD KEY `buyer_id` (`buyer_id`);
+
+--
 -- Index pour la table `cart_item`
 --
 ALTER TABLE `cart_item`
   ADD PRIMARY KEY (`id`),
   ADD KEY `user_id` (`user_id`),
+  ADD KEY `product_id` (`product_id`);
+
+--
+-- Index pour la table `cart_items`
+--
+ALTER TABLE `cart_items`
+  ADD PRIMARY KEY (`id`),
+  ADD KEY `cart_id` (`cart_id`),
   ADD KEY `product_id` (`product_id`);
 
 --
@@ -484,6 +568,20 @@ ALTER TABLE `product`
   ADD KEY `user_id` (`user_id`);
 
 --
+-- Index pour la table `products`
+--
+ALTER TABLE `products`
+  ADD PRIMARY KEY (`id`),
+  ADD KEY `seller_id` (`seller_id`);
+
+--
+-- Index pour la table `ratings`
+--
+ALTER TABLE `ratings`
+  ADD PRIMARY KEY (`id`),
+  ADD KEY `product_id` (`product_id`);
+
+--
 -- Index pour la table `review`
 --
 ALTER TABLE `review`
@@ -522,9 +620,21 @@ ALTER TABLE `animal`
   MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=2;
 
 --
+-- AUTO_INCREMENT pour la table `carts`
+--
+ALTER TABLE `carts`
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=2;
+
+--
 -- AUTO_INCREMENT pour la table `cart_item`
 --
 ALTER TABLE `cart_item`
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT;
+
+--
+-- AUTO_INCREMENT pour la table `cart_items`
+--
+ALTER TABLE `cart_items`
   MODIFY `id` int(11) NOT NULL AUTO_INCREMENT;
 
 --
@@ -549,7 +659,7 @@ ALTER TABLE `demande`
 -- AUTO_INCREMENT pour la table `equipement`
 --
 ALTER TABLE `equipement`
-  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=39;
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=43;
 
 --
 -- AUTO_INCREMENT pour la table `garage`
@@ -582,10 +692,22 @@ ALTER TABLE `product`
   MODIFY `id` int(11) NOT NULL AUTO_INCREMENT;
 
 --
+-- AUTO_INCREMENT pour la table `products`
+--
+ALTER TABLE `products`
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=3;
+
+--
+-- AUTO_INCREMENT pour la table `ratings`
+--
+ALTER TABLE `ratings`
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT;
+
+--
 -- AUTO_INCREMENT pour la table `review`
 --
 ALTER TABLE `review`
-  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=17;
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=18;
 
 --
 -- AUTO_INCREMENT pour la table `user`
@@ -610,11 +732,24 @@ ALTER TABLE `animal`
   ADD CONSTRAINT `fk_animal_user` FOREIGN KEY (`userId`) REFERENCES `users` (`id`) ON DELETE CASCADE;
 
 --
+-- Contraintes pour la table `carts`
+--
+ALTER TABLE `carts`
+  ADD CONSTRAINT `fk_carts_buyer_id` FOREIGN KEY (`buyer_id`) REFERENCES `users` (`id`) ON DELETE CASCADE;
+
+--
 -- Contraintes pour la table `cart_item`
 --
 ALTER TABLE `cart_item`
   ADD CONSTRAINT `cart_item_ibfk_1` FOREIGN KEY (`user_id`) REFERENCES `users` (`id`) ON DELETE CASCADE,
   ADD CONSTRAINT `cart_item_ibfk_2` FOREIGN KEY (`product_id`) REFERENCES `product` (`id`) ON DELETE CASCADE;
+
+--
+-- Contraintes pour la table `cart_items`
+--
+ALTER TABLE `cart_items`
+  ADD CONSTRAINT `fk_cart_items_cart_id` FOREIGN KEY (`cart_id`) REFERENCES `carts` (`id`) ON DELETE CASCADE,
+  ADD CONSTRAINT `fk_cart_items_product_id` FOREIGN KEY (`product_id`) REFERENCES `products` (`id`) ON DELETE CASCADE;
 
 --
 -- Contraintes pour la table `culture`
@@ -666,6 +801,18 @@ ALTER TABLE `parcelle`
 --
 ALTER TABLE `product`
   ADD CONSTRAINT `product_ibfk_1` FOREIGN KEY (`user_id`) REFERENCES `users` (`id`) ON DELETE CASCADE;
+
+--
+-- Contraintes pour la table `products`
+--
+ALTER TABLE `products`
+  ADD CONSTRAINT `fk_products_seller_id` FOREIGN KEY (`seller_id`) REFERENCES `users` (`id`) ON DELETE SET NULL;
+
+--
+-- Contraintes pour la table `ratings`
+--
+ALTER TABLE `ratings`
+  ADD CONSTRAINT `fk_ratings_product_id` FOREIGN KEY (`product_id`) REFERENCES `products` (`id`) ON DELETE CASCADE;
 
 --
 -- Contraintes pour la table `review`
