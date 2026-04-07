@@ -1,0 +1,46 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}Culture{% endblock %}
+
+{% block body %}
+    <h1>Culture</h1>
+
+    <table class="table">
+        <tbody>
+            <tr>
+                <th>Id</th>
+                <td>{{ culture.id }}</td>
+            </tr>
+            <tr>
+                <th>Nom</th>
+                <td>{{ culture.nom }}</td>
+            </tr>
+            <tr>
+                <th>Type_culture</th>
+                <td>{{ culture.type_culture }}</td>
+            </tr>
+            <tr>
+                <th>Date_plantation</th>
+                <td>{{ culture.date_plantation ? culture.date_plantation|date('Y-m-d') : '' }}</td>
+            </tr>
+            <tr>
+                <th>Date_recolte_prevue</th>
+                <td>{{ culture.date_recolte_prevue ? culture.date_recolte_prevue|date('Y-m-d') : '' }}</td>
+            </tr>
+            <tr>
+                <th>Etat_culture</th>
+                <td>{{ culture.etat_culture }}</td>
+            </tr>
+            <tr>
+                <th>Parcelle</th>
+                <td>{{ culture.parcelle ? culture.parcelle.nom : '' }}</td>
+            </tr>
+        </tbody>
+    </table>
+
+    <a href="{{ path('app_culture_index') }}">back to list</a>
+
+    <a href="{{ path('app_culture_edit', {'id': culture.id}) }}">edit</a>
+
+    {{ include('Parcelle/culture/_delete_form.html.twig') }}
+{% endblock %}
