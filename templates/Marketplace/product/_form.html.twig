@@ -1,0 +1,63 @@
+{{ form_start(form, {'attr': {'class': 'form-wrapper', 'enctype': 'multipart/form-data'}}) }}
+
+    <div class="form-group">
+        {{ form_label(form.name) }}
+        {{ form_widget(form.name, {'attr': {'class': 'form-control'}}) }}
+        <div style="color: #e74c3c; font-size: 0.85rem; margin-top: 0.3rem;">{{ form_errors(form.name) }}</div>
+    </div>
+
+    <div class="form-group">
+        {{ form_label(form.description) }}
+        {{ form_widget(form.description, {'attr': {'class': 'form-control'}}) }}
+        <div style="color: #e74c3c; font-size: 0.85rem; margin-top: 0.3rem;">{{ form_errors(form.description) }}</div>
+    </div>
+
+    <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 1rem;">
+        <div class="form-group">
+            {{ form_label(form.price) }}
+            {{ form_widget(form.price, {'attr': {'class': 'form-control'}}) }}
+            <div style="color: #e74c3c; font-size: 0.85rem; margin-top: 0.3rem;">{{ form_errors(form.price) }}</div>
+        </div>
+
+        <div class="form-group">
+            {{ form_label(form.quantity) }}
+            {{ form_widget(form.quantity, {'attr': {'class': 'form-control'}}) }}
+            <div style="color: #e74c3c; font-size: 0.85rem; margin-top: 0.3rem;">{{ form_errors(form.quantity) }}</div>
+        </div>
+    </div>
+
+    <div class="form-group">
+        {{ form_label(form.category) }}
+        {{ form_widget(form.category, {'attr': {'class': 'form-control'}}) }}
+        <div style="color: #e74c3c; font-size: 0.85rem; margin-top: 0.3rem;">{{ form_errors(form.category) }}</div>
+    </div>
+
+    <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 1rem;">
+        <div class="form-group">
+            {{ form_label(form.supplier) }}
+            {{ form_widget(form.supplier, {'attr': {'class': 'form-control'}}) }}
+            <div style="color: #e74c3c; font-size: 0.85rem; margin-top: 0.3rem;">{{ form_errors(form.supplier) }}</div>
+        </div>
+
+        <div class="form-group">
+            {{ form_label(form.expiryDate) }}
+            {{ form_widget(form.expiryDate, {'attr': {'class': 'form-control'}}) }}
+            <div style="color: #e74c3c; font-size: 0.85rem; margin-top: 0.3rem;">{{ form_errors(form.expiryDate) }}</div>
+        </div>
+    </div>
+
+    <div class="form-group">
+        {{ form_label(form.imageFile) }}
+        {{ form_widget(form.imageFile, {'attr': {'class': 'form-control', 'style': 'padding: 0.5rem;'}}) }}
+        <div style="color: #e74c3c; font-size: 0.85rem; margin-top: 0.3rem;">{{ form_errors(form.imageFile) }}</div>
+        <div style="color: rgba(255,255,255,0.4); font-size: 0.8rem; margin-top: 0.3rem;">Formats: JPG, PNG, WEBP, GIF. Max: 5 Mo.</div>
+        {% if form.vars.data and form.vars.data.image %}
+            <div style="margin-top: 0.5rem;">
+                <p style="font-size: 0.8rem; color: rgba(255,255,255,0.6); margin-bottom: 0.3rem;">Image actuelle :</p>
+                <img src="{{ asset('uploads/products/' ~ form.vars.data.image) }}" alt="Image actuelle" style="max-width: 150px; max-height: 100px; border-radius: 8px; border: 1px solid rgba(255,255,255,0.1);">
+            </div>
+        {% endif %}
+    </div>
+
+    <button class="btn btn-primary" style="width: 100%; margin-top: 1rem;">{{ button_label|default('Enregistrer') }}</button>
+{{ form_end(form) }}
