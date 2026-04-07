@@ -1,0 +1,50 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}Parcelle{% endblock %}
+
+{% block body %}
+    <h1>Parcelle</h1>
+
+    <table class="table">
+        <tbody>
+            <tr>
+                <th>Id</th>
+                <td>{{ parcelle.id }}</td>
+            </tr>
+            <tr>
+                <th>Nom</th>
+                <td>{{ parcelle.nom }}</td>
+            </tr>
+            <tr>
+                <th>Superficie</th>
+                <td>{{ parcelle.superficie }}</td>
+            </tr>
+            <tr>
+                <th>Localisation</th>
+                <td>{{ parcelle.localisation }}</td>
+            </tr>
+            <tr>
+                <th>Type_sol</th>
+                <td>{{ parcelle.type_sol }}</td>
+            </tr>
+            <tr>
+                <th>Latitude</th>
+                <td>{{ parcelle.latitude }}</td>
+            </tr>
+            <tr>
+                <th>Longitude</th>
+                <td>{{ parcelle.longitude }}</td>
+            </tr>
+            <tr>
+                <th>Utilisateur</th>
+                <td>{{ parcelle.user ? parcelle.user.email : '' }}</td>
+            </tr>
+        </tbody>
+    </table>
+
+    <a href="{{ path('app_parcelle_index') }}">back to list</a>
+
+    <a href="{{ path('app_parcelle_edit', {'id': parcelle.id}) }}">edit</a>
+
+    {{ include('Parcelle/_delete_form.html.twig') }}
+{% endblock %}

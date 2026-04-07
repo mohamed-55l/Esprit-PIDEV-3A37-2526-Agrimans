@@ -22,6 +22,12 @@ doctrine:
                 dir: '%kernel.project_dir%/src/Modules'
                 prefix: 'App\Modules'
                 alias: App
+            AppEntity:
+                type: attribute
+                is_bundle: false
+                dir: '%kernel.project_dir%/src/Entity'
+                prefix: 'App\Entity'
+                alias: AppEntity
 
 when@test:
     doctrine:

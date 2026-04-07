@@ -73,7 +73,7 @@ class Parcelle
     }
 
     #[ORM\Column(type: 'string', nullable: true)]
-    private ?string $type_sol = null;
+    public ?string $type_sol = null;
 
     public function getType_sol(): ?string
     {
@@ -129,7 +129,7 @@ class Parcelle
         return $this;
     }
 
-    #[ORM\OneToMany(targetEntity: Culture::class, mappedBy: 'parcelle')]
+    #[ORM\OneToMany(targetEntity: 'App\Modules\Parcelle\Entity\Culture', mappedBy: 'parcelle')]
     private Collection $cultures;
 
     /**

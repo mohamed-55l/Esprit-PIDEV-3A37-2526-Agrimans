@@ -11,6 +11,7 @@
         
         <!-- Icons (utilisation d'une librairie simple pour les futurs liens) -->
         <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+        <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
         
         <link rel="stylesheet" href="{{ asset('css/style.css') }}?v={{ random() }}">
         
@@ -64,8 +65,8 @@
                     <div class="dropdown">
                         <a href="#" style="cursor:default;"><i class="fa-solid fa-leaf"></i> Domaine & élevage</a>
                         <div class="dropdown-content">
-                            <a href="#"><i class="fa-solid fa-map"></i> Gestion des Parcelles</a>
-                            <a href="#"><i class="fa-solid fa-seedling"></i> Suivi des Cultures</a>
+                            <a href="{{ path('app_parcelle_index') }}"><i class="fa-solid fa-map"></i> Gestion des Parcelles</a>
+                            <a href="{{ path('app_culture_index') }}"><i class="fa-solid fa-seedling"></i> Suivi des Cultures</a>
                             <a href="#"><i class="fa-solid fa-cow"></i> Gestion des Animaux</a>
                         </div>
                     </div>
