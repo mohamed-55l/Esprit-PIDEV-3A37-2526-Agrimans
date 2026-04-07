@@ -39,6 +39,9 @@ class AnimalType extends AbstractType
 
     public function configureOptions(OptionsResolver $resolver): void
     {
-        $resolver->setDefaults(['data_class' => Animal::class]);
+        $resolver->setDefaults([
+            'data_class' => Animal::class,
+            'attr' => ['novalidate' => true],
+        ]);
     }
 }
