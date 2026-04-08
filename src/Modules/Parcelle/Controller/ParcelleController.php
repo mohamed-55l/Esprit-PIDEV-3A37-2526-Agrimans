@@ -15,10 +15,16 @@ use Symfony\Component\Routing\Attribute\Route;
 final class ParcelleController extends AbstractController
 {
     #[Route(name: 'app_parcelle_index', methods: ['GET'])]
-    public function index(ParcelleRepository $parcelleRepository): Response
+    public function index(Request $request, ParcelleRepository $parcelleRepository): Response
     {
+        $search = trim((string) $request->query->get('search', ''));
+        $parcelles = $search !== ''
+            ? $parcelleRepository->findBySearchTerm($search)
+            : $parcelleRepository->findAll();
+
         return $this->render('Parcelle/index.html.twig', [
-            'parcelles' => $parcelleRepository->findAll(),
+            'parcelles' => $parcelles,
+            'search' => $search,
         ]);
     }
 

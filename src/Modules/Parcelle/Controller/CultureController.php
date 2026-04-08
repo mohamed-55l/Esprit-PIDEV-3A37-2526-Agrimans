@@ -15,10 +15,16 @@ use Symfony\Component\Routing\Attribute\Route;
 final class CultureController extends AbstractController
 {
     #[Route(name: 'app_culture_index', methods: ['GET'])]
-    public function index(CultureRepository $cultureRepository): Response
+    public function index(Request $request, CultureRepository $cultureRepository): Response
     {
+        $search = trim((string) $request->query->get('search', ''));
+        $cultures = $search !== ''
+            ? $cultureRepository->findBySearchTerm($search)
+            : $cultureRepository->findAll();
+
         return $this->render('Parcelle/culture/index.html.twig', [
-            'cultures' => $cultureRepository->findAll(),
+            'cultures' => $cultures,
+            'search' => $search,
         ]);
     }
 
