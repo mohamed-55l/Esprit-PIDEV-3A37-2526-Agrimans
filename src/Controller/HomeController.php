@@ -20,8 +20,8 @@ class HomeController extends AbstractController
                 return $this->redirectToRoute('app_admin');
             }
 
-            // Si c'est un utilisateur régulier, rediriger vers les gestions (animaux)
-            return $this->redirectToRoute('waad_animal_index');
+            // Si c'est un utilisateur régulier, rediriger vers le tableau de bord principal
+            return $this->redirectToRoute('app_user_dashboard');
         }
 
         // Si pas connecté, afficher la page d'accueil avec les informations du site
