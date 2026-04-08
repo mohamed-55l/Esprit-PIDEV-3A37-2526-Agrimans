@@ -15,10 +15,21 @@ use Symfony\Component\Routing\Attribute\Route;
 class ReviewController extends AbstractController
 {
     #[Route('/', name: 'app_review_index', methods: ['GET'])]
-    public function index(ReviewRepository $reviewRepository): Response
+    public function index(Request $request, ReviewRepository $reviewRepository): Response
     {
+        $query = $request->query->get('q', '');
+        $sortBy = $request->query->get('sort', 'dateReview');
+        $sortOrder = $request->query->get('order', 'DESC');
+
+        $reviews = $reviewRepository->searchAndSort($query, $sortBy, $sortOrder);
+        $statistics = $reviewRepository->getStatistics();
+
         return $this->render('review/index.html.twig', [
-            'reviews' => $reviewRepository->findAll(),
+            'reviews' => $reviews,
+            'statistics' => $statistics,
+            'currentQuery' => $query,
+            'currentSort' => $sortBy,
+            'currentOrder' => $sortOrder
         ]);
     }
 

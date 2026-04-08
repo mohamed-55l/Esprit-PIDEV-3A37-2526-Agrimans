@@ -15,10 +15,21 @@ use Symfony\Component\Routing\Attribute\Route;
 final class EquipementController extends AbstractController
 {
     #[Route(name: 'app_equipement_index', methods: ['GET'])]
-    public function index(EquipementRepository $equipementRepository): Response
+    public function index(Request $request, EquipementRepository $equipementRepository): Response
     {
+        $query = $request->query->get('q', '');
+        $sortBy = $request->query->get('sort', 'nom');
+        $sortOrder = $request->query->get('order', 'ASC');
+
+        $equipements = $equipementRepository->searchAndSort($query, $sortBy, $sortOrder);
+        $statistics = $equipementRepository->getStatistics();
+
         return $this->render('Equipement/index.html.twig', [
-            'equipements' => $equipementRepository->findAll(),
+            'equipements' => $equipements,
+            'statistics' => $statistics,
+            'currentQuery' => $query,
+            'currentSort' => $sortBy,
+            'currentOrder' => $sortOrder
         ]);
     }
 

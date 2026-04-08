@@ -16,7 +16,55 @@
             </a>
         </div>
 
-        <div class="table-wrapper">
+        <!-- Section de Statistiques Équipement -->
+        <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 1.5rem; margin-bottom: 2rem;">
+            <div style="background: rgba(125, 191, 108, 0.1); border: 1px solid rgba(125, 191, 108, 0.3); padding: 1.5rem; border-radius: 16px; text-align: center;">
+                <h3 style="font-size: 1rem; color: rgba(255,255,255,0.7); margin-bottom: 0.5rem;">Total Équipements</h3>
+                <div style="font-size: 2.5rem; font-weight: 800; color: var(--light-green);">{{ statistics.total|default(0) }}</div>
+            </div>
+            {% for dispo, count in statistics.repartition|default([]) %}
+            <div style="background: rgba(255, 255, 255, 0.05); border: 1px solid rgba(255, 255, 255, 0.1); padding: 1.5rem; border-radius: 16px; text-align: center;">
+                <h3 style="font-size: 1rem; color: rgba(255,255,255,0.7); margin-bottom: 0.5rem;">{{ dispo }}</h3>
+                <div style="font-size: 2.5rem; font-weight: 800; color: var(--white);">{{ count }}</div>
+            </div>
+            {% endfor %}
+        </div>
+
+        <!-- Barre de Recherche et Tri -->
+        <div style="background: rgba(255,255,255,0.03); border: 1px solid rgba(255,255,255,0.08); border-radius: 16px; padding: 1.5rem; margin-bottom: 2rem;">
+            <form method="get" action="{{ path('app_equipement_index') }}" style="display: flex; gap: 1rem; flex-wrap: wrap; align-items: flex-end;">
+                <div style="flex-grow: 1; min-width: 250px;">
+                    <label style="display: block; font-size: 0.85rem; color: rgba(255,255,255,0.6); margin-bottom: 0.4rem;">Recherche (Nom ou Type)</label>
+                    <input type="text" name="q" value="{{ currentQuery|default('') }}" class="form-control" placeholder="Tracteur, Moissonneuse..." style="width: 100%;">
+                </div>
+                <div>
+                    <label style="display: block; font-size: 0.85rem; color: rgba(255,255,255,0.6); margin-bottom: 0.4rem;">Trier par</label>
+                    <select name="sort" class="form-control">
+                        <option value="nom" {% if currentSort|default('nom') == 'nom' %}selected{% endif %}>Nom</option>
+                        <option value="prix" {% if currentSort|default('nom') == 'prix' %}selected{% endif %}>Prix</option>
+                        <option value="type" {% if currentSort|default('nom') == 'type' %}selected{% endif %}>Catégorie</option>
+                        <option value="disponibilite" {% if currentSort|default('nom') == 'disponibilite' %}selected{% endif %}>Disponibilité</option>
+                    </select>
+                </div>
+                <div>
+                    <label style="display: block; font-size: 0.85rem; color: rgba(255,255,255,0.6); margin-bottom: 0.4rem;">Ordre</label>
+                    <select name="order" class="form-control">
+                        <option value="ASC" {% if currentOrder|default('ASC') == 'ASC' %}selected{% endif %}>Ascendant</option>
+                        <option value="DESC" {% if currentOrder|default('ASC') == 'DESC' %}selected{% endif %}>Descendant</option>
+                    </select>
+                </div>
+                <div>
+                    <button type="submit" class="hero-btn-primary" style="padding: 0.8rem 1.5rem; font-size: 0.95rem; display: flex; align-items: center; gap: 8px;">
+                        <i class="fa-solid fa-search"></i> Appliquer
+                    </button>
+                </div>
+                {% if currentQuery|default('') != '' or currentSort|default('nom') != 'nom' %}
+                <div>
+                    <a href="{{ path('app_equipement_index') }}" class="btn btn-danger" style="padding: 0.8rem 1.5rem;"><i class="fa-solid fa-times"></i> Réinitialiser</a>
+                </div>
+                {% endif %}
+            </form>
+        </div>        <div class="table-wrapper">
             <table class="styled-table">
                 <thead>
                     <tr>
