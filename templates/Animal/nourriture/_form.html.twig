@@ -1,0 +1,23 @@
+{{ form_start(form) }}
+{% if not form.vars.valid and form.vars.submitted %}
+    <div style="background:rgba(231,76,60,0.15); border:1px solid #e74c3c; color:#e74c3c; padding:0.75rem 1rem; border-radius:8px; margin-bottom:1rem;">
+        <i class="fa-solid fa-circle-xmark"></i> Veuillez corriger les erreurs ci-dessous.
+    </div>
+{% endif %}
+<div style="display:grid; grid-template-columns:1fr 1fr; gap:1rem;">
+    <div>{{ form_row(form.name) }}</div>
+    <div>{{ form_row(form.type) }}</div>
+    <div>{{ form_row(form.quantity) }}</div>
+    <div>{{ form_row(form.unit) }}</div>
+    <div>{{ form_row(form.cost) }}</div>
+    <div>{{ form_row(form.supplier) }}</div>
+    <div>{{ form_row(form.expiryDate) }}</div>
+    <div>{{ form_row(form.isActive) }}</div>
+</div>
+<div style="margin-top:0.5rem;">{{ form_row(form.nutritionalValue) }}</div>
+<div style="margin-top:1rem;">
+    <button type="submit" class="hero-btn-primary" style="font-size:0.9rem;">
+        <i class="fa-solid fa-floppy-disk"></i> Enregistrer
+    </button>
+</div>
+{{ form_end(form) }}

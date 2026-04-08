@@ -1,0 +1,13 @@
+{{ form_start(feedingForm) }}
+<div style="display:flex; flex-direction:column; gap:1rem;">
+    <div>{{ form_row(feedingForm.nourriture) }}</div>
+    <div>{{ form_row(feedingForm.quantityFed) }}</div>
+    <div>{{ form_row(feedingForm.feedingDate) }}</div>
+    <div>{{ form_row(feedingForm.notes) }}</div>
+</div>
+<div style="margin-top:1rem;">
+    <button type="submit" class="hero-btn-primary" style="font-size:0.9rem;">
+        <i class="fa-solid fa-floppy-disk"></i> Enregistrer
+    </button>
+</div>
+{{ form_end(feedingForm) }}

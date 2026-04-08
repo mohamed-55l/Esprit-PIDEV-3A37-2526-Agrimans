@@ -1,0 +1,48 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}Dashboard Admin{% endblock %}
+
+{% block body %}
+<section class="content-section" style="margin-top: 2rem;">
+    <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 2rem;">
+        <div>
+            <h2 style="font-size: 2rem; margin-bottom: 0.5rem;">Dashboard Administrateur</h2>
+            <p style="color: rgba(255,255,255,0.7);">Gérez l'application et les utilisateurs.</p>
+        </div>
+        <div>
+            <a href="{{ path('app_home') }}" class="btn btn-secondary"><i class="fa-solid fa-home"></i> Accueil</a>
+            <a href="{{ path('app_logout') }}" class="btn" style="background:#e74c3c; color:white;"><i class="fa-solid fa-sign-out-alt"></i> Déconnexion</a>
+        </div>
+    </div>
+
+    <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); gap: 2rem; margin-bottom: 2rem;">
+        <div style="background:rgba(255,255,255,0.04); border:1px solid rgba(255,255,255,0.08); border-radius:12px; padding:1.5rem;">
+            <h3 style="color: #198B61; margin-bottom: 1rem;"><i class="fa-solid fa-users"></i> Gestion des Utilisateurs</h3>
+            <p>Gérer les comptes utilisateurs, rôles et permissions.</p>
+            <a href="{{ path('app_user_management') }}" class="btn btn-primary">Gérer les Utilisateurs</a>
+        </div>
+
+        <div style="background:rgba(255,255,255,0.04); border:1px solid rgba(255,255,255,0.08); border-radius:12px; padding:1.5rem;">
+            <h3 style="color: #198B61; margin-bottom: 1rem;"><i class="fa-solid fa-store"></i> Gestion Marketplace</h3>
+            <p>Gérer les produits et les ventes.</p>
+            <a href="{{ path('app_marketplace_index') }}" class="btn btn-primary">Gérer la Boutique</a>
+        </div>
+
+        <div style="background:rgba(255,255,255,0.04); border:1px solid rgba(255,255,255,0.08); border-radius:12px; padding:1.5rem;">
+            <h3 style="color: #198B61; margin-bottom: 1rem;"><i class="fa-solid fa-chart-line"></i> Statistiques des Ventes</h3>
+            <p>Consulter les rapports et statistiques des ventes.</p>
+            <a href="{{ path('app_marketplace_stats') }}" class="btn btn-primary">Voir les Stats</a>
+        </div>
+    </div>
+
+    <div style="background:rgba(255,255,255,0.04); border:1px solid rgba(255,255,255,0.08); border-radius:12px; padding:1.5rem;">
+        <h3 style="margin-bottom: 1rem;">Actions Rapides</h3>
+        <div style="display: flex; gap: 1rem; flex-wrap: wrap;">
+            <a href="{{ path('app_create_admin') }}" class="btn btn-secondary">Créer Admin</a>
+            <a href="{{ path('app_create_user') }}" class="btn btn-secondary">Créer Utilisateur</a>
+            <a href="{{ path('app_marketplace_index') }}" class="btn btn-secondary">Voir Boutique</a>
+            <a href="#" class="btn btn-secondary">Exporter Données</a>
+        </div>
+    </div>
+</section>
+{% endblock %}
