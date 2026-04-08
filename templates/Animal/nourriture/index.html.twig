@@ -29,7 +29,6 @@
         <table class="styled-table">
             <thead>
                 <tr>
-                    <th>ID</th>
                     <th>Nom</th>
                     <th>Type</th>
                     <th>Quantité</th>
@@ -42,7 +41,6 @@
             <tbody>
             {% for nourriture in nourritures %}
                 <tr>
-                    <td style="color:rgba(255,255,255,0.5);">#{{ nourriture.id }}</td>
                     <td><strong>{{ nourriture.name }}</strong></td>
                     <td>{{ nourriture.type }}</td>
                     <td>{{ nourriture.quantity }} {{ nourriture.unit ?? '' }}</td>

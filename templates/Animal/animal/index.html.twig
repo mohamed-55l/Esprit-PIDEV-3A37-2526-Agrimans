@@ -29,7 +29,6 @@
         <table class="styled-table">
             <thead>
                 <tr>
-                    <th>ID</th>
                     <th>Nom</th>
                     <th>Espèce</th>
                     <th>Race</th>
@@ -41,7 +40,6 @@
             <tbody>
             {% for animal in animals %}
                 <tr>
-                    <td style="color: rgba(255,255,255,0.5);">#{{ animal.id }}</td>
                     <td><strong>{{ animal.name }}</strong></td>
                     <td>{{ animal.type }}</td>
                     <td>{{ animal.breed ?? '-' }}</td>

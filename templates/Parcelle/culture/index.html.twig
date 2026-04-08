@@ -24,7 +24,6 @@
             <table class="table">
                 <thead>
             <tr>
-                <th>Id</th>
                 <th>Nom</th>
                 <th>Type_culture</th>
                 <th>Date_plantation</th>
@@ -37,7 +36,6 @@
         <tbody>
         {% for culture in cultures %}
             <tr>
-                <td>{{ culture.id }}</td>
                 <td>{{ culture.nom }}</td>
                 <td>{{ culture.type_culture }}</td>
                 <td>{{ culture.date_plantation ? culture.date_plantation|date('Y-m-d') : '' }}</td>

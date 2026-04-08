@@ -32,7 +32,6 @@
             <table class="styled-table">
                 <thead>
                     <tr>
-                        <th>ID</th>
                         <th>Produit</th>
                         <th>Catégorie</th>
                         <th>Prix/kg</th>
@@ -46,7 +45,6 @@
                 <tbody>
                 {% for product in products %}
                     <tr>
-                        <td style="color: rgba(255,255,255,0.5);">#{{ product.id }}</td>
                         <td><strong>{{ product.name }}</strong></td>
                         <td>
                             <span class="badge {{ product.category == 'VEGETABLES' ? 'badge-success' : (product.category == 'FRUITS' ? 'badge-warning' : 'badge-primary') }}">

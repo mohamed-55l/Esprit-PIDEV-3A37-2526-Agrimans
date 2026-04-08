@@ -74,7 +74,6 @@
             <table class="styled-table">
                 <thead>
                     <tr>
-                        <th>ID</th>
                         <th>Équipement</th>
                         <th>Utilisateur</th>
                         <th>Note</th>
@@ -86,7 +85,6 @@
                 <tbody>
                 {% for review in reviews %}
                     <tr>
-                        <td style="color: rgba(255,255,255,0.5);">#{{ review.id }}</td>
                         <td><strong>{{ review.equipement ? review.equipement.nom : 'N/A' }}</strong></td>
                         <td><span class="badge badge-warning"><i class="fa-solid fa-user"></i> {{ review.userId }}</span></td>
                         <td style="color: #f1c40f;">

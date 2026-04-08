@@ -68,7 +68,6 @@
             <table class="styled-table">
                 <thead>
                     <tr>
-                        <th>ID / Réf</th>
                         <th>Nom de la Machine</th>
                         <th>Catégorie</th>
                         <th>Valeur Dinar</th>
@@ -79,7 +78,6 @@
                 <tbody>
                 {% for equipement in equipements %}
                     <tr>
-                        <td style="color: rgba(255,255,255,0.5);">#{{ equipement.id }}</td>
                         <td><strong>{{ equipement.nom }}</strong></td>
                         <td>{{ equipement.type }}</td>
                         <td style="font-weight: 600;">{{ equipement.prix|number_format(2, ',', ' ') }} DT</td>
