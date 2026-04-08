@@ -20,7 +20,7 @@ final class CultureController extends AbstractController
         $search = trim((string) $request->query->get('search', ''));
         $cultures = $search !== ''
             ? $cultureRepository->findBySearchTerm($search)
-            : $cultureRepository->findAll();
+            : $cultureRepository->findAllOrderByDateRecoltePrevueAsc();
 
         return $this->render('Parcelle/culture/index.html.twig', [
             'cultures' => $cultures,

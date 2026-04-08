@@ -31,4 +31,17 @@ class ParcelleRepository extends ServiceEntityRepository
             ->getQuery()
             ->getResult();
     }
+
+    /**
+     * Retourne toutes les parcelles triées par superficie décroissante.
+     *
+     * @return Parcelle[]
+     */
+    public function findAllOrderBySuperficieDesc(): array
+    {
+        return $this->createQueryBuilder('p')
+            ->orderBy('p.superficie', 'DESC')
+            ->getQuery()
+            ->getResult();
+    }
 }

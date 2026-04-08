@@ -20,7 +20,7 @@ final class ParcelleController extends AbstractController
         $search = trim((string) $request->query->get('search', ''));
         $parcelles = $search !== ''
             ? $parcelleRepository->findBySearchTerm($search)
-            : $parcelleRepository->findAll();
+            : $parcelleRepository->findAllOrderBySuperficieDesc();
 
         return $this->render('Parcelle/index.html.twig', [
             'parcelles' => $parcelles,

@@ -31,4 +31,21 @@ class CultureRepository extends ServiceEntityRepository
             ->getQuery()
             ->getResult();
     }
+
+    /**
+     * Retourne toutes les cultures triées par date de récolte prévue la plus proche.
+     *
+     * @return Culture[]
+     */
+    public function findAllOrderByDateRecoltePrevueAsc(): array
+    {
+        $qb = $this->createQueryBuilder('c');
+
+        return $qb
+            ->addSelect('(CASE WHEN c.date_recolte_prevue IS NULL THEN 1 ELSE 0 END) AS HIDDEN hasDate')
+            ->orderBy('hasDate', 'ASC')
+            ->addOrderBy('c.date_recolte_prevue', 'ASC')
+            ->getQuery()
+            ->getResult();
+    }
 }
