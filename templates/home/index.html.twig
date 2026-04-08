@@ -11,10 +11,10 @@
                 Agrimans centralise vos équipements, vos champs, la météo en temps réel et votre logistique sur une seule plateforme intelligente.
             </p>
             <div class="hero-actions">
-                <a href="{{ path('app_equipement_index') }}" class="hero-btn-primary">
+                <a href="{{ app.user ? path('app_equipement_index') : path('app_login') }}" class="hero-btn-primary">
                     Accéder aux Ressources
                 </a>
-                <a href="#" class="hero-btn-primary btn-outline" style="background:transparent; color:white;">
+                <a href="{{ app.user ? '#' : path('app_login') }}" class="hero-btn-primary btn-outline" style="background:transparent; color:white;">
                     Explorer la carte
                 </a>
             </div>
@@ -25,8 +25,134 @@
         </div>
     </section>
 
+    <!-- Quick Access Buttons (visible when logged in) -->
+    {% if app.user %}
+    <section class="quick-access-section">
+        <style>
+            .qa-section-wrapper {
+                padding: 4rem 1rem;
+                background: linear-gradient(to bottom, rgba(25, 139, 97, 0.08), rgba(25, 139, 97, 0.02));
+                border-top: 1px solid rgba(255, 255, 255, 0.1);
+                border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+            }
+            .qa-grid {
+                display: flex;
+                justify-content: center;
+                gap: 2rem;
+                flex-wrap: wrap;
+                max-width: 1200px;
+                margin: 0 auto;
+            }
+            .qa-btn {
+                background: rgba(255, 255, 255, 0.05);
+                backdrop-filter: blur(10px);
+                border: 1px solid rgba(25, 139, 97, 0.3);
+                border-radius: 20px;
+                padding: 2.5rem;
+                text-decoration: none;
+                color: #ffffff;
+                display: flex;
+                flex-direction: column;
+                align-items: center;
+                gap: 1rem;
+                transition: all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+                min-width: 160px;
+                box-shadow: 0 4px 15px rgba(0, 0, 0, 0.15);
+                position: relative;
+                overflow: hidden;
+            }
+            .qa-btn:hover {
+                background: rgba(25, 139, 97, 0.2);
+                border-color: #198B61;
+                transform: translateY(-8px);
+                box-shadow: 0 15px 30px rgba(25, 139, 97, 0.3);
+            }
+            .qa-icon-wrapper {
+                background: rgba(25, 139, 97, 0.15);
+                border-radius: 50%;
+                width: 70px;
+                height: 70px;
+                display: flex;
+                align-items: center;
+                justify-content: center;
+                transition: transform 0.4s ease;
+            }
+            .qa-icon-wrapper i {
+                font-size: 2rem;
+                color: #27ae60;
+            }
+            .qa-btn:hover .qa-icon-wrapper {
+                transform: scale(1.15) rotate(5deg);
+                background: rgba(25, 139, 97, 0.3);
+            }
+            .qa-text {
+                font-weight: 700;
+                font-size: 1.2rem;
+                text-transform: uppercase;
+                letter-spacing: 1px;
+            }
+            .qa-underline {
+                position: absolute;
+                bottom: 0;
+                left: 0;
+                width: 100%;
+                height: 4px;
+                background: #27ae60;
+                transform: scaleX(0);
+                transition: transform 0.4s ease;
+            }
+            .qa-btn:hover .qa-underline {
+                transform: scaleX(1);
+            }
+            @media (max-width: 768px) {
+                .qa-btn { padding: 1.5rem; min-width: 120px; }
+                .qa-icon-wrapper { width: 50px; height: 50px; }
+                .qa-icon-wrapper i { font-size: 1.5rem; }
+                .qa-text { font-size: 1rem; }
+            }
+        </style>
+        
+        <div class="qa-section-wrapper">
+            <h2 style="text-align: center; margin-bottom: 2rem; color: #fff; font-size: 1.8rem; font-weight: 600;">Accès Rapide</h2>
+            <div class="qa-grid">
+                <a href="{{ path('app_home') }}#contact" class="qa-btn">
+                    <div class="qa-icon-wrapper">
+                        <i class="fa-solid fa-envelope"></i>
+                    </div>
+                    <span class="qa-text">Contact</span>
+                    <div class="qa-underline"></div>
+                </a>
+                
+                <a href="{{ path('app_home') }}#about" class="qa-btn">
+                    <div class="qa-icon-wrapper">
+                        <i class="fa-solid fa-info-circle"></i>
+                    </div>
+                    <span class="qa-text">À propos</span>
+                    <div class="qa-underline"></div>
+                </a>
+                
+                <a href="{{ path('app_marketplace_index') }}" class="qa-btn">
+                    <div class="qa-icon-wrapper">
+                        <i class="fa-solid fa-store"></i>
+                    </div>
+                    <span class="qa-text">Boutique</span>
+                    <div class="qa-underline"></div>
+                </a>
+                
+                <a href="{{ path('app_marketplace_cart') }}" class="qa-btn">
+                    <div class="qa-icon-wrapper">
+                        <i class="fa-solid fa-shopping-cart"></i>
+                    </div>
+                    <span class="qa-text">Panier</span>
+                    <div class="qa-underline"></div>
+                </a>
+            </div>
+        </div>
+    </section>
+    {% endif %}
+
     <!-- Features Overview Section -->
-    <section class="features-section">
+    <section id="about" class="features-section">
         <div class="section-header animate-on-scroll">
             <h2 class="section-title">L'écosystème Agrimans</h2>
             <p class="section-subtitle">Découvrez une suite d'outils puissants conçus pour optimiser chaque aspect de votre exploitation agricole.</p>
@@ -47,7 +173,7 @@
                 <p class="feature-desc">
                     Suivez en temps réel la position de vos tracteurs et équipements. Planifiez les maintenances, assignez les ressources et gérez les garages intelligemment.
                 </p>
-                <a href="{{ path('app_equipement_index') }}" class="feature-link">Gérer le matériel <i class="fa-solid fa-arrow-right" style="margin-left: 5px; font-size:0.8rem;"></i></a>
+                <a href="{% if app.user %}{{ path('app_equipement_index') }}{% else %}{{ path('app_login') }}{% endif %}" class="feature-link">Gérer le matériel <i class="fa-solid fa-arrow-right" style="margin-left: 5px; font-size:0.8rem;"></i></a>
             </div>
 
             <!-- Feature 2: Domaine & Cultures -->
@@ -62,7 +188,7 @@
                 <p class="feature-desc">
                     Cartographiez vos parcelles et analysez les sols. Suivez les cycles de plantation, prévoyez les récoltes et adaptez-vous aux bulletins météorologiques.
                 </p>
-                <a href="#" class="feature-link">Explorer les parcelles <i class="fa-solid fa-arrow-right" style="margin-left: 5px; font-size:0.8rem;"></i></a>
+                <a href="{% if app.user %}#{% else %}{{ path('app_login') }}{% endif %}" class="feature-link">Explorer les parcelles <i class="fa-solid fa-arrow-right" style="margin-left: 5px; font-size:0.8rem;"></i></a>
             </div>
 
             <!-- Feature 3: Elevage -->
@@ -77,7 +203,7 @@
                 <p class="feature-desc">
                     Maintenez un registre précis de vos animaux. Suivez leur état de santé, leur évolution de poids et programmez leurs examens vétérinaires continus.
                 </p>
-                <a href="#" class="feature-link">Voir le cheptel <i class="fa-solid fa-arrow-right" style="margin-left: 5px; font-size:0.8rem;"></i></a>
+                <a href="{% if app.user %}#{% else %}{{ path('app_login') }}{% endif %}" class="feature-link">Voir le cheptel <i class="fa-solid fa-arrow-right" style="margin-left: 5px; font-size:0.8rem;"></i></a>
             </div>
 
             <!-- Feature 4: Marketplace -->
@@ -92,7 +218,7 @@
                 <p class="feature-desc">
                     Achetez des semences, vendez vos récoltes et participez à un marché agricole dynamique. Pilotez vos commandes et bénéficiez de circuits courts sécurisés.
                 </p>
-                <a href="#" class="feature-link">Accéder à la boutique <i class="fa-solid fa-arrow-right" style="margin-left: 5px; font-size:0.8rem;"></i></a>
+                <a href="{% if app.user %}{{ path('app_marketplace_index') }}{% else %}{{ path('app_login') }}{% endif %}" class="feature-link">Accéder à la boutique <i class="fa-solid fa-arrow-right" style="margin-left: 5px; font-size:0.8rem;"></i></a>
             </div>
 
         </div>
@@ -102,9 +228,34 @@
     <section class="cta-section animate-on-scroll">
         <h2 class="cta-title">Prêt à moderniser votre exploitation ?</h2>
         <p style="color: rgba(255,255,255,0.7); margin-bottom: 2rem;">Rejoignez la plateforme Agrimans et prenez le contrôle total de vos ressources grâce à un assistant intelligent intégré.</p>
-        <a href="#" class="hero-btn-primary" style="padding: 1rem 2.5rem; font-size: 1.1rem;">
+        <a href="{{ app.user ? '#' : path('app_login') }}" class="hero-btn-primary" style="padding: 1rem 2.5rem; font-size: 1.1rem;">
             Démarrer l'Assitant IA <i class="fa-solid fa-robot" style="margin-left:8px;"></i>
         </a>
+    </section>
+
+    <!-- Contact Section (moved to bottom) -->
+    <section id="contact" class="contact-section" style="padding: 4rem 1rem; background: rgba(255,255,255,0.03);">
+        <div class="section-header animate-on-scroll">
+            <h2 class="section-title">Contactez-nous</h2>
+            <p class="section-subtitle">Posez-nous vos questions ou lancez votre projet agricole avec Agrimans.</p>
+        </div>
+        <div class="contact-cards" style="display: grid; grid-template-columns: repeat(auto-fit, minmax(240px, 1fr)); gap: 1.5rem; margin-top: 2rem;">
+            <div style="background: rgba(255,255,255,0.04); border: 1px solid rgba(255,255,255,0.08); border-radius: 16px; padding: 1.75rem;">
+                <h3 style="margin-bottom: 0.75rem; color: #198B61;">Support</h3>
+                <p>support@agrimans.com</p>
+                <p>+216 12 345 678</p>
+            </div>
+            <div style="background: rgba(255,255,255,0.04); border: 1px solid rgba(255,255,255,0.08); border-radius: 16px; padding: 1.75rem;">
+                <h3 style="margin-bottom: 0.75rem; color: #198B61;">Bureau</h3>
+                <p>Rue de l'Agriculture, Tunis</p>
+                <p>Tunisie</p>
+            </div>
+            <div style="background: rgba(255,255,255,0.04); border: 1px solid rgba(255,255,255,0.08); border-radius: 16px; padding: 1.75rem;">
+                <h3 style="margin-bottom: 0.75rem; color: #198B61;">Réseaux</h3>
+                <p><a href="#" style="color:#ffffff;">Facebook</a></p>
+                <p><a href="#" style="color:#ffffff;">Instagram</a></p>
+            </div>
+        </div>
     </section>
 
     <!-- Script that powers the scroll animations -->

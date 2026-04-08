@@ -34,57 +34,95 @@
     <body>
         
             <nav class="navbar">
-                <a href="{{ path('app_home') }}" class="logo" style="text-transform: uppercase; color: #198B61;">
-                    <img src="{{ asset('images/FullLogo_Transparent_NoBuffer (1).png') }}" alt="Agrimans Logo" style="height: 40px; width: auto; margin-right: 10px;">
-                    Agrimans
+                <a href="{{ path('app_home') }}" class="logo">
+                    <img src="{{ asset('images/logo.png') }}" alt="Agrimans Logo" style="height: 55px; width: auto; transition: height 0.3s ease;">
                 </a>
                 
-                <!-- Titres génériques de navigation avec Dropdowns (Menus déroulants) -->
                 <div class="nav-links">
-                    
-                    <div class="dropdown">
-                        <a href="{{ path('app_home') }}"><i class="fa-solid fa-gauge-high"></i> Tableau de bord</a>
-                        <div class="dropdown-content">
-                            <a href="#"><i class="fa-solid fa-chart-line"></i> Statistiques du domaine</a>
-                            <a href="#"><i class="fa-solid fa-cloud-sun"></i> Météo en temps réel</a>
-                            <a href="#"><i class="fa-solid fa-robot"></i> Smart Assistant (Chatbot)</a>
+                    {% if not app.user %}
+                        <a href="{{ path('app_home') }}#contact" class="nav-link-professional">Contact</a>
+                        <a href="{{ path('app_home') }}#about" class="nav-link-professional">À propos</a>
+                        <a href="{{ path('app_marketplace_index') }}" class="nav-link-professional">Boutique</a>
+                    {% elseif 'ROLE_ADMIN' in app.user.roles %}
+                        <!-- Admin sees no navigation menu, only dashboard access -->
+                    {% else %}
+                        <div class="dropdown">
+                            <a href="{{ path('app_home') }}"><i class="fa-solid fa-gauge-high"></i> Tableau de bord</a>
+                            <div class="dropdown-content">
+                                <a href="#"><i class="fa-solid fa-chart-line"></i> Statistiques du domaine</a>
+                                <a href="#"><i class="fa-solid fa-cloud-sun"></i> Météo en temps réel</a>
+                                <a href="#"><i class="fa-solid fa-robot"></i> Smart Assistant</a>
+                            </div>
                         </div>
-                    </div>
 
-                    <div class="dropdown">
-                        <a href="#" style="color: #7DBF6C; cursor:default;"><i class="fa-solid fa-tractor"></i> Ressources agro</a>
-                        <div class="dropdown-content">
-                            <a href="{{ path('app_equipement_index') }}"><i class="fa-solid fa-toolbox"></i> Stock équipements</a>
-                            <a href="#"><i class="fa-solid fa-map-location-dot"></i> Suivi GPS & Garages</a>
-                            <a href="#"><i class="fa-solid fa-tasks"></i> Demandes & Assignements</a>
-                            <a href="{{ path('app_review_index') }}"><i class="fa-solid fa-star"></i> Avis & Évaluations</a>
+                        <div class="dropdown">
+                            <a href="#" style="color: #7DBF6C; cursor:default;"><i class="fa-solid fa-tractor"></i> Ressources agro</a>
+                            <div class="dropdown-content">
+                                <a href="{{ path('app_equipement_index') }}"><i class="fa-solid fa-toolbox"></i> Stock équipements</a>
+                                <a href="#"><i class="fa-solid fa-map-location-dot"></i> Suivi GPS & Garages</a>
+                                <a href="#"><i class="fa-solid fa-tasks"></i> Demandes & Assignements</a>
+                                <a href="{{ path('app_review_index') }}"><i class="fa-solid fa-star"></i> Avis & Évaluations</a>
+                            </div>
                         </div>
-                    </div>
 
-                    <div class="dropdown">
-                        <a href="#" style="cursor:default;"><i class="fa-solid fa-leaf"></i> Domaine & élevage</a>
-                        <div class="dropdown-content">
-                            <a href="#"><i class="fa-solid fa-map"></i> Gestion des Parcelles</a>
-                            <a href="#"><i class="fa-solid fa-seedling"></i> Suivi des Cultures</a>
-                            <a href="{{ path('waad_animal_index') }}"><i class="fa-solid fa-cow"></i> Gestion des Animaux</a>
-                            <a href="{{ path('waad_nourriture_index') }}"><i class="fa-solid fa-bowl-food"></i> Stocks Alimentaires</a>
+                        <div class="dropdown">
+                            <a href="#" style="cursor:default;"><i class="fa-solid fa-leaf"></i> Domaine & élevage</a>
+                            <div class="dropdown-content">
+                                <a href="#"><i class="fa-solid fa-map"></i> Gestion des Parcelles</a>
+                                <a href="#"><i class="fa-solid fa-seedling"></i> Suivi des Cultures</a>
+                                <a href="{{ path('waad_animal_index') }}"><i class="fa-solid fa-cow"></i> Gestion des Animaux</a>
+                                <a href="{{ path('waad_nourriture_index') }}"><i class="fa-solid fa-bowl-food"></i> Stocks Alimentaires</a>
+                            </div>
                         </div>
-                    </div>
-
-                    <div class="dropdown">
-                        <a href="{{ path('app_marketplace_index') }}" style="cursor:default;"><i class="fa-solid fa-store"></i> Marketplace</a>
-                        <div class="dropdown-content">
-                            <a href="{{ path('app_marketplace_index') }}"><i class="fa-solid fa-cart-shopping"></i> Explorer la Boutique</a>
-                            <a href="{{ path('app_marketplace_cart') }}"><i class="fa-solid fa-bag-shopping"></i> Mon Panier & Commandes</a>
-                            <a href="{{ path('app_marketplace_my_products') }}"><i class="fa-solid fa-box-open"></i> Gérer mes Produits</a>
-                            <a href="{{ path('app_marketplace_stats') }}"><i class="fa-solid fa-chart-line"></i> Statistiques</a>
-                        </div>
-                    </div>
+                    {% endif %}
                 </div>
 
-                
                 <div class="nav-actions">
-                    <a href="#" class="top-btn btn-outline"><i class="fa-solid fa-user"></i> Espace profil</a>
+                    <style>
+                        .nav-link-professional {
+                            display: inline-flex; align-items: center; gap: 6px;
+                            padding: 0.5rem 1rem; margin: 0 4px;
+                            font-weight: 500; font-size: 0.95rem; text-decoration: none;
+                            color: rgba(255, 255, 255, 0.85);
+                            transition: color 0.3s ease, transform 0.3s ease;
+                        }
+                        .nav-link-professional:hover {
+                            color: #ffffff;
+                            transform: translateY(-2px);
+                        }
+                        .nav-cart-icon {
+                            display: flex; align-items: center; justify-content: center;
+                            width: 42px; height: 42px; border-radius: 50%;
+                            background: rgba(255, 255, 255, 0.1); color: #fff;
+                            transition: all 0.3s ease; text-decoration: none;
+                            font-size: 1.1rem;
+                        }
+                        .nav-cart-icon:hover {
+                            background: #198B61; color: #fff; transform: scale(1.1); box-shadow: 0 4px 10px rgba(25, 139, 97, 0.4);
+                        }
+                    </style>
+
+                    {% if app.user %}
+                        {% if 'ROLE_ADMIN' in app.user.roles %}
+                            <!-- Admin has no action buttons in navbar -->
+                        {% else %}
+                            <!-- Added the explicit buttons the user wanted in the navbar -->
+                            <a href="{{ path('app_home') }}#contact" class="nav-link-professional">Contact</a>
+                            <a href="{{ path('app_home') }}#about" class="nav-link-professional">À propos</a>
+                            <a href="{{ path('app_marketplace_index') }}" class="nav-link-professional">Boutique</a>
+                            <a href="{{ path('app_marketplace_cart') }}" class="nav-cart-icon" title="Panier"><i class="fa-solid fa-shopping-cart"></i></a>
+                        {% endif %}
+                        <div class="dropdown" style="margin-left: 1rem;">
+                            <a href="#" class="top-btn btn-outline" style="background: rgba(255,255,255,0.1); border-radius:12px; padding: 0.6rem 1.2rem;"><i class="fa-solid fa-user"></i> {{ app.user.email }}</a>
+                            <div class="dropdown-content" style="right: 0;">
+                                <a href="#">Profil</a>
+                                <a href="#">Paramètres</a>
+                                <a href="{{ path('app_logout') }}" style="color: #e74c3c;"><i class="fa-solid fa-sign-out-alt"></i> Déconnexion</a>
+                            </div>
+                        </div>
+                    {% else %}
+                        <a href="{{ path('app_login') }}" class="top-btn btn-outline" style="padding: 0.6rem 1.5rem; border-radius: 12px;"><i class="fa-solid fa-sign-in-alt"></i> Connexion</a>
+                    {% endif %}
                 </div>
             </nav>
 
