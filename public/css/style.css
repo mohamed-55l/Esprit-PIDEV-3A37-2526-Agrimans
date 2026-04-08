@@ -656,4 +656,10 @@ h1, h2 { color: var(--white); }
     .hero-image-wrapper { height: 350px; }
 }
 
+/* Suppression du cadre bleu au clic (Focus Ring) */
+.btn:focus, button:focus, a:focus, .form-control:focus {
+    outline: none !important;
+    box-shadow: none !important;
+}
+
 
