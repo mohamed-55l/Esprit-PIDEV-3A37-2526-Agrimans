@@ -129,7 +129,7 @@
             <h3 style="margin:0;"><i class="fa-solid fa-pen" style="color:#198B61;"></i> Modifier {{ animal.name }}</h3>
             <button onclick="document.getElementById('modalEditAnimal').style.display='none'" style="background:none;border:none;color:white;font-size:1.5rem;cursor:pointer;">&times;</button>
         </div>
-        {{ include('Waad/animal/_form.html.twig', {form: editForm}) }}
+        {{ include('Animal/animal/_form.html.twig', {form: editForm}) }}
     </div>
 </div>
 
@@ -140,7 +140,7 @@
             <h3 style="margin:0;"><i class="fa-solid fa-plus-circle" style="color:#198B61;"></i> Ajouter alimentation</h3>
             <button onclick="document.getElementById('modalAddFeeding').style.display='none'" style="background:none;border:none;color:white;font-size:1.5rem;cursor:pointer;">&times;</button>
         </div>
-        {{ include('Waad/animal_nourriture/_form.html.twig', {feedingForm: addFeedingForm}) }}
+        {{ include('Animal/animal_nourriture/_form.html.twig', {feedingForm: addFeedingForm}) }}
     </div>
 </div>
 
@@ -152,7 +152,7 @@
             <h3 style="margin:0;"><i class="fa-solid fa-pen" style="color:#198B61;"></i> Modifier alimentation</h3>
             <button onclick="document.getElementById('modalEditFeeding{{ feeding.id }}').style.display='none'" style="background:none;border:none;color:white;font-size:1.5rem;cursor:pointer;">&times;</button>
         </div>
-        {{ include('Waad/animal_nourriture/_form.html.twig', {feedingForm: editFeedingForms[feeding.id]}) }}
+        {{ include('Animal/animal_nourriture/_form.html.twig', {feedingForm: editFeedingForms[feeding.id]}) }}
     </div>
 </div>
 

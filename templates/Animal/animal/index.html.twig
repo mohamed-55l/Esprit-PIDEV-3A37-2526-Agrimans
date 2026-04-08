@@ -85,7 +85,7 @@
             <h3 style="margin:0;"><i class="fa-solid fa-plus-circle" style="color:#198B61;"></i> Ajouter un Animal</h3>
             <button onclick="document.getElementById('modalAddAnimal').style.display='none'" style="background:none;border:none;color:white;font-size:1.5rem;cursor:pointer;">&times;</button>
         </div>
-        {{ include('Waad/animal/_form.html.twig', {form: form}) }}
+        {{ include('Animal/animal/_form.html.twig', {form: form}) }}
     </div>
 </div>
 
@@ -97,7 +97,7 @@
             <h3 style="margin:0;"><i class="fa-solid fa-pen" style="color:#198B61;"></i> Modifier {{ animal.name }}</h3>
             <button onclick="document.getElementById('modalEdit{{ animal.id }}').style.display='none'" style="background:none;border:none;color:white;font-size:1.5rem;cursor:pointer;">&times;</button>
         </div>
-        {{ include('Waad/animal/_form.html.twig', {form: editForms[animal.id]}) }}
+        {{ include('Animal/animal/_form.html.twig', {form: editForms[animal.id]}) }}
     </div>
 </div>
 

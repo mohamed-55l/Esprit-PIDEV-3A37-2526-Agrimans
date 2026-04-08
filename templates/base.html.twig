@@ -40,9 +40,9 @@
                 
                 <div class="nav-links">
                     {% if not app.user %}
-                        <a href="{{ path('app_home') }}#contact" class="nav-link-professional">Contact</a>
-                        <a href="{{ path('app_home') }}#about" class="nav-link-professional">À propos</a>
-                        <a href="{{ path('app_marketplace_index') }}" class="nav-link-professional">Boutique</a>
+                        <a href="{{ path('app_home') }}#contact" class="nav-link-professional"><i class="fa-solid fa-envelope"></i> Contact</a>
+                        <a href="{{ path('app_home') }}#about" class="nav-link-professional"><i class="fa-solid fa-info-circle"></i> À propos</a>
+                        <a href="{{ path('app_marketplace_index') }}" class="nav-link-professional"><i class="fa-solid fa-store"></i> Boutique</a>
                     {% elseif 'ROLE_ADMIN' in app.user.roles %}
                         <!-- Admin sees no navigation menu, only dashboard access -->
                     {% else %}
@@ -81,13 +81,15 @@
                     <style>
                         .nav-link-professional {
                             display: inline-flex; align-items: center; gap: 6px;
-                            padding: 0.5rem 1rem; margin: 0 4px;
-                            font-weight: 500; font-size: 0.95rem; text-decoration: none;
+                            padding: 0.6rem 1.2rem; margin: 0 4px;
+                            font-weight: 600; font-size: 0.95rem; text-decoration: none;
                             color: rgba(255, 255, 255, 0.85);
-                            transition: color 0.3s ease, transform 0.3s ease;
+                            border-radius: 12px;
+                            transition: all 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275);
                         }
                         .nav-link-professional:hover {
                             color: #ffffff;
+                            background: rgba(255, 255, 255, 0.1);
                             transform: translateY(-2px);
                         }
                         .nav-cart-icon {
@@ -121,6 +123,7 @@
                             </div>
                         </div>
                     {% else %}
+                        <a href="{{ path('app_marketplace_cart') }}" class="nav-cart-icon" title="Panier" style="margin-right: 1rem;"><i class="fa-solid fa-shopping-cart"></i></a>
                         <a href="{{ path('app_login') }}" class="top-btn btn-outline" style="padding: 0.6rem 1.5rem; border-radius: 12px;"><i class="fa-solid fa-sign-in-alt"></i> Connexion</a>
                     {% endif %}
                 </div>

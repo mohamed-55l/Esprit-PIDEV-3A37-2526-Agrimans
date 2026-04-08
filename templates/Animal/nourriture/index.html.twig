@@ -80,7 +80,7 @@
             <h3 style="margin:0;"><i class="fa-solid fa-plus-circle" style="color:#198B61;"></i> Ajouter Nourriture</h3>
             <button onclick="document.getElementById('modalAddNourriture').style.display='none'" style="background:none;border:none;color:white;font-size:1.5rem;cursor:pointer;">&times;</button>
         </div>
-        {{ include('Waad/nourriture/_form.html.twig', {form: form}) }}
+        {{ include('Animal/nourriture/_form.html.twig', {form: form}) }}
     </div>
 </div>
 
@@ -92,7 +92,7 @@
             <h3 style="margin:0;"><i class="fa-solid fa-pen" style="color:#198B61;"></i> Modifier {{ nourriture.name }}</h3>
             <button onclick="document.getElementById('modalEditN{{ nourriture.id }}').style.display='none'" style="background:none;border:none;color:white;font-size:1.5rem;cursor:pointer;">&times;</button>
         </div>
-        {{ include('Waad/nourriture/_form.html.twig', {form: editForms[nourriture.id]}) }}
+        {{ include('Animal/nourriture/_form.html.twig', {form: editForms[nourriture.id]}) }}
     </div>
 </div>
 
