@@ -41,10 +41,8 @@
                 
                 <div class="nav-links">
                     {% if not app.user %}
-                        <a href="{{ path('app_home') }}#contact" class="nav-link-professional"><i class="fa-solid fa-envelope"></i> Contact</a>
-                        <a href="{{ path('app_home') }}#about" class="nav-link-professional"><i class="fa-solid fa-info-circle"></i> À propos</a>
                         <a href="{{ path('app_marketplace_index') }}" class="nav-link-professional"><i class="fa-solid fa-store"></i> Boutique</a>
-                    {% elseif 'ROLE_ADMIN' in app.user.roles %}
+                    {% elseif is_granted('ROLE_ADMIN') %}
                         <!-- Admin sees no navigation menu, only dashboard access -->
                     {% else %}
                         <div class="dropdown">
@@ -57,7 +55,7 @@
                         </div>
 
                         <div class="dropdown">
-                            <a href="#" style="color: #7DBF6C; cursor:default;"><i class="fa-solid fa-tractor"></i> Ressources agro</a>
+                            <a href="#" style="cursor:default;"><i class="fa-solid fa-tractor"></i> Ressources agro</a>
                             <div class="dropdown-content">
                                 <a href="{{ path('app_equipement_index') }}"><i class="fa-solid fa-toolbox"></i> Stock équipements</a>
                                 <a href="#"><i class="fa-solid fa-map-location-dot"></i> Suivi GPS & Garages</a>
@@ -106,13 +104,10 @@
                     </style>
 
                     {% if app.user %}
-                        {% if 'ROLE_ADMIN' in app.user.roles %}
+                        {% if is_granted('ROLE_ADMIN') %}
                             <!-- Admin has no action buttons in navbar -->
                         {% else %}
-                            <!-- Added the explicit buttons the user wanted in the navbar -->
-                            <a href="{{ path('app_home') }}#contact" class="nav-link-professional">Contact</a>
-                            <a href="{{ path('app_home') }}#about" class="nav-link-professional">À propos</a>
-                            <a href="{{ path('app_marketplace_index') }}" class="nav-link-professional">Boutique</a>
+                            <a href="{{ path('app_marketplace_index') }}" class="nav-link-professional" style="margin-right: 10px;"><i class="fa-solid fa-store"></i> Boutique</a>
                             <a href="{{ path('app_marketplace_cart') }}" class="nav-cart-icon" title="Panier"><i class="fa-solid fa-shopping-cart"></i></a>
                         {% endif %}
                         <div class="dropdown" style="margin-left: 1rem;">
