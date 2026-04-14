@@ -1,697 +1,89 @@
-<!DOCTYPE html>
-<html lang="fr">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Dashboard Professionnel | Agrimans</title>
+{% extends 'base.html.twig' %}
+
+{% block title %}Mon Tableau de Bord | Agrimans{% endblock %}
+
+{% block body %}
+<!-- Hero Section -->
+<section class="hero-section" style="margin-top: 2rem;">
+    <div class="hero-content">
+        <h1 class="hero-title" style="font-size: 2.8rem;">Bienvenue, {{ app.user.userIdentifier }}&nbsp;👋</h1>
+        <p class="hero-subtitle">Voici un aperçu général de vos statistiques et de l'état de votre domaine Agricole.</p>
+        
+        <div class="hero-actions">
+            <a href="{{ path('app_parcelle_index') }}" class="hero-btn-primary"><i class="fa-solid fa-map"></i> Voir mes Parcelles</a>
+            <a href="{{ path('waad_animal_index') }}" class="btn btn-glow"><i class="fa-solid fa-cow"></i> Gérer mon Élevage</a>
+        </div>
+    </div>
+</section>
+
+<!-- Statistiques Globales (Features Grid Style) -->
+<section style="margin-top: 4rem;">
+    <h2 class="section-title" style="font-size: 2rem; margin-bottom: 2rem;">Statistiques Globales</h2>
     
-    <!-- Fonts & Icons -->
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
-    <!-- Chart.js -->
-    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
-
-    <style>
-        :root {
-            --primary: #198B61;
-            --primary-hover: #147350;
-            --secondary: #2C3E50;
-            --dark: #12181b;
-            --dark-card: #1e2529;
-            --text-main: #f8f9fa;
-            --text-muted: #9ba4b5;
-            --border-color: rgba(255, 255, 255, 0.08);
-            --danger: #e74c3c;
-            --warning: #f1c40f;
-            --success: #2ecc71;
-            --sidebar-width: 280px;
-        }
-
-        * {
-            margin: 0;
-            padding: 0;
-            box-sizing: border-box;
-            font-family: 'Inter', sans-serif;
-        }
-
-        body {
-            background-color: var(--dark);
-            color: var(--text-main);
-            display: flex;
-            min-height: 100vh;
-            overflow-x: hidden;
-        }
-
-        /* Sidebar Styles */
-        .sidebar {
-            width: var(--sidebar-width);
-            background-color: var(--dark-card);
-            border-right: 1px solid var(--border-color);
-            display: flex;
-            flex-direction: column;
-            position: fixed;
-            height: 100vh;
-            left: 0;
-            top: 0;
-            z-index: 100;
-        }
-
-        .sidebar-header {
-            padding: 1.5rem;
-            display: flex;
-            align-items: center;
-            gap: 1rem;
-            border-bottom: 1px solid var(--border-color);
-        }
-
-        .sidebar-header img {
-            height: 40px;
-        }
-
-        .sidebar-nav {
-            padding: 1.5rem 1rem;
-            flex: 1;
-            overflow-y: auto;
-        }
-
-        .nav-section-title {
-            text-transform: uppercase;
-            font-size: 0.75rem;
-            color: var(--text-muted);
-            letter-spacing: 1px;
-            margin-bottom: 1rem;
-            margin-top: 1.5rem;
-            padding-left: 0.5rem;
-            font-weight: 600;
-        }
-
-        .nav-section-title:first-child {
-            margin-top: 0;
-        }
-
-        .nav-item {
-            display: flex;
-            align-items: center;
-            gap: 1rem;
-            padding: 0.8rem 1rem;
-            color: var(--text-muted);
-            text-decoration: none;
-            border-radius: 10px;
-            margin-bottom: 0.3rem;
-            transition: all 0.3s ease;
-            font-weight: 500;
-        }
-
-        .nav-item:hover, .nav-item.active {
-            background-color: rgba(25, 139, 97, 0.1);
-            color: var(--primary);
-        }
-
-        .nav-item i {
-            width: 20px;
-            text-align: center;
-            font-size: 1.1rem;
-        }
-
-        .sidebar-footer {
-            padding: 1.5rem;
-            border-top: 1px solid var(--border-color);
-        }
-
-        /* Main Content Styles */
-        .main-content {
-            margin-left: var(--sidebar-width);
-            flex: 1;
-            display: flex;
-            flex-direction: column;
-            min-height: 100vh;
-        }
-
-        .topbar {
-            height: 80px;
-            padding: 0 2rem;
-            display: flex;
-            align-items: center;
-            justify-content: space-between;
-            background-color: var(--dark-card);
-            border-bottom: 1px solid var(--border-color);
-        }
-
-        .topbar-search {
-            position: relative;
-            width: 300px;
-        }
-
-        .topbar-search input {
-            width: 100%;
-            background-color: var(--dark);
-            border: 1px solid var(--border-color);
-            color: var(--text-main);
-            padding: 0.6rem 1rem 0.6rem 2.5rem;
-            border-radius: 8px;
-            font-size: 0.9rem;
-            transition: all 0.3s ease;
-        }
-
-        .topbar-search input:focus {
-            outline: none;
-            border-color: var(--primary);
-            box-shadow: 0 0 0 2px rgba(25, 139, 97, 0.2);
-        }
-
-        .topbar-search i {
-            position: absolute;
-            left: 1rem;
-            top: 50%;
-            transform: translateY(-50%);
-            color: var(--text-muted);
-        }
-
-        .user-menu {
-            display: flex;
-            align-items: center;
-            gap: 1.5rem;
-        }
-
-        .icon-btn {
-            background: none;
-            border: none;
-            color: var(--text-muted);
-            font-size: 1.2rem;
-            cursor: pointer;
-            position: relative;
-            transition: color 0.3s ease;
-        }
-
-        .icon-btn:hover {
-            color: var(--primary);
-        }
-
-        .badge {
-            position: absolute;
-            top: -5px;
-            right: -5px;
-            background-color: var(--danger);
-            color: white;
-            font-size: 0.6rem;
-            font-weight: bold;
-            padding: 2px 5px;
-            border-radius: 10px;
-        }
-
-        .user-profile {
-            display: flex;
-            align-items: center;
-            gap: 1rem;
-            padding: 0.4rem;
-            border-radius: 30px;
-            background-color: var(--dark);
-            border: 1px solid var(--border-color);
-            cursor: pointer;
-        }
-
-        .avatar {
-            width: 35px;
-            height: 35px;
-            border-radius: 50%;
-            background-color: var(--primary);
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            font-weight: bold;
-            color: white;
-        }
-
-        .user-info {
-            display: flex;
-            flex-direction: column;
-            padding-right: 1rem;
-        }
-
-        .user-name {
-            font-size: 0.9rem;
-            font-weight: 600;
-        }
-
-        .user-role {
-            font-size: 0.75rem;
-            color: var(--text-muted);
-        }
-
-        /* Dashboard Container */
-        .dashboard-container {
-            padding: 2rem;
-            flex: 1;
-        }
-
-        .page-header {
-            margin-bottom: 2rem;
-        }
-
-        .page-title {
-            font-size: 1.8rem;
-            font-weight: 700;
-            color: white;
-            margin-bottom: 0.5rem;
-        }
-
-        .page-subtitle {
-            color: var(--text-muted);
-            font-size: 0.95rem;
-        }
-
-        /* Stat Cards */
-        .stats-grid {
-            display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
-            gap: 1.5rem;
-            margin-bottom: 2rem;
-        }
-
-        .stat-card {
-            background: linear-gradient(145deg, var(--dark-card), #161c20);
-            border: 1px solid var(--border-color);
-            border-radius: 16px;
-            padding: 1.5rem;
-            display: flex;
-            flex-direction: column;
-            position: relative;
-            overflow: hidden;
-            transition: transform 0.3s ease, box-shadow 0.3s ease;
-        }
-
-        .stat-card:hover {
-            transform: translateY(-5px);
-            box-shadow: 0 10px 20px rgba(0,0,0,0.2);
-            border-color: rgba(25, 139, 97, 0.4);
-        }
-
-        .stat-icon {
-            width: 48px;
-            height: 48px;
-            border-radius: 12px;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            font-size: 1.5rem;
-            margin-bottom: 1rem;
-        }
-
-        .stat-icon.green {
-            background-color: rgba(46, 204, 113, 0.1);
-            color: var(--success);
-        }
-        .stat-icon.blue {
-            background-color: rgba(52, 152, 219, 0.1);
-            color: #3498db;
-        }
-        .stat-icon.orange {
-            background-color: rgba(243, 156, 18, 0.1);
-            color: #f39c12;
-        }
-        .stat-icon.purple {
-            background-color: rgba(155, 89, 182, 0.1);
-            color: #9b59b6;
-        }
-
-        .stat-value {
-            font-size: 2.2rem;
-            font-weight: 700;
-            margin-bottom: 0.2rem;
-            color: white;
-        }
-
-        .stat-label {
-            color: var(--text-muted);
-            font-size: 0.9rem;
-            font-weight: 500;
-        }
-
-        .stat-trend {
-            margin-top: 1rem;
-            font-size: 0.85rem;
-            display: flex;
-            align-items: center;
-            gap: 0.5rem;
-        }
-
-        .trend-up {
-            color: var(--success);
-        }
-
-        /* Charts Section */
-        .charts-container {
-            display: grid;
-            grid-template-columns: 2fr 1fr;
-            gap: 1.5rem;
-            margin-bottom: 2rem;
-        }
-
-        .chart-card {
-            background-color: var(--dark-card);
-            border: 1px solid var(--border-color);
-            border-radius: 16px;
-            padding: 1.5rem;
-        }
-
-        .card-header {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            margin-bottom: 1.5rem;
-        }
-
-        .card-title {
-            font-size: 1.1rem;
-            font-weight: 600;
-            color: white;
-        }
-
-        /* Quick Actions Grid */
-        .actions-grid {
-            display: grid;
-            grid-template-columns: 1fr 1fr;
-            gap: 1rem;
-        }
-
-        .action-btn {
-            background-color: rgba(255,255,255,0.03);
-            border: 1px solid var(--border-color);
-            border-radius: 12px;
-            padding: 1rem;
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            justify-content: center;
-            gap: 0.8rem;
-            color: var(--text-main);
-            text-decoration: none;
-            transition: all 0.3s ease;
-        }
-
-        .action-btn i {
-            font-size: 1.5rem;
-            color: var(--primary);
-        }
-
-        .action-btn:hover {
-            background-color: rgba(25, 139, 97, 0.1);
-            border-color: var(--primary);
-            transform: translateY(-2px);
-        }
-
-        /* Alert Section */
-        .alert-banner {
-            background: linear-gradient(to right, rgba(241, 196, 15, 0.1), rgba(241, 196, 15, 0.05));
-            border-left: 4px solid var(--warning);
-            border-radius: 8px;
-            padding: 1rem 1.5rem;
-            display: flex;
-            align-items: center;
-            gap: 1rem;
-            margin-bottom: 2rem;
-        }
-
-        .alert-banner i {
-            color: var(--warning);
-            font-size: 1.5rem;
-        }
-
-        .alert-content p {
-            margin: 0;
-            font-size: 0.95rem;
-        }
-
-        .alert-content strong {
-            color: white;
-        }
-
-        /* Responsive */
-        @media (max-width: 992px) {
-            .charts-container {
-                grid-template-columns: 1fr;
-            }
-        }
-    </style>
-</head>
-<body>
-
-    <!-- Sidebar -->
-    <aside class="sidebar">
-        <div class="sidebar-header">
-            <i class="fa-solid fa-leaf" style="color: var(--primary); font-size: 1.5rem;"></i>
-            <span style="font-size: 1.2rem; font-weight: 700; color: white;">AGRIMANS</span>
+    <div class="features-grid">
+        
+        <!-- Stat: Parcelles -->
+        <div class="feature-card visible" style="transform:translateY(0); opacity:1;">
+            <div class="feature-icon-wrapper">
+                <i class="feature-icon fa-solid fa-map-location-dot"></i>
+                <h3 class="feature-title">Mes Parcelles</h3>
+            </div>
+            <div style="font-size: 3rem; font-weight: 800; color: var(--light-green); display: flex; align-items: baseline; gap: 10px;">
+                {{ stats.total_parcelles }} <span style="font-size: 1rem; color: rgba(255,255,255,0.6); font-weight: 500;">terrains enregistrés</span>
+            </div>
+            <a href="{{ path('app_parcelle_index') }}" class="feature-link">Gérer <i class="fa-solid fa-arrow-right" style="margin-left: 5px; font-size:0.8rem;"></i></a>
         </div>
 
-        <div class="sidebar-nav">
-            <a href="#" class="nav-item active">
-                <i class="fa-solid fa-border-all"></i>
-                Vue d'ensemble
-            </a>
-            
-            <div class="nav-section-title">Domaine & Élevage</div>
-            <a href="{{ path('app_parcelle_index') }}" class="nav-item">
-                <i class="fa-solid fa-map"></i>
-                Parcelles
-            </a>
-            <a href="{{ path('app_culture_index') }}" class="nav-item">
-                <i class="fa-solid fa-seedling"></i>
-                Cultures
-            </a>
-            <a href="{{ path('waad_animal_index') }}" class="nav-item">
-                <i class="fa-solid fa-cow"></i>
-                Animaux
-            </a>
-            
-            <div class="nav-section-title">Ressources</div>
-            <a href="{{ path('waad_nourriture_index') }}" class="nav-item">
-                <i class="fa-solid fa-wheat-awn"></i>
-                Stocks
-            </a>
-            <a href="{{ path('app_equipement_index') }}" class="nav-item">
-                <i class="fa-solid fa-tractor"></i>
-                Équipements
-            </a>
-            
-            <div class="nav-section-title">E-commerce</div>
-            <a href="{{ path('app_marketplace_index') }}" class="nav-item">
-                <i class="fa-solid fa-store"></i>
-                Boutique
-            </a>
-            <a href="{{ path('app_review_index') }}" class="nav-item">
-                <i class="fa-solid fa-star"></i>
-                Avis
-            </a>
+        <!-- Stat: Cultures -->
+        <div class="feature-card visible" style="transform:translateY(0); opacity:1;">
+            <div class="feature-icon-wrapper">
+                <i class="feature-icon fa-solid fa-seedling"></i>
+                <h3 class="feature-title">Cultures Actives</h3>
+            </div>
+            <div style="font-size: 3rem; font-weight: 800; color: var(--light-green); display: flex; align-items: baseline; gap: 10px;">
+                {{ stats.total_cultures }} <span style="font-size: 1rem; color: rgba(255,255,255,0.6); font-weight: 500;">en croissance</span>
+            </div>
+            <a href="{{ path('app_culture_index') }}" class="feature-link">Suivi <i class="fa-solid fa-arrow-right" style="margin-left: 5px; font-size:0.8rem;"></i></a>
         </div>
 
-        <div class="sidebar-footer">
-            <a href="{{ path('app_home') }}" class="nav-item" style="color: var(--text-muted);">
-                <i class="fa-solid fa-arrow-left"></i>
-                Retour au site
-            </a>
+        <!-- Stat: Animaux -->
+        <div class="feature-card visible" style="transform:translateY(0); opacity:1;">
+            <div class="feature-icon-wrapper">
+                <i class="feature-icon fa-solid fa-cow"></i>
+                <h3 class="feature-title">Cheptel Animal</h3>
+            </div>
+            <div style="font-size: 3rem; font-weight: 800; color: var(--light-green); display: flex; align-items: baseline; gap: 10px;">
+                {{ stats.total_animaux }} <span style="font-size: 1rem; color: rgba(255,255,255,0.6); font-weight: 500;">animaux suivis</span>
+            </div>
+            <a href="{{ path('waad_animal_index') }}" class="feature-link">Détails <i class="fa-solid fa-arrow-right" style="margin-left: 5px; font-size:0.8rem;"></i></a>
         </div>
-    </aside>
 
-    <!-- Main Content -->
-    <main class="main-content">
-        <!-- Topbar -->
-        <header class="topbar">
-            <div class="topbar-search">
-                <i class="fa-solid fa-search"></i>
-                <input type="text" placeholder="Rechercher...">
+        <!-- Stat: Commandes / Boutique -->
+        <div class="feature-card visible" style="transform:translateY(0); opacity:1;">
+            <div class="feature-icon-wrapper">
+                <i class="feature-icon fa-solid fa-bag-shopping"></i>
+                <h3 class="feature-title">Achats en cours</h3>
             </div>
-
-            <div class="user-menu">
-                <button class="icon-btn">
-                    <i class="fa-regular fa-bell"></i>
-                    {% if stats.alertes is defined and stats.alertes > 0 %}
-                    <span class="badge">{{ stats.alertes }}</span>
-                    {% endif %}
-                </button>
-                <div class="user-profile">
-                    <div class="avatar">
-                        {{ app.user ? app.user.userIdentifier|slice(0,1)|upper : 'A' }}
-                    </div>
-                    <div class="user-info">
-                        <span class="user-name">{{ app.user ? app.user.userIdentifier : 'Utilisateur' }}</span>
-                        <span class="user-role">Agriculteur</span>
-                    </div>
-                    <i class="fa-solid fa-chevron-down" style="color: var(--text-muted); font-size: 0.8rem;"></i>
-                </div>
-                <a href="{{ path('app_logout') }}" class="icon-btn" style="margin-left: 0.5rem;" title="Déconnexion">
-                    <i class="fa-solid fa-sign-out-alt"></i>
-                </a>
+            <div style="font-size: 3rem; font-weight: 800; color: var(--light-green); display: flex; align-items: baseline; gap: 10px;">
+                {{ stats.commandes_en_cours }} <span style="font-size: 1rem; color: rgba(255,255,255,0.6); font-weight: 500;">commandes actives</span>
             </div>
-        </header>
-
-        <!-- Dashboard Content -->
-        <div class="dashboard-container">
-            <div class="page-header">
-                <h1 class="page-title">Tableau de Bord</h1>
-                <p class="page-subtitle">Aperçu en temps réel de votre domaine et de vos rendements.</p>
-            </div>
-
-            {% if stats.alertes is defined and stats.alertes > 0 %}
-            <div class="alert-banner">
-                <i class="fa-solid fa-triangle-exclamation"></i>
-                <div class="alert-content">
-                    <p><strong>Alerte système :</strong> Vous avez {{ stats.alertes }} notification(s) importante(s) requérant votre attention.</p>
-                </div>
-            </div>
-            {% endif %}
-
-            <!-- Stat Cards Grid -->
-            <div class="stats-grid">
-                <div class="stat-card">
-                    <div class="stat-icon green">
-                        <i class="fa-solid fa-map-location-dot"></i>
-                    </div>
-                    <div class="stat-value">{{ stats.total_parcelles|default('12') }}</div>
-                    <div class="stat-label">Parcelles Actives</div>
-                    <div class="stat-trend trend-up">
-                        <i class="fa-solid fa-arrow-trend-up"></i> +2% ce mois
-                    </div>
-                </div>
-
-                <div class="stat-card">
-                    <div class="stat-icon blue">
-                        <i class="fa-solid fa-seedling"></i>
-                    </div>
-                    <div class="stat-value">{{ stats.total_cultures|default('8') }}</div>
-                    <div class="stat-label">Cultures en cours</div>
-                    <div class="stat-trend trend-up">
-                        <i class="fa-solid fa-arrow-trend-up"></i> +5% ce mois
-                    </div>
-                </div>
-
-                <div class="stat-card">
-                    <div class="stat-icon orange">
-                        <i class="fa-solid fa-cow"></i>
-                    </div>
-                    <div class="stat-value">{{ stats.total_animaux|default('45') }}</div>
-                    <div class="stat-label">Cheptel Animal</div>
-                    <div class="stat-trend" style="color: var(--text-muted);">
-                        <i class="fa-solid fa-minus"></i> Stable
-                    </div>
-                </div>
-
-                <div class="stat-card">
-                    <div class="stat-icon purple">
-                        <i class="fa-solid fa-bag-shopping"></i>
-                    </div>
-                    <div class="stat-value">{{ stats.commandes_en_cours|default('3') }}</div>
-                    <div class="stat-label">Commandes Boutique</div>
-                    <div class="stat-trend" style="color: var(--warning);">
-                        <i class="fa-regular fa-clock"></i> En traitement
-                    </div>
-                </div>
-            </div>
-
-            <!-- Main Charts & Actions -->
-            <div class="charts-container">
-                <div class="chart-card">
-                    <div class="card-header">
-                        <h3 class="card-title">Rendement Annuel</h3>
-                        <div class="dropdown">
-                            <button style="background:none; border:1px solid var(--border-color); color:var(--text-muted); padding:5px 10px; border-radius:6px; cursor:pointer;">
-                                Cette année <i class="fa-solid fa-chevron-down ms-1"></i>
-                            </button>
-                        </div>
-                    </div>
-                    <!-- Chart Canvas -->
-                    <div style="height: 300px; width: 100%;">
-                        <canvas id="yieldChart"></canvas>
-                    </div>
-                </div>
-
-                <div class="chart-card">
-                    <div class="card-header">
-                        <h3 class="card-title">Actions Rapides</h3>
-                    </div>
-                    <div class="actions-grid">
-                        <a href="{{ path('app_parcelle_index') }}" class="action-btn">
-                            <i class="fa-solid fa-plus-circle"></i>
-                            <span>Nouv. Parcelle</span>
-                        </a>
-                        <a href="{{ path('waad_animal_index') }}" class="action-btn">
-                            <i class="fa-solid fa-stethoscope"></i>
-                            <span>Santé Animale</span>
-                        </a>
-                        <a href="{{ path('app_marketplace_index') }}" class="action-btn">
-                            <i class="fa-solid fa-cart-shopping"></i>
-                            <span>Boutique</span>
-                        </a>
-                        <a href="{{ path('waad_nourriture_index') }}" class="action-btn">
-                            <i class="fa-solid fa-boxes-stacked"></i>
-                            <span>Stocks</span>
-                        </a>
-                    </div>
-                </div>
-            </div>
+            <a href="{{ path('app_marketplace_index') }}" class="feature-link">Marketplace <i class="fa-solid fa-arrow-right" style="margin-left: 5px; font-size:0.8rem;"></i></a>
         </div>
-    </main>
 
-    <!-- Chart Config -->
-    <script>
-        document.addEventListener('DOMContentLoaded', function() {
-            const ctx = document.getElementById('yieldChart').getContext('2d');
-            
-            // Gradient for chart line
-            let gradient = ctx.createLinearGradient(0, 0, 0, 400);
-            gradient.addColorStop(0, 'rgba(25, 139, 97, 0.5)');
-            gradient.addColorStop(1, 'rgba(25, 139, 97, 0.0)');
+    </div>
+</section>
 
-            const yieldChart = new Chart(ctx, {
-                type: 'line',
-                data: {
-                    labels: ['Jan', 'Fév', 'Mar', 'Avr', 'Mai', 'Juin', 'Juil', 'Aoû', 'Sep', 'Oct', 'Nov', 'Déc'],
-                    datasets: [{
-                        label: 'Rendement (Tonnes)',
-                        data: [12, 19, 15, 25, 22, 30, 28, 35, 42, 38, 25, 18],
-                        borderColor: '#198B61',
-                        backgroundColor: gradient,
-                        borderWidth: 3,
-                        pointBackgroundColor: '#198B61',
-                        pointBorderColor: '#fff',
-                        pointBorderWidth: 2,
-                        pointRadius: 4,
-                        pointHoverRadius: 6,
-                        fill: true,
-                        tension: 0.4
-                    }]
-                },
-                options: {
-                    responsive: true,
-                    maintainAspectRatio: false,
-                    plugins: {
-                        legend: { display: false },
-                        tooltip: {
-                            backgroundColor: '#1e2529',
-                            titleColor: '#fff',
-                            bodyColor: '#fff',
-                            borderColor: 'rgba(255,255,255,0.1)',
-                            borderWidth: 1,
-                            padding: 10,
-                            displayColors: false
-                        }
-                    },
-                    scales: {
-                        y: {
-                            beginAtZero: true,
-                            grid: {
-                                color: 'rgba(255, 255, 255, 0.05)',
-                                drawBorder: false
-                            },
-                            ticks: { color: '#9ba4b5' }
-                        },
-                        x: {
-                            grid: { display: false },
-                            ticks: { color: '#9ba4b5' }
-                        }
-                    }
-                }
-            });
-        });
-    </script>
-</body>
-</html>
+<!-- Section Alertes / Opportunités (Exemple visuel supplémentaire) -->
+<section class="content-section" style="margin-top: 3rem;">
+    <h3 style="margin-bottom: 1.5rem;"><i class="fa-solid fa-bell" style="color: #f1c40f;"></i> Activité & Alertes Récentes</h3>
+    {% if stats.alertes > 0 %}
+        <div style="padding: 1rem; background: rgba(241, 196, 15, 0.1); border-left: 4px solid #f1c40f; border-radius: 8px;">
+            Vous avez <strong>{{ stats.alertes }}</strong> alerte(s) à consulter concernant vos cultures ou la santé des animaux.
+        </div>
+    {% else %}
+        <div style="padding: 1rem; background: rgba(125, 191, 108, 0.1); border-left: 4px solid var(--light-green); border-radius: 8px; color: var(--white);">
+            <i class="fa-solid fa-check-circle" style="color: var(--light-green); margin-right: 5px;"></i> Tout fonctionne parfaitement ! Aucune alerte n'est à signaler pour le moment.
+        </div>
+    {% endif %}
+</section>
+{% endblock %}

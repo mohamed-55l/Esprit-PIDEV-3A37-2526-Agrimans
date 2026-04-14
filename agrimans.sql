@@ -3,7 +3,7 @@
 -- https://www.phpmyadmin.net/
 --
 -- Hôte : 127.0.0.1
--- Généré le : mar. 07 avr. 2026 à 10:06
+-- Généré le : mar. 14 avr. 2026 à 11:16
 -- Version du serveur : 10.4.32-MariaDB
 -- Version de PHP : 8.1.25
 
@@ -42,7 +42,30 @@ CREATE TABLE `animal` (
 --
 
 INSERT INTO `animal` (`id`, `nom`, `espece`, `race`, `poids`, `etatSante`, `userId`) VALUES
-(1, 'hj', 'hbjn', 'hbji', 7, 'Gestation', 4);
+(1, 'hj', 'hbjn', 'hbji', 7, 'Gestation', 4),
+(2, 'aaa', 'aaa', 'aaa', 777, 'Sain', 2);
+
+-- --------------------------------------------------------
+
+--
+-- Structure de la table `animal_nourriture`
+--
+
+CREATE TABLE `animal_nourriture` (
+  `id` int(11) NOT NULL,
+  `quantity_fed` decimal(10,2) NOT NULL,
+  `feeding_date` datetime DEFAULT NULL,
+  `notes` varchar(500) DEFAULT NULL,
+  `animal_id` int(11) NOT NULL,
+  `nourriture_id` int(11) NOT NULL
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
+
+--
+-- Déchargement des données de la table `animal_nourriture`
+--
+
+INSERT INTO `animal_nourriture` (`id`, `quantity_fed`, `feeding_date`, `notes`, `animal_id`, `nourriture_id`) VALUES
+(1, 2.00, '2026-04-07 15:30:00', 'dqdf', 1, 1);
 
 -- --------------------------------------------------------
 
@@ -65,20 +88,6 @@ INSERT INTO `carts` (`id`, `buyer_id`) VALUES
 -- --------------------------------------------------------
 
 --
--- Structure de la table `cart_item`
---
-
-CREATE TABLE `cart_item` (
-  `id` int(11) NOT NULL,
-  `user_id` int(11) NOT NULL,
-  `product_id` int(11) NOT NULL,
-  `quantity` float NOT NULL DEFAULT 1,
-  `added_at` timestamp NOT NULL DEFAULT current_timestamp()
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
-
--- --------------------------------------------------------
-
---
 -- Structure de la table `cart_items`
 --
 
@@ -88,17 +97,6 @@ CREATE TABLE `cart_items` (
   `product_id` int(11) NOT NULL,
   `quantity` int(11) NOT NULL,
   `added_at` timestamp NOT NULL DEFAULT current_timestamp()
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
-
--- --------------------------------------------------------
-
---
--- Structure de la table `category`
---
-
-CREATE TABLE `category` (
-  `id` int(11) NOT NULL,
-  `name` varchar(100) NOT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 
 -- --------------------------------------------------------
@@ -122,48 +120,27 @@ CREATE TABLE `culture` (
 --
 
 INSERT INTO `culture` (`id_culture`, `nom`, `type_culture`, `date_plantation`, `date_recolte_prevue`, `etat_culture`, `parcelle_id`) VALUES
-(1, 'yrzeufhbv', 'urhfbez', '2026-04-01', '2027-04-01', 'En croissance', 5);
+(1, 'AZIZ', 'fff', '2026-04-08', '2026-04-10', 'crouii', 6),
+(2, 'Ble', 'cereale', '2026-04-08', '2026-04-10', 'ceeee', NULL);
 
 -- --------------------------------------------------------
 
 --
--- Structure de la table `demande`
+-- Structure de la table `doctrine_migration_versions`
 --
 
-CREATE TABLE `demande` (
-  `id` int(11) NOT NULL,
-  `agriculteur_id` int(11) NOT NULL,
-  `equipement_id` int(11) NOT NULL,
-  `nom_equipement` varchar(200) DEFAULT NULL,
-  `type_demande` varchar(50) DEFAULT NULL,
-  `quantite` int(11) DEFAULT 1,
-  `description` text DEFAULT NULL,
-  `commentaire` text DEFAULT NULL,
-  `date_demande` timestamp NOT NULL DEFAULT current_timestamp(),
-  `statut` varchar(20) DEFAULT 'EN_ATTENTE',
-  `reponse_chef` text DEFAULT NULL,
-  `date_traitement` timestamp NULL DEFAULT NULL
+CREATE TABLE `doctrine_migration_versions` (
+  `version` varchar(191) NOT NULL,
+  `executed_at` datetime DEFAULT NULL,
+  `execution_time` int(11) DEFAULT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 
 --
--- Déchargement des données de la table `demande`
+-- Déchargement des données de la table `doctrine_migration_versions`
 --
 
-INSERT INTO `demande` (`id`, `agriculteur_id`, `equipement_id`, `nom_equipement`, `type_demande`, `quantite`, `description`, `commentaire`, `date_demande`, `statut`, `reponse_chef`, `date_traitement`) VALUES
-(2, 3, 30, 'ijhbhj', 'EQUIPEMENT_EXISTANT', 0, 'tdfvc', 'tdfvc', '2026-03-01 23:56:38', 'ACCEPTE', 'test', '2026-03-05 11:42:31'),
-(11, 4, 38, 'ffffff', 'EQUIPEMENT_EXISTANT', 4, NULL, 'hjklm', '2026-03-26 21:34:46', 'EN_ATTENTE', NULL, NULL);
-
--- --------------------------------------------------------
-
---
--- Structure de la table `email_otp`
---
-
-CREATE TABLE `email_otp` (
-  `email` varchar(150) NOT NULL,
-  `code` varchar(10) NOT NULL,
-  `expiry` datetime NOT NULL
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
+INSERT INTO `doctrine_migration_versions` (`version`, `executed_at`, `execution_time`) VALUES
+('DoctrineMigrations\\Version20260407213250', '2026-04-07 23:37:06', 17);
 
 -- --------------------------------------------------------
 
@@ -185,7 +162,7 @@ CREATE TABLE `equipement` (
 --
 
 INSERT INTO `equipement` (`id`, `nom`, `type`, `prix`, `disponibilite`, `user_id`) VALUES
-(17, 'testttcgvh bjn,;', 'tracteur', -10, 'En maintenance', NULL),
+(17, 'testttcgvh bjn,;', 'tracteur', 10, 'En maintenance', NULL),
 (18, 'Test Machine', 'Test', 100, 'Indisponible', NULL),
 (19, 'Test Machine', 'Test', 100, 'Disponible', NULL),
 (26, 'Test Machine', 'Test', 100, 'Disponible', 1),
@@ -201,7 +178,9 @@ INSERT INTO `equipement` (`id`, `nom`, `type`, `prix`, `disponibilite`, `user_id
 (37, 'llllll', 'tttttttttttttt', 111111, 'En maintenance', 1),
 (38, 'ffffff', 'nnnnnn', 55555, 'Disponible', 1),
 (41, '888', '888', 10, 'Disponible', NULL),
-(42, 'tracteuuuuuur', 'tracteuuuur', 100000000, 'Indisponible', NULL);
+(42, 'tracteuuuuuur', 'tracteuuuur', 100000000, 'Indisponible', NULL),
+(44, 'rrrrrrrrrrrrrr', 'rrrrrrrrrrrr', 852, 'En maintenance', NULL),
+(45, '852', '8520', 888, 'Disponible', NULL);
 
 -- --------------------------------------------------------
 
@@ -257,6 +236,50 @@ INSERT INTO `garage` (`id`, `nom`, `adresse`, `latitude`, `longitude`, `capacite
 -- --------------------------------------------------------
 
 --
+-- Structure de la table `messenger_messages`
+--
+
+CREATE TABLE `messenger_messages` (
+  `id` bigint(20) NOT NULL,
+  `body` longtext NOT NULL,
+  `headers` longtext NOT NULL,
+  `queue_name` varchar(190) NOT NULL,
+  `created_at` datetime NOT NULL,
+  `available_at` datetime NOT NULL,
+  `delivered_at` datetime DEFAULT NULL
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
+
+-- --------------------------------------------------------
+
+--
+-- Structure de la table `nourriture`
+--
+
+CREATE TABLE `nourriture` (
+  `id` int(11) NOT NULL,
+  `name` varchar(255) NOT NULL,
+  `type` varchar(100) NOT NULL,
+  `quantity` decimal(10,2) NOT NULL,
+  `unit` varchar(50) DEFAULT NULL,
+  `nutritional_value` varchar(255) DEFAULT NULL,
+  `expiry_date` datetime DEFAULT NULL,
+  `supplier` varchar(255) DEFAULT NULL,
+  `cost` decimal(10,2) DEFAULT NULL,
+  `date_added` datetime DEFAULT NULL,
+  `is_active` tinyint(1) NOT NULL DEFAULT 1
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
+
+--
+-- Déchargement des données de la table `nourriture`
+--
+
+INSERT INTO `nourriture` (`id`, `name`, `type`, `quantity`, `unit`, `nutritional_value`, `expiry_date`, `supplier`, `cost`, `date_added`, `is_active`) VALUES
+(1, 'aaa', 'acb', 15.00, 'a', '4', '2026-04-07 19:30:00', 'bhd', 10.00, '2026-04-07 15:30:22', 1),
+(2, 'oooooooooo', 'gfhj', 8520.00, 'hjk', NULL, NULL, '41', 852.00, '2026-04-07 23:13:57', 1);
+
+-- --------------------------------------------------------
+
+--
 -- Structure de la table `order`
 --
 
@@ -304,7 +327,8 @@ CREATE TABLE `parcelle` (
 --
 
 INSERT INTO `parcelle` (`id_parcelle`, `nom`, `superficie`, `localisation`, `type_sol`, `utilisateur_id`, `latitude`, `longitude`) VALUES
-(5, 'dtfghj', 12.5, 'iergfbhj', 'ehgrvunf,izgbuhzef ', 1, 36.5478, 10.2874);
+(5, 'dtfghj', 12.5, 'iergfbhj', 'ehgrvunf,izgbuhzef ', 1, 36.5478, 10.2874),
+(6, 'Aeeeee', 45, 'ffff', 'arft', 2, 30, 10);
 
 -- --------------------------------------------------------
 
@@ -350,8 +374,11 @@ CREATE TABLE `products` (
 --
 
 INSERT INTO `products` (`id`, `name`, `description`, `price`, `quantity`, `image`, `seller_id`, `category`, `supplier`, `expiry_date`) VALUES
-(1, 'test', 'test', 17, 17, NULL, 1, 'FRUITS', 'mohamed', '2028-12-09'),
-(2, 'test', 'test', 17, 17, NULL, 1, 'FRUITS', 'mohamed', '2028-12-09');
+(1, 'test', 'test', 17, 16, NULL, 1, 'FRUITS', 'mohamed', '2028-12-09'),
+(2, 'test', 'test', 17, 17, NULL, 1, 'FRUITS', 'mohamed', '2028-12-09'),
+(3, 'batata', '7lowa', 1.2, 398, 'cea9746f-90a6-4574-8e54-b5da1f088e2c-69d4c80980e3c.jpg', 1, 'VEGETABLES', 'lemby', '2027-01-17'),
+(4, 'bsal', 'reb3i', 20, 300, 'pngtree-shallot-or-red-onion-png-transparent-png-image-6402672-69d4c6a261a4a.jpg', 1, 'VEGETABLES', '5lifa', '2027-03-03'),
+(5, 'fa9ous', 'reb3i', 12, 500, 'pngtree-shallot-or-red-onion-png-transparent-png-image-6402672-69d62d332b50d.jpg', 1, 'VEGETABLES', 'kamel', '2026-09-14');
 
 -- --------------------------------------------------------
 
@@ -368,6 +395,14 @@ CREATE TABLE `ratings` (
   `price_category` varchar(20) DEFAULT NULL,
   `created_at` datetime NOT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
+
+--
+-- Déchargement des données de la table `ratings`
+--
+
+INSERT INTO `ratings` (`id`, `product_id`, `user_id`, `rating`, `comment`, `price_category`, `created_at`) VALUES
+(1, 5, 1, 4, 'ya3tik el sa7a  sem7', 'LOW', '2026-04-08 12:30:21'),
+(2, 3, 1, 5, 'mel7a', 'HIGH', '2026-04-08 12:41:54');
 
 -- --------------------------------------------------------
 
@@ -391,7 +426,8 @@ CREATE TABLE `review` (
 INSERT INTO `review` (`id`, `commentaire`, `note`, `date_review`, `equipement_id`, `user_id`) VALUES
 (10, 'jjjjjjjjjjjjj', 5, '2026-03-02', 29, 1),
 (16, 'poiugfdcvb', 3, '2026-03-26', 38, 4),
-(17, NULL, 3, '2026-04-05', 35, 1);
+(17, NULL, 3, '2026-04-05', 35, 1),
+(18, 'yghjklm;m:', 5, '2026-04-08', 37, 1);
 
 -- --------------------------------------------------------
 
@@ -447,6 +483,29 @@ INSERT INTO `users` (`id`, `full_name`, `email`, `phone`, `password_hash`, `role
 -- --------------------------------------------------------
 
 --
+-- Structure de la table `user_auth`
+--
+
+CREATE TABLE `user_auth` (
+  `id` int(11) NOT NULL,
+  `email` varchar(180) NOT NULL,
+  `roles` longtext CHARACTER SET utf8mb4 COLLATE utf8mb4_bin NOT NULL CHECK (json_valid(`roles`)),
+  `password` varchar(255) NOT NULL
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
+
+--
+-- Déchargement des données de la table `user_auth`
+--
+
+INSERT INTO `user_auth` (`id`, `email`, `roles`, `password`) VALUES
+(1, 'admin@agrimans.com', '[\"ROLE_ADMIN\"]', '$2y$13$c3b9X6Y3t0KhIK3XTEVVCO.d97zQmmzJmHix9J5hBxhuFXr.naAL.'),
+(2, 'user@agrimans.com', '[\"ROLE_USER\"]', '$2y$13$CXQtkBcmOjBOdDPjEBwTMu2JiKvlXhccbTy7UD5ETVg0iNVvpNGP.'),
+(3, 'test@agrimans.com', '[\"ROLE_ADMIN\"]', '$2y$13$Ll3cUHBxReurue04l8i.zOopqGDlHfk7UCdhpZZ3trB6xITzSsFIe'),
+(4, 'testuser@agrimans.com', '[\"ROLE_USER\"]', '$2y$13$1Lv6vb4GZm3bi8EysmB0mOhdnL.0yyi1oSczh06PXm9dAe4A/vPYu');
+
+-- --------------------------------------------------------
+
+--
 -- Structure de la table `user_otp`
 --
 
@@ -469,19 +528,19 @@ ALTER TABLE `animal`
   ADD KEY `fk_animal_user` (`userId`);
 
 --
+-- Index pour la table `animal_nourriture`
+--
+ALTER TABLE `animal_nourriture`
+  ADD PRIMARY KEY (`id`),
+  ADD KEY `IDX_A9B23EF78E962C16` (`animal_id`),
+  ADD KEY `IDX_A9B23EF798BD5834` (`nourriture_id`);
+
+--
 -- Index pour la table `carts`
 --
 ALTER TABLE `carts`
   ADD PRIMARY KEY (`id`),
   ADD KEY `buyer_id` (`buyer_id`);
-
---
--- Index pour la table `cart_item`
---
-ALTER TABLE `cart_item`
-  ADD PRIMARY KEY (`id`),
-  ADD KEY `user_id` (`user_id`),
-  ADD KEY `product_id` (`product_id`);
 
 --
 -- Index pour la table `cart_items`
@@ -492,12 +551,6 @@ ALTER TABLE `cart_items`
   ADD KEY `product_id` (`product_id`);
 
 --
--- Index pour la table `category`
---
-ALTER TABLE `category`
-  ADD PRIMARY KEY (`id`);
-
---
 -- Index pour la table `culture`
 --
 ALTER TABLE `culture`
@@ -505,18 +558,10 @@ ALTER TABLE `culture`
   ADD KEY `fk_culture_parcelle` (`parcelle_id`);
 
 --
--- Index pour la table `demande`
+-- Index pour la table `doctrine_migration_versions`
 --
-ALTER TABLE `demande`
-  ADD PRIMARY KEY (`id`),
-  ADD KEY `equipement_id` (`equipement_id`),
-  ADD KEY `fk_demande_user_new` (`agriculteur_id`);
-
---
--- Index pour la table `email_otp`
---
-ALTER TABLE `email_otp`
-  ADD PRIMARY KEY (`email`);
+ALTER TABLE `doctrine_migration_versions`
+  ADD PRIMARY KEY (`version`);
 
 --
 -- Index pour la table `equipement`
@@ -536,6 +581,19 @@ ALTER TABLE `equipement_geo`
 -- Index pour la table `garage`
 --
 ALTER TABLE `garage`
+  ADD PRIMARY KEY (`id`);
+
+--
+-- Index pour la table `messenger_messages`
+--
+ALTER TABLE `messenger_messages`
+  ADD PRIMARY KEY (`id`),
+  ADD KEY `IDX_75EA56E0FB7336F0E3BD61CE16BA31DBBF396750` (`queue_name`,`available_at`,`delivered_at`,`id`);
+
+--
+-- Index pour la table `nourriture`
+--
+ALTER TABLE `nourriture`
   ADD PRIMARY KEY (`id`);
 
 --
@@ -586,8 +644,8 @@ ALTER TABLE `ratings`
 --
 ALTER TABLE `review`
   ADD PRIMARY KEY (`id`),
-  ADD KEY `equipement_id` (`equipement_id`),
-  ADD KEY `fk_review_users_new` (`user_id`);
+  ADD KEY `fk_review_users_new` (`user_id`),
+  ADD KEY `FK_794381C6806F0F5C` (`equipement_id`);
 
 --
 -- Index pour la table `user`
@@ -604,6 +662,13 @@ ALTER TABLE `users`
   ADD UNIQUE KEY `email` (`email`);
 
 --
+-- Index pour la table `user_auth`
+--
+ALTER TABLE `user_auth`
+  ADD PRIMARY KEY (`id`),
+  ADD UNIQUE KEY `UNIQ_825FFC90E7927C74` (`email`);
+
+--
 -- Index pour la table `user_otp`
 --
 ALTER TABLE `user_otp`
@@ -617,6 +682,12 @@ ALTER TABLE `user_otp`
 -- AUTO_INCREMENT pour la table `animal`
 --
 ALTER TABLE `animal`
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=3;
+
+--
+-- AUTO_INCREMENT pour la table `animal_nourriture`
+--
+ALTER TABLE `animal_nourriture`
   MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=2;
 
 --
@@ -626,46 +697,40 @@ ALTER TABLE `carts`
   MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=2;
 
 --
--- AUTO_INCREMENT pour la table `cart_item`
---
-ALTER TABLE `cart_item`
-  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT;
-
---
 -- AUTO_INCREMENT pour la table `cart_items`
 --
 ALTER TABLE `cart_items`
-  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT;
-
---
--- AUTO_INCREMENT pour la table `category`
---
-ALTER TABLE `category`
-  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT;
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=6;
 
 --
 -- AUTO_INCREMENT pour la table `culture`
 --
 ALTER TABLE `culture`
-  MODIFY `id_culture` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=2;
-
---
--- AUTO_INCREMENT pour la table `demande`
---
-ALTER TABLE `demande`
-  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=13;
+  MODIFY `id_culture` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=3;
 
 --
 -- AUTO_INCREMENT pour la table `equipement`
 --
 ALTER TABLE `equipement`
-  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=43;
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=47;
 
 --
 -- AUTO_INCREMENT pour la table `garage`
 --
 ALTER TABLE `garage`
   MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=7;
+
+--
+-- AUTO_INCREMENT pour la table `messenger_messages`
+--
+ALTER TABLE `messenger_messages`
+  MODIFY `id` bigint(20) NOT NULL AUTO_INCREMENT;
+
+--
+-- AUTO_INCREMENT pour la table `nourriture`
+--
+ALTER TABLE `nourriture`
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=3;
 
 --
 -- AUTO_INCREMENT pour la table `order`
@@ -683,7 +748,7 @@ ALTER TABLE `order_item`
 -- AUTO_INCREMENT pour la table `parcelle`
 --
 ALTER TABLE `parcelle`
-  MODIFY `id_parcelle` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=6;
+  MODIFY `id_parcelle` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=8;
 
 --
 -- AUTO_INCREMENT pour la table `product`
@@ -695,19 +760,19 @@ ALTER TABLE `product`
 -- AUTO_INCREMENT pour la table `products`
 --
 ALTER TABLE `products`
-  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=3;
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=7;
 
 --
 -- AUTO_INCREMENT pour la table `ratings`
 --
 ALTER TABLE `ratings`
-  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT;
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=4;
 
 --
 -- AUTO_INCREMENT pour la table `review`
 --
 ALTER TABLE `review`
-  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=18;
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=20;
 
 --
 -- AUTO_INCREMENT pour la table `user`
@@ -722,14 +787,21 @@ ALTER TABLE `users`
   MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=5;
 
 --
+-- AUTO_INCREMENT pour la table `user_auth`
+--
+ALTER TABLE `user_auth`
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=6;
+
+--
 -- Contraintes pour les tables déchargées
 --
 
 --
--- Contraintes pour la table `animal`
+-- Contraintes pour la table `animal_nourriture`
 --
-ALTER TABLE `animal`
-  ADD CONSTRAINT `fk_animal_user` FOREIGN KEY (`userId`) REFERENCES `users` (`id`) ON DELETE CASCADE;
+ALTER TABLE `animal_nourriture`
+  ADD CONSTRAINT `FK_A9B23EF78E962C16` FOREIGN KEY (`animal_id`) REFERENCES `animal` (`id`),
+  ADD CONSTRAINT `FK_A9B23EF798BD5834` FOREIGN KEY (`nourriture_id`) REFERENCES `nourriture` (`id`);
 
 --
 -- Contraintes pour la table `carts`
@@ -738,31 +810,13 @@ ALTER TABLE `carts`
   ADD CONSTRAINT `fk_carts_buyer_id` FOREIGN KEY (`buyer_id`) REFERENCES `users` (`id`) ON DELETE CASCADE;
 
 --
--- Contraintes pour la table `cart_item`
---
-ALTER TABLE `cart_item`
-  ADD CONSTRAINT `cart_item_ibfk_1` FOREIGN KEY (`user_id`) REFERENCES `users` (`id`) ON DELETE CASCADE,
-  ADD CONSTRAINT `cart_item_ibfk_2` FOREIGN KEY (`product_id`) REFERENCES `product` (`id`) ON DELETE CASCADE;
-
---
 -- Contraintes pour la table `cart_items`
 --
 ALTER TABLE `cart_items`
+  ADD CONSTRAINT `FK_BEF484451AD5CDBF` FOREIGN KEY (`cart_id`) REFERENCES `carts` (`id`) ON DELETE CASCADE,
+  ADD CONSTRAINT `FK_BEF484454584665A` FOREIGN KEY (`product_id`) REFERENCES `products` (`id`) ON DELETE CASCADE,
   ADD CONSTRAINT `fk_cart_items_cart_id` FOREIGN KEY (`cart_id`) REFERENCES `carts` (`id`) ON DELETE CASCADE,
   ADD CONSTRAINT `fk_cart_items_product_id` FOREIGN KEY (`product_id`) REFERENCES `products` (`id`) ON DELETE CASCADE;
-
---
--- Contraintes pour la table `culture`
---
-ALTER TABLE `culture`
-  ADD CONSTRAINT `fk_culture_parcelle` FOREIGN KEY (`parcelle_id`) REFERENCES `parcelle` (`id_parcelle`) ON DELETE CASCADE;
-
---
--- Contraintes pour la table `demande`
---
-ALTER TABLE `demande`
-  ADD CONSTRAINT `demande_ibfk_2` FOREIGN KEY (`equipement_id`) REFERENCES `equipement` (`id`) ON DELETE CASCADE,
-  ADD CONSTRAINT `fk_demande_user_new` FOREIGN KEY (`agriculteur_id`) REFERENCES `users` (`id`) ON DELETE CASCADE;
 
 --
 -- Contraintes pour la table `equipement`
@@ -774,33 +828,9 @@ ALTER TABLE `equipement`
 -- Contraintes pour la table `equipement_geo`
 --
 ALTER TABLE `equipement_geo`
+  ADD CONSTRAINT `FK_7ED7FDDF806F0F5C` FOREIGN KEY (`equipement_id`) REFERENCES `equipement` (`id`) ON DELETE CASCADE,
   ADD CONSTRAINT `equipement_geo_ibfk_1` FOREIGN KEY (`equipement_id`) REFERENCES `equipement` (`id`) ON DELETE CASCADE,
   ADD CONSTRAINT `equipement_geo_ibfk_2` FOREIGN KEY (`garage_id`) REFERENCES `garage` (`id`) ON DELETE SET NULL;
-
---
--- Contraintes pour la table `order`
---
-ALTER TABLE `order`
-  ADD CONSTRAINT `order_ibfk_1` FOREIGN KEY (`user_id`) REFERENCES `users` (`id`) ON DELETE CASCADE;
-
---
--- Contraintes pour la table `order_item`
---
-ALTER TABLE `order_item`
-  ADD CONSTRAINT `order_item_ibfk_1` FOREIGN KEY (`order_id`) REFERENCES `order` (`id`) ON DELETE CASCADE,
-  ADD CONSTRAINT `order_item_ibfk_2` FOREIGN KEY (`product_id`) REFERENCES `product` (`id`) ON DELETE CASCADE;
-
---
--- Contraintes pour la table `parcelle`
---
-ALTER TABLE `parcelle`
-  ADD CONSTRAINT `fk_parcelle_user` FOREIGN KEY (`utilisateur_id`) REFERENCES `users` (`id`) ON DELETE SET NULL;
-
---
--- Contraintes pour la table `product`
---
-ALTER TABLE `product`
-  ADD CONSTRAINT `product_ibfk_1` FOREIGN KEY (`user_id`) REFERENCES `users` (`id`) ON DELETE CASCADE;
 
 --
 -- Contraintes pour la table `products`
@@ -812,20 +842,16 @@ ALTER TABLE `products`
 -- Contraintes pour la table `ratings`
 --
 ALTER TABLE `ratings`
+  ADD CONSTRAINT `FK_CEB607C94584665A` FOREIGN KEY (`product_id`) REFERENCES `products` (`id`) ON DELETE CASCADE,
   ADD CONSTRAINT `fk_ratings_product_id` FOREIGN KEY (`product_id`) REFERENCES `products` (`id`) ON DELETE CASCADE;
 
 --
 -- Contraintes pour la table `review`
 --
 ALTER TABLE `review`
+  ADD CONSTRAINT `FK_794381C6806F0F5C` FOREIGN KEY (`equipement_id`) REFERENCES `equipement` (`id`) ON DELETE CASCADE,
   ADD CONSTRAINT `fk_review_users_new` FOREIGN KEY (`user_id`) REFERENCES `users` (`id`) ON DELETE CASCADE,
   ADD CONSTRAINT `review_ibfk_1` FOREIGN KEY (`equipement_id`) REFERENCES `equipement` (`id`) ON DELETE CASCADE;
-
---
--- Contraintes pour la table `user_otp`
---
-ALTER TABLE `user_otp`
-  ADD CONSTRAINT `user_otp_ibfk_1` FOREIGN KEY (`user_id`) REFERENCES `users` (`id`) ON DELETE CASCADE;
 COMMIT;
 
 /*!40101 SET CHARACTER_SET_CLIENT=@OLD_CHARACTER_SET_CLIENT */;

@@ -1,172 +1,59 @@
 {% extends 'base.html.twig' %}
 
-{% block title %}{{ animal.name }} — Détail{% endblock %}
+{% block title %}Détails de l'Animal | Agrimans{% endblock %}
 
 {% block body %}
-<section class="content-section" style="margin-top: 2rem;">
-
-    <div style="margin-bottom:1.5rem;">
-        <a href="{{ path('waad_animal_index') }}" class="btn btn-secondary"><i class="fa-solid fa-arrow-left"></i> Retour au cheptel</a>
-    </div>
-
-    {% for message in app.flashes('success') %}
-        <div style="background:rgba(29,185,84,0.15); border:1px solid #1db954; color:#1db954; padding:0.75rem 1rem; border-radius:8px; margin-bottom:1rem;">
-            <i class="fa-solid fa-circle-check"></i> {{ message }}
-        </div>
-    {% endfor %}
-    {% for message in app.flashes('error') %}
-        <div style="background:rgba(231,76,60,0.15); border:1px solid #e74c3c; color:#e74c3c; padding:0.75rem 1rem; border-radius:8px; margin-bottom:1rem;">
-            <i class="fa-solid fa-circle-xmark"></i> {{ message }}
-        </div>
-    {% endfor %}
-
-    {# Animal Card #}
-    <div style="background:rgba(255,255,255,0.04); border:1px solid rgba(255,255,255,0.08); border-radius:12px; padding:1.5rem; margin-bottom:2rem;">
-        <div style="display:flex; justify-content:space-between; align-items:flex-start; margin-bottom:1.5rem;">
-            <div>
-                <h2 style="margin:0 0 0.25rem 0; font-size:1.8rem;">
-                    <i class="fa-solid fa-cow" style="color:#198B61; margin-right:0.5rem;"></i>{{ animal.name }}
-                </h2>
-                <span style="color:rgba(255,255,255,0.5); font-size:0.9rem;">Ajouté le {{ animal.dateAdded ? animal.dateAdded|date('d/m/Y') : '-' }}</span>
-            </div>
-            <div style="display:flex; gap:0.5rem;">
-                <button onclick="document.getElementById('modalEditAnimal').style.display='flex'" class="btn btn-primary">
-                    <i class="fa-solid fa-pen"></i> Modifier
-                </button>
-            </div>
-        </div>
-        <div style="display:grid; grid-template-columns: repeat(2, 1fr); gap:1rem;">
-            <div style="background:rgba(255,255,255,0.03); border-radius:8px; padding:1rem;">
-                <div style="color:rgba(255,255,255,0.5); font-size:0.8rem; margin-bottom:0.25rem;">TYPE</div>
-                <div style="font-weight:600;">{{ animal.type }}</div>
-            </div>
-            <div style="background:rgba(255,255,255,0.03); border-radius:8px; padding:1rem;">
-                <div style="color:rgba(255,255,255,0.5); font-size:0.8rem; margin-bottom:0.25rem;">RACE</div>
-                <div>{{ animal.breed ?? '-' }}</div>
-            </div>
-            <div style="background:rgba(255,255,255,0.03); border-radius:8px; padding:1rem;">
-                <div style="color:rgba(255,255,255,0.5); font-size:0.8rem; margin-bottom:0.25rem;">POIDS</div>
-                <div>{{ animal.weight ? animal.weight ~ ' kg' : '-' }}</div>
-            </div>
-            <div style="background:rgba(255,255,255,0.03); border-radius:8px; padding:1rem;">
-                <div style="color:rgba(255,255,255,0.5); font-size:0.8rem; margin-bottom:0.25rem;">ÉTAT DE SANTÉ</div>
-                <div>{{ animal.healthStatus ?? '-' }}</div>
-            </div>
-            <div style="background:rgba(255,255,255,0.03); border-radius:8px; padding:1rem;">
-                <div style="color:rgba(255,255,255,0.5); font-size:0.8rem; margin-bottom:0.25rem;">POIDS</div>
-                <div>{{ animal.weight ? animal.weight ~ ' kg' : '-' }}</div>
-            </div>
-            <div style="background:rgba(255,255,255,0.03); border-radius:8px; padding:1rem;">
-                <div style="color:rgba(255,255,255,0.5); font-size:0.8rem; margin-bottom:0.25rem;">SANTÉ</div>
-                <div>
-                    {% if animal.healthStatus == 'healthy' %}
-                        <span class="badge badge-success"><i class="fa-solid fa-heart-pulse"></i> Sain</span>
-                    {% elseif animal.healthStatus == 'sick' %}
-                        <span class="badge badge-danger"><i class="fa-solid fa-virus"></i> Malade</span>
-                    {% elseif animal.healthStatus == 'recovering' %}
-                        <span class="badge badge-warning"><i class="fa-solid fa-kit-medical"></i> Convalescent</span>
-                    {% else %}-{% endif %}
-                </div>
-            </div>
-            <div style="background:rgba(255,255,255,0.03); border-radius:8px; padding:1rem;">
-                <div style="color:rgba(255,255,255,0.5); font-size:0.8rem; margin-bottom:0.25rem;">PRODUCTION</div>
-                <div>{{ animal.productionType ?? '-' }}</div>
-            </div>
-        </div>
-    </div>
-
-    {# Feeding History #}
-    <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:1rem;">
+<div class="content-section" style="max-width: 800px; margin: 2rem auto;">
+    <div class="page-header" style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 2rem;">
         <div>
-            <h3 style="margin:0 0 0.25rem 0;"><i class="fa-solid fa-bowl-food" style="color:#198B61;"></i> Historique d'alimentation</h3>
-            <p style="color:rgba(255,255,255,0.5); margin:0; font-size:0.85rem;">Enregistrements d'alimentation pour {{ animal.name }}</p>
+            <a href="{{ path('waad_animal_index') }}" style="color: rgba(255,255,255,0.5); text-decoration: none; font-size: 0.9rem; margin-bottom: 10px; display: inline-block;">
+                <i class="fa-solid fa-arrow-left"></i> Retour à la liste
+            </a>
+            <h1 style="font-size: 2.2rem; font-weight: 700; color: #fff; margin-bottom: 0.5rem;"><i class="fa-solid fa-paw" style="color: #f39c12; margin-right: 10px;"></i> {{ animal.nom }}</h1>
         </div>
-        <button onclick="document.getElementById('modalAddFeeding').style.display='flex'" class="hero-btn-primary" style="font-size:0.85rem;">
-            + Ajouter alimentation
-        </button>
     </div>
 
-    <div class="table-wrapper">
-        <table class="styled-table">
-            <thead>
-                <tr>
-                    <th>Nourriture</th>
-                    <th>Quantité</th>
-                    <th>Date</th>
-                    <th>Notes</th>
-                    <th>Actions</th>
-                </tr>
-            </thead>
-            <tbody>
-            {% for feeding in animal.animalNourritures %}
-                <tr>
-                    <td><strong>{{ feeding.nourriture.name }}</strong></td>
-                    <td>{{ feeding.quantityFed }} {{ feeding.nourriture.unit ?? '' }}</td>
-                    <td>{{ feeding.feedingDate ? feeding.feedingDate|date('d/m/Y H:i') : '-' }}</td>
-                    <td style="color:rgba(255,255,255,0.6);">{{ feeding.notes ?? '-' }}</td>
-                    <td style="display:flex; gap:0.5rem; justify-content:flex-end;">
-                        <button onclick="document.getElementById('modalEditFeeding{{ feeding.id }}').style.display='flex'" class="btn btn-primary" title="Modifier"><i class="fa-solid fa-pen"></i></button>
-                        <button onclick="document.getElementById('modalDeleteFeeding{{ feeding.id }}').style.display='flex'" class="btn" style="background:#e74c3c;color:white;" title="Supprimer"><i class="fa-solid fa-trash"></i></button>
-                    </td>
-                </tr>
-            {% else %}
-                <tr>
-                    <td colspan="5" style="text-align:center; padding:2rem; color:rgba(255,255,255,0.5);">
-                        <i class="fa-solid fa-bowl-food" style="font-size:2rem; opacity:0.4; display:block; margin-bottom:0.5rem;"></i>
-                        Aucun enregistrement d'alimentation.
-                    </td>
-                </tr>
-            {% endfor %}
-            </tbody>
-        </table>
-    </div>
-</section>
-
-{# EDIT ANIMAL MODAL #}
-<div id="modalEditAnimal" style="display:none; position:fixed; inset:0; background:rgba(0,0,0,0.75); z-index:1000; align-items:center; justify-content:center;">
-    <div style="background:#1C2D21; border:1px solid rgba(255,255,255,0.1); border-radius:12px; padding:2rem; width:620px; max-height:90vh; overflow-y:auto;">
-        <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:1.5rem;">
-            <h3 style="margin:0;"><i class="fa-solid fa-pen" style="color:#198B61;"></i> Modifier {{ animal.name }}</h3>
-            <button onclick="document.getElementById('modalEditAnimal').style.display='none'" style="background:none;border:none;color:white;font-size:1.5rem;cursor:pointer;">&times;</button>
+    <div style="background: rgba(255,255,255,0.03); border: 1px solid rgba(255,255,255,0.08); border-radius: 12px; padding: 2rem; margin-bottom: 2rem;">
+        <h3 style="color: #f39c12; margin-bottom: 1.5rem; font-size: 1.2rem;"><i class="fa-solid fa-circle-info"></i> Informations de l'Animal</h3>
+        
+        <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 2rem;">
+            <div>
+                <p style="color: rgba(255,255,255,0.5); font-size: 0.85rem; text-transform: uppercase; margin-bottom: 0.2rem;">Espèce</p>
+                <p style="font-size: 1.1rem; font-weight: 500; color: #fff;">{{ animal.espece }}</p>
+            </div>
+            <div>
+                <p style="color: rgba(255,255,255,0.5); font-size: 0.85rem; text-transform: uppercase; margin-bottom: 0.2rem;">Sexe</p>
+                <p style="font-size: 1.1rem; font-weight: 500; color: #fff;">{{ animal.sexe }}</p>
+            </div>
+            <div>
+                <p style="color: rgba(255,255,255,0.5); font-size: 0.85rem; text-transform: uppercase; margin-bottom: 0.2rem;">Etat de santé</p>
+                <p style="font-size: 1.1rem; font-weight: 500; color: #fff;">{{ animal.etatSante }}</p>
+            </div>
+            <div>
+                <p style="color: rgba(255,255,255,0.5); font-size: 0.85rem; text-transform: uppercase; margin-bottom: 0.2rem;">Poids</p>
+                <p style="font-size: 1.1rem; font-weight: 500; color: #fff;">{{ animal.poids }} kg</p>
+            </div>
+            <div>
+                <p style="color: rgba(255,255,255,0.5); font-size: 0.85rem; text-transform: uppercase; margin-bottom: 0.2rem;">Date de naissance</p>
+                <p style="font-size: 1.1rem; font-weight: 500; color: #fff;">{{ animal.dateNaissance ? animal.dateNaissance|date('d/m/Y') : '' }}</p>
+            </div>
         </div>
-        {{ include('animal/_form.html.twig', {form: editForm}) }}
     </div>
-</div>
-
-{# ADD FEEDING MODAL #}
-<div id="modalAddFeeding" style="display:none; position:fixed; inset:0; background:rgba(0,0,0,0.75); z-index:1000; align-items:center; justify-content:center;">
-    <div style="background:#1C2D21; border:1px solid rgba(255,255,255,0.1); border-radius:12px; padding:2rem; width:500px; max-height:90vh; overflow-y:auto;">
-        <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:1.5rem;">
-            <h3 style="margin:0;"><i class="fa-solid fa-plus-circle" style="color:#198B61;"></i> Ajouter alimentation</h3>
-            <button onclick="document.getElementById('modalAddFeeding').style.display='none'" style="background:none;border:none;color:white;font-size:1.5rem;cursor:pointer;">&times;</button>
-        </div>
-        {{ include('animal_nourriture/_form.html.twig', {feedingForm: addFeedingForm}) }}
-    </div>
-</div>
-
-{# EDIT & DELETE FEEDING MODALS #}
-{% for feeding in animal.animalNourritures %}
-<div id="modalEditFeeding{{ feeding.id }}" style="display:none; position:fixed; inset:0; background:rgba(0,0,0,0.75); z-index:1000; align-items:center; justify-content:center;">
-    <div style="background:#1C2D21; border:1px solid rgba(255,255,255,0.1); border-radius:12px; padding:2rem; width:500px; max-height:90vh; overflow-y:auto;">
-        <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:1.5rem;">
-            <h3 style="margin:0;"><i class="fa-solid fa-pen" style="color:#198B61;"></i> Modifier alimentation</h3>
-            <button onclick="document.getElementById('modalEditFeeding{{ feeding.id }}').style.display='none'" style="background:none;border:none;color:white;font-size:1.5rem;cursor:pointer;">&times;</button>
-        </div>
-        {{ include('animal_nourriture/_form.html.twig', {feedingForm: editFeedingForms[feeding.id]}) }}
-    </div>
-</div>
-
-<div id="modalDeleteFeeding{{ feeding.id }}" style="display:none; position:fixed; inset:0; background:rgba(0,0,0,0.75); z-index:1000; align-items:center; justify-content:center;">
-    <div style="background:#1C2D21; border:1px solid rgba(255,255,255,0.1); border-radius:12px; padding:2rem; width:420px;">
-        <h3 style="margin-bottom:1rem;"><i class="fa-solid fa-triangle-exclamation" style="color:#e74c3c;"></i> Supprimer cet enregistrement ?</h3>
-        <p style="color:rgba(255,255,255,0.7); margin-bottom:1.5rem;">Cette action est irréversible.</p>
-        <div style="display:flex; gap:1rem; justify-content:flex-end;">
-            <button onclick="document.getElementById('modalDeleteFeeding{{ feeding.id }}').style.display='none'" class="btn btn-secondary">Annuler</button>
-            <form action="{{ path('waad_feeding_delete', {animalId: animal.id, id: feeding.id}) }}" method="POST" style="display:inline;">
-                <button type="submit" class="btn" style="background:#e74c3c;color:white;">Supprimer</button>
-            </form>
+    
+    <div style="background: rgba(255,255,255,0.03); border: 1px solid rgba(255,255,255,0.08); border-radius: 12px; padding: 2rem; margin-bottom: 2rem;">
+        <h3 style="color: #3498db; margin-bottom: 1.5rem; font-size: 1.2rem;"><i class="fa-solid fa-pen"></i> Editer les informations</h3>
+        
+        <style>
+            .animal-form label { display: block; margin-bottom: 0.5rem; color: rgba(255,255,255,0.8); }
+            .animal-form input, .animal-form select { width: 100%; margin-bottom: 1rem; background: rgba(255,255,255,0.05); border: 1px solid rgba(255,255,255,0.1); color: #fff; padding: 0.8rem; border-radius: 8px; }
+            .animal-form button { margin-top: 1rem; width: 100%; }
+        </style>
+        <div class="animal-form">
+            {{ form_start(editForm) }}
+            {{ form_widget(editForm) }}
+            <button class="btn btn-primary" type="submit" style="background-color: var(--primary); border: none; padding: 0.8rem; border-radius: 8px; color: #fff; cursor: pointer; font-weight: 600;">Mettre à jour l'animal</button>
+            {{ form_end(editForm) }}
         </div>
     </div>
 </div>
-{% endfor %}
 {% endblock %}

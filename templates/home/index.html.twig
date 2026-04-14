@@ -6,13 +6,13 @@
     <!-- Hero Section (Adafeed Style) -->
     <section class="hero-section">
         <div class="hero-content">
-            <h1 class="hero-title">GÃ©rez votre ferme<br>modernement.</h1>
+            <h1 class="hero-title">Gérez votre ferme<br>modernement.</h1>
             <p class="hero-subtitle">
-                Agrimans centralise vos Ã©quipements, vos champs, la mÃ©tÃ©o en temps rÃ©el et votre logistique sur une seule plateforme intelligente.
+                Agrimans centralise vos équipements, vos champs, la météo en temps réel et votre logistique sur une seule plateforme intelligente.
             </p>
             <div class="hero-actions">
                 <a href="{{ app.user ? path('app_equipement_index') : path('app_login') }}" class="hero-btn-primary">
-                    AccÃ©der aux Ressources
+                    Accéder aux Ressources
                 </a>
                 <a href="{{ app.user ? '#' : path('app_login') }}" class="hero-btn-primary btn-outline" style="background:transparent; color:white;">
                     Explorer la carte
@@ -113,7 +113,7 @@
         </style>
         
         <div class="qa-section-wrapper">
-            <h2 style="text-align: center; margin-bottom: 2rem; color: #fff; font-size: 1.8rem; font-weight: 600;">AccÃ¨s Rapide</h2>
+            <h2 style="text-align: center; margin-bottom: 2rem; color: #fff; font-size: 1.8rem; font-weight: 600;">Accès Rapide</h2>
             <div class="qa-grid">
                 <a href="{{ path('app_home') }}#contact" class="qa-btn">
                     <div class="qa-icon-wrapper">
@@ -127,7 +127,7 @@
                     <div class="qa-icon-wrapper">
                         <i class="fa-solid fa-info-circle"></i>
                     </div>
-                    <span class="qa-text">Ã€ propos</span>
+                    <span class="qa-text">À propos</span>
                     <div class="qa-underline"></div>
                 </a>
                 
@@ -154,8 +154,8 @@
     <!-- Features Overview Section -->
     <section id="about" class="features-section">
         <div class="section-header animate-on-scroll">
-            <h2 class="section-title">L'Ã©cosystÃ¨me Agrimans</h2>
-            <p class="section-subtitle">DÃ©couvrez une suite d'outils puissants conÃ§us pour optimiser chaque aspect de votre exploitation agricole.</p>
+            <h2 class="section-title">L'écosystème Agrimans</h2>
+            <p class="section-subtitle">Découvrez une suite d'outils puissants conçus pour optimiser chaque aspect de votre exploitation agricole.</p>
         </div>
 
         <div class="features-grid">
@@ -164,16 +164,16 @@
             <div class="feature-card animate-on-scroll" style="transition-delay: 0.1s;">
                 <div class="feature-image-container">
                     <!-- Image tracteur existante ou une autre variante -->
-                    <img src="{{ asset('images/lucid-origin_Vast_wheat_fields_at_golden_sunset_green_and_yellow_crops_tractor_working_in_bac-0 (1).jpg') }}" alt="Gestion Ã‰quipements">
+                    <img src="{{ asset('images/lucid-origin_Vast_wheat_fields_at_golden_sunset_green_and_yellow_crops_tractor_working_in_bac-0 (1).jpg') }}" alt="Gestion Équipements">
                 </div>
                 <div class="feature-icon-wrapper">
                     <i class="fa-solid fa-tractor feature-icon"></i>
-                    <h3 class="feature-title">Parc MatÃ©riel & GPS</h3>
+                    <h3 class="feature-title">Parc Matériel & GPS</h3>
                 </div>
                 <p class="feature-desc">
-                    Suivez en temps rÃ©el la position de vos tracteurs et Ã©quipements. Planifiez les maintenances, assignez les ressources et gÃ©rez les garages intelligemment.
+                    Suivez en temps réel la position de vos tracteurs et équipements. Planifiez les maintenances, assignez les ressources et gérez les garages intelligemment.
                 </p>
-                <a href="{% if app.user %}{{ path('app_equipement_index') }}{% else %}{{ path('app_login') }}{% endif %}" class="feature-link">GÃ©rer le matÃ©riel <i class="fa-solid fa-arrow-right" style="margin-left: 5px; font-size:0.8rem;"></i></a>
+                <a href="{% if app.user %}{{ path('app_equipement_index') }}{% else %}{{ path('app_login') }}{% endif %}" class="feature-link">Gérer le matériel <i class="fa-solid fa-arrow-right" style="margin-left: 5px; font-size:0.8rem;"></i></a>
             </div>
 
             <!-- Feature 2: Domaine & Cultures -->
@@ -186,11 +186,11 @@
                     <h3 class="feature-title">Domaine & Cultures</h3>
                 </div>
                 <p class="feature-desc">
-                    Cartographiez vos parcelles et analysez les sols. Suivez les cycles de plantation, prÃ©voyez les rÃ©coltes et adaptez-vous aux bulletins mÃ©tÃ©orologiques.
+                    Cartographiez vos parcelles et analysez les sols. Suivez les cycles de plantation, prévoyez les récoltes et adaptez-vous aux bulletins météorologiques.
                 </p>
                 <a href="{% if app.user %}{{ path('app_parcelle_index') }}{% else %}{{ path('app_login') }}{% endif %}" class="feature-link">Explorer les parcelles <i class="fa-solid fa-arrow-right" style="margin-left: 5px; font-size:0.8rem;"></i></a>
                 <br>
-                <a href="{% if app.user %}{{ path('app_culture_index') }}{% else %}{{ path('app_login') }}{% endif %}" class="feature-link" style="margin-top: 10px; display: inline-block;">GÃ©rer les cultures <i class="fa-solid fa-arrow-right" style="margin-left: 5px; font-size:0.8rem;"></i></a>
+                <a href="{% if app.user %}{{ path('app_culture_index') }}{% else %}{{ path('app_login') }}{% endif %}" class="feature-link" style="margin-top: 10px; display: inline-block;">Gérer les cultures <i class="fa-solid fa-arrow-right" style="margin-left: 5px; font-size:0.8rem;"></i></a>
             </div>
 
             <!-- Feature 3: Elevage -->
@@ -200,10 +200,10 @@
                 </div>
                 <div class="feature-icon-wrapper">
                     <i class="fa-solid fa-cow feature-icon"></i>
-                    <h3 class="feature-title">Ã‰levage Domestique</h3>
+                    <h3 class="feature-title">Élevage Domestique</h3>
                 </div>
                 <p class="feature-desc">
-                    Maintenez un registre prÃ©cis de vos animaux. Suivez leur Ã©tat de santÃ©, leur Ã©volution de poids et programmez leurs examens vÃ©tÃ©rinaires continus.
+                    Maintenez un registre précis de vos animaux. Suivez leur état de santé, leur évolution de poids et programmez leurs examens vétérinaires continus.
                 </p>
                 <a href="{% if app.user %}#{% else %}{{ path('app_login') }}{% endif %}" class="feature-link">Voir le cheptel <i class="fa-solid fa-arrow-right" style="margin-left: 5px; font-size:0.8rem;"></i></a>
             </div>
@@ -218,9 +218,9 @@
                     <h3 class="feature-title">Marketplace B2B</h3>
                 </div>
                 <p class="feature-desc">
-                    Achetez des semences, vendez vos rÃ©coltes et participez Ã  un marchÃ© agricole dynamique. Pilotez vos commandes et bÃ©nÃ©ficiez de circuits courts sÃ©curisÃ©s.
+                    Achetez des semences, vendez vos récoltes et participez à un marché agricole dynamique. Pilotez vos commandes et bénéficiez de circuits courts sécurisés.
                 </p>
-                <a href="{% if app.user %}{{ path('app_marketplace_index') }}{% else %}{{ path('app_login') }}{% endif %}" class="feature-link">AccÃ©der Ã  la boutique <i class="fa-solid fa-arrow-right" style="margin-left: 5px; font-size:0.8rem;"></i></a>
+                <a href="{% if app.user %}{{ path('app_marketplace_index') }}{% else %}{{ path('app_login') }}{% endif %}" class="feature-link">Accéder à la boutique <i class="fa-solid fa-arrow-right" style="margin-left: 5px; font-size:0.8rem;"></i></a>
             </div>
 
         </div>
@@ -228,10 +228,10 @@
 
     <!-- Mini CTA Section -->
     <section class="cta-section animate-on-scroll">
-        <h2 class="cta-title">PrÃªt Ã  moderniser votre exploitation ?</h2>
-        <p style="color: rgba(255,255,255,0.7); margin-bottom: 2rem;">Rejoignez la plateforme Agrimans et prenez le contrÃ´le total de vos ressources grÃ¢ce Ã  un assistant intelligent intÃ©grÃ©.</p>
+        <h2 class="cta-title">Prêt à moderniser votre exploitation ?</h2>
+        <p style="color: rgba(255,255,255,0.7); margin-bottom: 2rem;">Rejoignez la plateforme Agrimans et prenez le contrôle total de vos ressources grâce à un assistant intelligent intégré.</p>
         <a href="{{ app.user ? '#' : path('app_login') }}" class="hero-btn-primary" style="padding: 1rem 2.5rem; font-size: 1.1rem;">
-            DÃ©marrer l'Assitant IA <i class="fa-solid fa-robot" style="margin-left:8px;"></i>
+            Démarrer l'Assitant IA <i class="fa-solid fa-robot" style="margin-left:8px;"></i>
         </a>
     </section>
 
@@ -245,7 +245,7 @@
             <div style="background: rgba(255,255,255,0.04); border: 1px solid rgba(255,255,255,0.08); border-radius: 16px; padding: 1.75rem;">
                 <h3 style="margin-bottom: 0.75rem; color: #198B61;">Support</h3>
                 <p>support@agrimans.com</p>
-                <p>+216 12 345 678</p>
+                <p>+216 51 037 288</p>
             </div>
             <div style="background: rgba(255,255,255,0.04); border: 1px solid rgba(255,255,255,0.08); border-radius: 16px; padding: 1.75rem;">
                 <h3 style="margin-bottom: 0.75rem; color: #198B61;">Bureau</h3>
@@ -253,7 +253,7 @@
                 <p>Tunisie</p>
             </div>
             <div style="background: rgba(255,255,255,0.04); border: 1px solid rgba(255,255,255,0.08); border-radius: 16px; padding: 1.75rem;">
-                <h3 style="margin-bottom: 0.75rem; color: #198B61;">RÃ©seaux</h3>
+                <h3 style="margin-bottom: 0.75rem; color: #198B61;">Réseaux</h3>
                 <p><a href="#" style="color:#ffffff;">Facebook</a></p>
                 <p><a href="#" style="color:#ffffff;">Instagram</a></p>
             </div>
