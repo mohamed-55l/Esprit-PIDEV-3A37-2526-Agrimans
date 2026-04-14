@@ -28,7 +28,7 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
     private ?string $password = null;
 
     // Add getter/setter for parcelles if needed
-    #[ORM\OneToMany(targetEntity: 'App\Modules\Parcelle\Entity\Parcelle', mappedBy: 'user')]
+    #[ORM\OneToMany(targetEntity: 'App\Entity\Parcelle', mappedBy: 'user')]
     private Collection $parcelles;
 
     public function __construct()

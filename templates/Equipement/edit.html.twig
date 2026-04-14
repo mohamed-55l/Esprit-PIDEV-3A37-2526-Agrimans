@@ -1,17 +1,17 @@
 {% extends 'base.html.twig' %}
 
-{% block title %}Modifier Équipement{% endblock %}
+{% block title %}Modifier Ã‰quipement{% endblock %}
 
 {% block body %}
     <div style="max-width: 600px; margin: 0 auto;" class="glass-card">
         <h1 style="text-align:center;">Modifier #{{ equipement.id }}</h1>
 
-        {{ include('Equipement/_form.html.twig', {'button_label': 'Mettre à jour'}) }}
+        {{ include('equipement/_form.html.twig', {'button_label': 'Mettre Ã  jour'}) }}
 
         <div style="margin-top: 2rem; display: flex; justify-content: space-between; align-items: center;">
-            <a href="{{ path('app_equipement_index') }}" style="color: #198B61; text-decoration: underline;">Retour à la liste</a>
+            <a href="{{ path('app_equipement_index') }}" style="color: #198B61; text-decoration: underline;">Retour Ã  la liste</a>
             
-            {{ include('Equipement/_delete_form.html.twig') }}
+            {{ include('equipement/_delete_form.html.twig') }}
         </div>
     </div>
 {% endblock %}

@@ -1,0 +1,103 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}Cultures | Agrimans{% endblock %}
+
+{% block body %}
+<div class="content-section" style="max-width: 1200px; margin: 2rem auto;">
+    <div class="page-header" style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 2rem;">
+        <div>
+            <h1 style="font-size: 2.2rem; font-weight: 700; color: #fff; margin-bottom: 0.5rem;"><i class="fa-solid fa-seedling" style="color: var(--primary); margin-right: 10px;"></i> Mes Cultures</h1>
+            <p style="color: rgba(255,255,255,0.6);">Suivi et gestion de vos plantations en cours.</p>
+            {% if search is defined and search is not empty %}
+                <p style="color: var(--primary); font-weight: 500; margin-top: 0.5rem;"><i class="fa-solid fa-magnifying-glass"></i> Résultats pour « {{ search }} »</p>
+            {% endif %}
+        </div>
+        <div class="page-actions" style="display: flex; gap: 1rem; align-items: center;">
+            <form method="get" action="{{ path('app_culture_index') }}" style="position: relative;">
+                <i class="fa-solid fa-search" style="position: absolute; left: 1rem; top: 50%; transform: translateY(-50%); color: rgba(255,255,255,0.4);"></i>
+                <input type="search" name="search" value="{{ search|default('') }}" placeholder="Recherche culture..." style="background: rgba(255,255,255,0.05); border: 1px solid rgba(255,255,255,0.1); color: #fff; padding: 0.6rem 1rem 0.6rem 2.5rem; border-radius: 8px; width: 250px;" />
+                <button type="submit" style="display: none;"></button>
+            </form>
+            <a href="{{ path('app_culture_new') }}" class="btn btn-primary" style="background-color: var(--primary); border: none; padding: 0.7rem 1.2rem; border-radius: 8px; color: #fff; text-decoration: none; font-weight: 600;"><i class="fa-solid fa-plus"></i> Nouvelle Culture</a>
+        </div>
+    </div>
+
+    <div style="background: rgba(255,255,255,0.03); border: 1px solid rgba(255,255,255,0.08); border-radius: 12px; overflow: hidden;">
+        <div class="table-responsive">
+            <table style="width: 100%; border-collapse: collapse; color: #fff;">
+                <thead style="background: rgba(0,0,0,0.2);">
+                    <tr>
+                        <th style="padding: 1.2rem 1rem; text-align: left; font-weight: 600; color: rgba(255,255,255,0.7); text-transform: uppercase; font-size: 0.8rem;">Nom & Variété</th>
+                        <th style="padding: 1.2rem 1rem; text-align: left; font-weight: 600; color: rgba(255,255,255,0.7); text-transform: uppercase; font-size: 0.8rem;">Parcelle Assignée</th>
+                        <th style="padding: 1.2rem 1rem; text-align: left; font-weight: 600; color: rgba(255,255,255,0.7); text-transform: uppercase; font-size: 0.8rem;">Plantation</th>
+                        <th style="padding: 1.2rem 1rem; text-align: left; font-weight: 600; color: rgba(255,255,255,0.7); text-transform: uppercase; font-size: 0.8rem;">Récolte Prévue</th>
+                        <th style="padding: 1.2rem 1rem; text-align: center; font-weight: 600; color: rgba(255,255,255,0.7); text-transform: uppercase; font-size: 0.8rem;">État</th>
+                        <th style="padding: 1.2rem 1rem; text-align: right; font-weight: 600; color: rgba(255,255,255,0.7); text-transform: uppercase; font-size: 0.8rem;">Actions</th>
+                    </tr>
+                </thead>
+                <tbody>
+                {% for culture in cultures %}
+                    <tr style="border-bottom: 1px solid rgba(255,255,255,0.05); transition: background 0.3s;" onmouseover="this.style.background='rgba(255,255,255,0.05)'" onmouseout="this.style.background='transparent'">
+                        <td style="padding: 1rem; font-weight: 500;">
+                            <div style="display: flex; align-items: center; gap: 10px;">
+                                <div style="width: 32px; height: 32px; border-radius: 8px; background: rgba(52, 152, 219, 0.2); display: flex; align-items: center; justify-content: center; color: #3498db;">
+                                    <i class="fa-solid fa-wheat-awn"></i>
+                                </div>
+                                <div>
+                                    <div style="font-weight: 600;">{{ culture.nom }}</div>
+                                    <div style="font-size: 0.75rem; color: rgba(255,255,255,0.5);">{{ culture.type_culture }}</div>
+                                </div>
+                            </div>
+                        </td>
+                        <td style="padding: 1rem;">
+                            {% if culture.parcelle %}
+                                <a href="{{ path('app_parcelle_show', {'id': culture.parcelle.id}) }}" style="color: var(--primary); text-decoration: none; font-weight: 500;">
+                                    <i class="fa-solid fa-map-pin"></i> {{ culture.parcelle.nom }}
+                                </a>
+                            {% else %}
+                                <span style="color: rgba(255,255,255,0.4);"><i class="fa-solid fa-triangle-exclamation"></i> Non assignée</span>
+                            {% endif %}
+                        </td>
+                        <td style="padding: 1rem; color: rgba(255,255,255,0.8);">
+                            <i class="fa-regular fa-calendar" style="color: rgba(255,255,255,0.4); margin-right: 5px;"></i>
+                            {{ culture.date_plantation ? culture.date_plantation|date('d/m/Y') : '-' }}
+                        </td>
+                        <td style="padding: 1rem; color: rgba(255,255,255,0.8);">
+                            <i class="fa-regular fa-calendar-check" style="color: rgba(255,255,255,0.4); margin-right: 5px;"></i>
+                            {{ culture.date_recolte_prevue ? culture.date_recolte_prevue|date('d/m/Y') : '-' }}
+                        </td>
+                        <td style="padding: 1rem; text-align: center;">
+                            {% if culture.etat_culture|lower == 'en croissance' or culture.etat_culture|lower == 'active' %}
+                                <span style="background: rgba(46, 204, 113, 0.2); color: #2ecc71; padding: 4px 10px; border-radius: 20px; font-size: 0.8rem; font-weight: 600;">{{ culture.etat_culture }}</span>
+                            {% elseif culture.etat_culture|lower == 'recoltée' or culture.etat_culture|lower == 'récolté' %}
+                                <span style="background: rgba(155, 89, 182, 0.2); color: #9b59b6; padding: 4px 10px; border-radius: 20px; font-size: 0.8rem; font-weight: 600;">{{ culture.etat_culture }}</span>
+                            {% else %}
+                                <span style="background: rgba(241, 196, 15, 0.2); color: #f1c40f; padding: 4px 10px; border-radius: 20px; font-size: 0.8rem; font-weight: 600;">{{ culture.etat_culture }}</span>
+                            {% endif %}
+                        </td>
+                        <td style="padding: 1rem; text-align: right;">
+                            <div style="display: flex; gap: 0.5rem; justify-content: flex-end;">
+                                <a href="{{ path('app_culture_show', {'id': culture.id}) }}" class="btn" style="background: rgba(255,255,255,0.1); color: #fff; padding: 0.4rem 0.8rem; border-radius: 6px; text-decoration: none; font-size: 0.85rem;"><i class="fa-solid fa-eye"></i></a>
+                                <a href="{{ path('app_culture_edit', {'id': culture.id}) }}" class="btn" style="background: rgba(52, 152, 219, 0.2); color: #3498db; padding: 0.4rem 0.8rem; border-radius: 6px; text-decoration: none; font-size: 0.85rem;"><i class="fa-solid fa-pen"></i></a>
+                                <form method="post" action="{{ path('app_culture_delete', {'id': culture.id}) }}" style="display:inline-block; margin:0;" onsubmit="return confirm('Confirmez-vous la suppression de cette culture ?');">
+                                    <input type="hidden" name="_token" value="{{ csrf_token('delete' ~ culture.id) }}">
+                                    <button class="btn" style="background: rgba(231, 76, 60, 0.2); color: #e74c3c; border: none; padding: 0.4rem 0.8rem; border-radius: 6px; cursor: pointer; font-size: 0.85rem;"><i class="fa-solid fa-trash"></i></button>
+                                </form>
+                            </div>
+                        </td>
+                    </tr>
+                {% else %}
+                    <tr>
+                        <td colspan="6" style="padding: 3rem; text-align: center; color: rgba(255,255,255,0.5);">
+                            <i class="fa-solid fa-seedling" style="font-size: 3rem; margin-bottom: 1rem; opacity: 0.3;"></i>
+                            <p>Aucune culture n'a été trouvée.</p>
+                            <a href="{{ path('app_culture_new') }}" style="color: var(--primary); text-decoration: underline;">Ajouter ma première culture</a>
+                        </td>
+                    </tr>
+                {% endfor %}
+                </tbody>
+            </table>
+        </div>
+    </div>
+</div>
+{% endblock %}

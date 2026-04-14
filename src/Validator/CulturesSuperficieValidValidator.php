@@ -5,7 +5,7 @@ namespace App\Validator;
 use Symfony\Component\Validator\Constraint;
 use Symfony\Component\Validator\ConstraintValidator;
 use Symfony\Component\Validator\Exception\UnexpectedTypeException;
-use App\Modules\Parcelle\Entity\Parcelle;
+use App\Entity\Parcelle;
 
 class CulturesSuperficieValidValidator extends ConstraintValidator
 {

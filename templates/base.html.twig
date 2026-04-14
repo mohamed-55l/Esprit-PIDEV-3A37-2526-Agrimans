@@ -49,7 +49,7 @@
                             <a href="{{ path('app_home') }}"><i class="fa-solid fa-gauge-high"></i> Tableau de bord</a>
                             <div class="dropdown-content">
                                 <a href="#"><i class="fa-solid fa-chart-line"></i> Statistiques du domaine</a>
-                                <a href="#"><i class="fa-solid fa-cloud-sun"></i> Météo en temps réel</a>
+                                <a href="#"><i class="fa-solid fa-cloud-sun"></i> MÃ©tÃ©o en temps rÃ©el</a>
                                 <a href="#"><i class="fa-solid fa-robot"></i> Smart Assistant</a>
                             </div>
                         </div>
@@ -57,15 +57,15 @@
                         <div class="dropdown">
                             <a href="#" style="cursor:default;"><i class="fa-solid fa-tractor"></i> Ressources agro</a>
                             <div class="dropdown-content">
-                                <a href="{{ path('app_equipement_index') }}"><i class="fa-solid fa-toolbox"></i> Stock équipements</a>
+                                <a href="{{ path('app_equipement_index') }}"><i class="fa-solid fa-toolbox"></i> Stock Ã©quipements</a>
                                 <a href="#"><i class="fa-solid fa-map-location-dot"></i> Suivi GPS & Garages</a>
                                 <a href="#"><i class="fa-solid fa-tasks"></i> Demandes & Assignements</a>
-                                <a href="{{ path('app_review_index') }}"><i class="fa-solid fa-star"></i> Avis & Évaluations</a>
+                                <a href="{{ path('app_review_index') }}"><i class="fa-solid fa-star"></i> Avis & Ã‰valuations</a>
                             </div>
                         </div>
 
                         <div class="dropdown">
-                            <a href="#" style="cursor:default;"><i class="fa-solid fa-leaf"></i> Domaine & élevage</a>
+                            <a href="#" style="cursor:default;"><i class="fa-solid fa-leaf"></i> Domaine & Ã©levage</a>
                             <div class="dropdown-content">
                                 <a href="{{ path('app_parcelle_index') }}"><i class="fa-solid fa-map"></i> Gestion des Parcelles</a>
                                 <a href="{{ path('app_culture_index') }}"><i class="fa-solid fa-seedling"></i> Suivi des Cultures</a>
@@ -114,8 +114,8 @@
                             <a href="#" class="top-btn btn-outline" style="background: rgba(255,255,255,0.1); border-radius:12px; padding: 0.6rem 1.2rem;"><i class="fa-solid fa-user"></i> {{ app.user.email }}</a>
                             <div class="dropdown-content" style="right: 0;">
                                 <a href="#">Profil</a>
-                                <a href="#">Paramètres</a>
-                                <a href="{{ path('app_logout') }}" style="color: #e74c3c;"><i class="fa-solid fa-sign-out-alt"></i> Déconnexion</a>
+                                <a href="#">ParamÃ¨tres</a>
+                                <a href="{{ path('app_logout') }}" style="color: #e74c3c;"><i class="fa-solid fa-sign-out-alt"></i> DÃ©connexion</a>
                             </div>
                         </div>
                     {% else %}

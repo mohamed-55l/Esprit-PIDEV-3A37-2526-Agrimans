@@ -1,10 +1,10 @@
 {% extends 'base.html.twig' %}
 
-{% block title %}Détails de l'Équipement{% endblock %}
+{% block title %}DÃ©tails de l'Ã‰quipement{% endblock %}
 
 {% block body %}
     <div style="max-width: 700px; margin: 0 auto;" class="glass-card">
-        <h1>Détails : {{ equipement.nom }}</h1>
+        <h1>DÃ©tails : {{ equipement.nom }}</h1>
 
         <table class="styled-table" style="margin-bottom: 2rem;">
             <tbody>
@@ -17,7 +17,7 @@
                     <td><strong>{{ equipement.nom }}</strong></td>
                 </tr>
                 <tr>
-                    <th>Type / Catégorie</th>
+                    <th>Type / CatÃ©gorie</th>
                     <td>{{ equipement.type }}</td>
                 </tr>
                 <tr>
@@ -25,7 +25,7 @@
                     <td><span style="font-size:1.2rem; color: var(--primary-color); font-weight: bold;">{{ equipement.prix|number_format(2, ',', ' ') }} DT</span></td>
                 </tr>
                 <tr>
-                    <th>Disponibilité</th>
+                    <th>DisponibilitÃ©</th>
                     <td>
                         {% if equipement.disponibilite == 'Disponible' %}
                             <span class="badge badge-success">{{ equipement.disponibilite }}</span>
@@ -40,9 +40,9 @@
         </table>
 
         <div style="display: flex; gap: 1rem;">
-            <a href="{{ path('app_equipement_index') }}" class="btn btn-secondary">Retour à la liste</a>
-            <a href="{{ path('app_equipement_edit', {'id': equipement.id}) }}" class="btn btn-primary">Éditer</a>
-            {{ include('Equipement/_delete_form.html.twig') }}
+            <a href="{{ path('app_equipement_index') }}" class="btn btn-secondary">Retour Ã  la liste</a>
+            <a href="{{ path('app_equipement_edit', {'id': equipement.id}) }}" class="btn btn-primary">Ã‰diter</a>
+            {{ include('equipement/_delete_form.html.twig') }}
         </div>
     </div>
 {% endblock %}

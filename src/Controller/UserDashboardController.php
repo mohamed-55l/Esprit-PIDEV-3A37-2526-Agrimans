@@ -14,7 +14,7 @@ class UserDashboardController extends AbstractController
     public function index(): Response
     {
         // Dans le futur, nous pourrons injecter les Repositories ici 
-        // pour récupérer les vraies statistiques (par ex: nb de parcelles, nb d'animaux)
+        // pour rÃ©cupÃ©rer les vraies statistiques (par ex: nb de parcelles, nb d'animaux)
         
         // Statistiques globales fictives / initialisation
         $stats = [

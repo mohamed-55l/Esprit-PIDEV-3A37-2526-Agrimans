@@ -1,0 +1,70 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}Créer une Nouvelle Culture | Agrimans{% endblock %}
+
+{% block body %}
+<div class="content-section" style="max-width: 800px; margin: 2rem auto;">
+    <div class="page-header" style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 2rem;">
+        <div>
+            <a href="{{ path('app_culture_index') }}" style="color: rgba(255,255,255,0.5); text-decoration: none; font-size: 0.9rem; margin-bottom: 10px; display: inline-block;">
+                <i class="fa-solid fa-arrow-left"></i> Retour à la liste
+            </a>
+            <h1 style="font-size: 2.2rem; font-weight: 700; color: #fff; margin-bottom: 0.5rem;"><i class="fa-solid fa-seedling" style="color: var(--primary); margin-right: 10px;"></i> Nouvelle Culture</h1>
+            <p style="color: rgba(255,255,255,0.6);">Ajoutez une nouvelle plantation à l'une de vos parcelles.</p>
+        </div>
+    </div>
+
+    <div style="background: rgba(255,255,255,0.03); border: 1px solid rgba(255,255,255,0.08); border-radius: 12px; padding: 2rem;">
+        {{ include('culture/_form.html.twig') }}
+    </div>
+</div>
+
+<style>
+    /* Styling the Symfony form elements to match the dark theme */
+    form div {
+        margin-bottom: 1.5rem;
+    }
+    form label {
+        display: block;
+        color: rgba(255,255,255,0.8);
+        font-weight: 500;
+        margin-bottom: 0.5rem;
+        font-size: 0.9rem;
+    }
+    form input[type="text"], 
+    form input[type="number"], 
+    form input[type="date"],
+    form select {
+        width: 100%;
+        background: rgba(255,255,255,0.05);
+        border: 1px solid rgba(255,255,255,0.1);
+        color: #fff;
+        padding: 0.8rem 1rem;
+        border-radius: 8px;
+        font-family: 'Inter', sans-serif;
+        transition: all 0.3s;
+    }
+    form input:focus, form select:focus {
+        outline: none;
+        border-color: var(--primary);
+        box-shadow: 0 0 0 2px rgba(25, 139, 97, 0.2);
+    }
+    form button[type="submit"] {
+        background-color: var(--primary);
+        color: white;
+        border: none;
+        padding: 0.8rem 2rem;
+        border-radius: 8px;
+        font-weight: 600;
+        font-size: 1rem;
+        cursor: pointer;
+        transition: all 0.3s;
+        margin-top: 1rem;
+        width: 100%;
+    }
+    form button[type="submit"]:hover {
+        background-color: #147350;
+        transform: translateY(-2px);
+    }
+</style>
+{% endblock %}

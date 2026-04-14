@@ -1,65 +1,80 @@
 {% extends 'base.html.twig' %}
 
-{% block title %}Parcelle index{% endblock %}
+{% block title %}Mes Parcelles | Agrimans{% endblock %}
 
 {% block body %}
-    <div class="content-section">
-        <div class="page-header">
-            <div>
-                <h1>Liste des parcelles</h1>
-                {% if search is not empty %}
-                    <p style="color: rgba(255,255,255,0.7); margin-top:0.5rem;">Résultats pour « {{ search }} »</p>
-                {% endif %}
-            </div>
-            <div class="page-actions">
-                <form method="get" action="{{ path('app_parcelle_index') }}" style="display:flex; gap:0.5rem; align-items:center;">
-                    <input type="search" name="search" value="{{ search }}" placeholder="Recherche parcelle..." class="form-control" style="width:220px;" />
-                    <button type="submit" class="btn btn-secondary">Rechercher</button>
-                </form>
-                <a href="{{ path('app_parcelle_new') }}" class="btn btn-primary">Ajouter parcelle</a>
-            </div>
+<div class="content-section" style="max-width: 1200px; margin: 2rem auto;">
+    <div class="page-header" style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 2rem;">
+        <div>
+            <h1 style="font-size: 2.2rem; font-weight: 700; color: #fff; margin-bottom: 0.5rem;"><i class="fa-solid fa-map-location-dot" style="color: var(--primary); margin-right: 10px;"></i> Mes Parcelles</h1>
+            <p style="color: rgba(255,255,255,0.6);">Gérer et visualiser vos terrains agricoles.</p>
+            {% if search is defined and search is not empty %}
+                <p style="color: var(--primary); font-weight: 500; margin-top: 0.5rem;"><i class="fa-solid fa-magnifying-glass"></i> Résultats pour « {{ search }} »</p>
+            {% endif %}
         </div>
-
-        <div class="table-responsive">
-            <table class="table">
-                <thead>
-                    <tr>
-                <th>Nom</th>
-                <th>Superficie</th>
-                <th>Localisation</th>
-                <th>Type_sol</th>
-                <th>Latitude</th>
-                <th>Longitude</th>
-                <th>Utilisateur</th>
-                <th>actions</th>
-            </tr>
-        </thead>
-        <tbody>
-        {% for parcelle in parcelles %}
-            <tr>
-                <td>{{ parcelle.nom }}</td>
-                <td>{{ parcelle.superficie }}</td>
-                <td>{{ parcelle.localisation }}</td>
-                <td>{{ parcelle.type_sol }}</td>
-                <td>{{ parcelle.latitude }}</td>
-                <td>{{ parcelle.longitude }}</td>
-                <td>{{ parcelle.user ? parcelle.user.email : '' }}</td>
-                <td>
-                    <a href="{{ path('app_parcelle_show', {'id': parcelle.id}) }}" class="btn btn-secondary">Voir</a>
-                    <a href="{{ path('app_parcelle_edit', {'id': parcelle.id}) }}" class="btn btn-primary">Modifier</a>
-                    <form method="post" action="{{ path('app_parcelle_delete', {'id': parcelle.id}) }}" style="display:inline-block; margin:0;" onsubmit="return confirm('Supprimer cette parcelle ?');">
-                        <input type="hidden" name="_token" value="{{ csrf_token('delete' ~ parcelle.id) }}">
-                        <button class="btn btn-danger">Supprimer</button>
-                    </form>
-                </td>
-            </tr>
-        {% else %}
-            <tr>
-                <td colspan="9">no records found</td>
-            </tr>
-        {% endfor %}
-        </tbody>
-    </table>
+        <div class="page-actions" style="display: flex; gap: 1rem; align-items: center;">
+            <form method="get" action="{{ path('app_parcelle_index') }}" style="position: relative;">
+                <i class="fa-solid fa-search" style="position: absolute; left: 1rem; top: 50%; transform: translateY(-50%); color: rgba(255,255,255,0.4);"></i>
+                <input type="search" name="search" value="{{ search|default('') }}" placeholder="Recherche parcelle..." style="background: rgba(255,255,255,0.05); border: 1px solid rgba(255,255,255,0.1); color: #fff; padding: 0.6rem 1rem 0.6rem 2.5rem; border-radius: 8px; width: 250px;" />
+                <button type="submit" style="display: none;"></button>
+            </form>
+            <a href="{{ path('app_parcelle_new') }}" class="btn btn-primary" style="background-color: var(--primary); border: none; padding: 0.7rem 1.2rem; border-radius: 8px; color: #fff; text-decoration: none; font-weight: 600;"><i class="fa-solid fa-plus"></i> Nouvelle Parcelle</a>
         </div>
     </div>
+
+    <div style="background: rgba(255,255,255,0.03); border: 1px solid rgba(255,255,255,0.08); border-radius: 12px; overflow: hidden;">
+        <div class="table-responsive">
+            <table style="width: 100%; border-collapse: collapse; color: #fff;">
+                <thead style="background: rgba(0,0,0,0.2);">
+                    <tr>
+                        <th style="padding: 1.2rem 1rem; text-align: left; font-weight: 600; color: rgba(255,255,255,0.7); text-transform: uppercase; font-size: 0.8rem;">Nom</th>
+                        <th style="padding: 1.2rem 1rem; text-align: left; font-weight: 600; color: rgba(255,255,255,0.7); text-transform: uppercase; font-size: 0.8rem;">Superficie</th>
+                        <th style="padding: 1.2rem 1rem; text-align: left; font-weight: 600; color: rgba(255,255,255,0.7); text-transform: uppercase; font-size: 0.8rem;">Localisation</th>
+                        <th style="padding: 1.2rem 1rem; text-align: left; font-weight: 600; color: rgba(255,255,255,0.7); text-transform: uppercase; font-size: 0.8rem;">Type de Sol</th>
+                        <th style="padding: 1.2rem 1rem; text-align: left; font-weight: 600; color: rgba(255,255,255,0.7); text-transform: uppercase; font-size: 0.8rem;">Coordonnées</th>
+                        <th style="padding: 1.2rem 1rem; text-align: right; font-weight: 600; color: rgba(255,255,255,0.7); text-transform: uppercase; font-size: 0.8rem;">Actions</th>
+                    </tr>
+                </thead>
+                <tbody>
+                {% for parcelle in parcelles %}
+                    <tr style="border-bottom: 1px solid rgba(255,255,255,0.05); transition: background 0.3s;" onmouseover="this.style.background='rgba(255,255,255,0.05)'" onmouseout="this.style.background='transparent'">
+                        <td style="padding: 1rem; font-weight: 500;">
+                            <div style="display: flex; align-items: center; gap: 10px;">
+                                <div style="width: 32px; height: 32px; border-radius: 8px; background: rgba(25, 139, 97, 0.2); display: flex; align-items: center; justify-content: center; color: var(--primary);">
+                                    <i class="fa-solid fa-leaf"></i>
+                                </div>
+                                {{ parcelle.nom }}
+                            </div>
+                        </td>
+                        <td style="padding: 1rem; color: rgba(255,255,255,0.8);">{{ parcelle.superficie }} ha</td>
+                        <td style="padding: 1rem; color: rgba(255,255,255,0.8);"><i class="fa-solid fa-location-dot" style="color: rgba(255,255,255,0.4); margin-right: 5px;"></i>{{ parcelle.localisation }}</td>
+                        <td style="padding: 1rem;"><span style="background: rgba(255,255,255,0.1); padding: 4px 10px; border-radius: 20px; font-size: 0.8rem;">{{ parcelle.type_sol }}</span></td>
+                        <td style="padding: 1rem; font-size:0.85rem; color: rgba(255,255,255,0.5);">
+                            Lat: {{ parcelle.latitude }}<br>Lon: {{ parcelle.longitude }}
+                        </td>
+                        <td style="padding: 1rem; text-align: right;">
+                            <div style="display: flex; gap: 0.5rem; justify-content: flex-end;">
+                                <a href="{{ path('app_parcelle_show', {'id': parcelle.id}) }}" class="btn" style="background: rgba(255,255,255,0.1); color: #fff; padding: 0.4rem 0.8rem; border-radius: 6px; text-decoration: none; font-size: 0.85rem;"><i class="fa-solid fa-eye"></i></a>
+                                <a href="{{ path('app_parcelle_edit', {'id': parcelle.id}) }}" class="btn" style="background: rgba(52, 152, 219, 0.2); color: #3498db; padding: 0.4rem 0.8rem; border-radius: 6px; text-decoration: none; font-size: 0.85rem;"><i class="fa-solid fa-pen"></i></a>
+                                <form method="post" action="{{ path('app_parcelle_delete', {'id': parcelle.id}) }}" style="display:inline-block; margin:0;" onsubmit="return confirm('Confirmez-vous la suppression de cette parcelle ?');">
+                                    <input type="hidden" name="_token" value="{{ csrf_token('delete' ~ parcelle.id) }}">
+                                    <button class="btn" style="background: rgba(231, 76, 60, 0.2); color: #e74c3c; border: none; padding: 0.4rem 0.8rem; border-radius: 6px; cursor: pointer; font-size: 0.85rem;"><i class="fa-solid fa-trash"></i></button>
+                                </form>
+                            </div>
+                        </td>
+                    </tr>
+                {% else %}
+                    <tr>
+                        <td colspan="6" style="padding: 3rem; text-align: center; color: rgba(255,255,255,0.5);">
+                            <i class="fa-solid fa-map" style="font-size: 3rem; margin-bottom: 1rem; opacity: 0.3;"></i>
+                            <p>Aucune parcelle n'a été trouvée.</p>
+                            <a href="{{ path('app_parcelle_new') }}" style="color: var(--primary); text-decoration: underline;">Ajouter ma première parcelle</a>
+                        </td>
+                    </tr>
+                {% endfor %}
+                </tbody>
+            </table>
+        </div>
+    </div>
+</div>
 {% endblock %}

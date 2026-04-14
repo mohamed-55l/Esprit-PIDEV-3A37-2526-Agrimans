@@ -38,7 +38,7 @@ class UserManagementController extends AbstractController
 
         $entityManager->flush();
 
-        $this->addFlash('success', 'Rôle de l\'utilisateur mis à jour.');
+        $this->addFlash('success', 'RÃ´le de l\'utilisateur mis Ã  jour.');
 
         return $this->redirectToRoute('app_user_management');
     }
@@ -54,7 +54,7 @@ class UserManagementController extends AbstractController
                 // Check if user already exists
                 $existingUser = $userRepository->findOneBy(['email' => $email]);
                 if ($existingUser) {
-                    $this->addFlash('error', 'Un utilisateur avec cet email existe déjà.');
+                    $this->addFlash('error', 'Un utilisateur avec cet email existe dÃ©jÃ .');
                     return $this->redirectToRoute('app_create_admin');
                 }
 
@@ -66,7 +66,7 @@ class UserManagementController extends AbstractController
                 $entityManager->persist($user);
                 $entityManager->flush();
 
-                $this->addFlash('success', 'Administrateur créé avec succès.');
+                $this->addFlash('success', 'Administrateur crÃ©Ã© avec succÃ¨s.');
                 return $this->redirectToRoute('app_user_management');
             }
         }
@@ -85,7 +85,7 @@ class UserManagementController extends AbstractController
                 // Check if user already exists
                 $existingUser = $userRepository->findOneBy(['email' => $email]);
                 if ($existingUser) {
-                    $this->addFlash('error', 'Un utilisateur avec cet email existe déjà.');
+                    $this->addFlash('error', 'Un utilisateur avec cet email existe dÃ©jÃ .');
                     return $this->redirectToRoute('app_create_user');
                 }
 
@@ -97,7 +97,7 @@ class UserManagementController extends AbstractController
                 $entityManager->persist($user);
                 $entityManager->flush();
 
-                $this->addFlash('success', 'Utilisateur créé avec succès.');
+                $this->addFlash('success', 'Utilisateur crÃ©Ã© avec succÃ¨s.');
                 return $this->redirectToRoute('app_user_management');
             }
         }
@@ -112,7 +112,7 @@ class UserManagementController extends AbstractController
             $entityManager->remove($user);
             $entityManager->flush();
 
-            $this->addFlash('success', 'Utilisateur supprimé.');
+            $this->addFlash('success', 'Utilisateur supprimÃ©.');
         }
 
         return $this->redirectToRoute('app_user_management');

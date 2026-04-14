@@ -20,7 +20,7 @@ class ValidCoordinatesValidator extends ConstraintValidator
         }
 
         // On s'attend à ce que $value soit l'entité Parcelle
-        if (!$value instanceof \App\Modules\Parcelle\Entity\Parcelle) {
+        if (!$value instanceof \App\Entity\Parcelle) {
             return;
         }
 

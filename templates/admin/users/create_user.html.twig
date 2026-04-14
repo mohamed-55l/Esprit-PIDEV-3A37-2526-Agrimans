@@ -1,11 +1,11 @@
 {% extends 'base.html.twig' %}
 
-{% block title %}Créer un Utilisateur{% endblock %}
+{% block title %}CrÃ©er un Utilisateur{% endblock %}
 
 {% block body %}
 <section class="content-section" style="margin-top: 2rem; max-width: 500px; margin-left: auto; margin-right: auto;">
     <div style="background:rgba(255,255,255,0.04); border:1px solid rgba(255,255,255,0.08); border-radius:12px; padding:2rem;">
-        <h2 style="text-align: center; margin-bottom: 1.5rem; color: #198B61;">Créer un Utilisateur</h2>
+        <h2 style="text-align: center; margin-bottom: 1.5rem; color: #198B61;">CrÃ©er un Utilisateur</h2>
 
         {% for message in app.flashes('success') %}
             <div style="background:rgba(39,174,96,0.15); border:1px solid #27ae60; color:#27ae60; padding:0.75rem 1rem; border-radius:8px; margin-bottom:1rem;">
@@ -33,7 +33,7 @@
             <div style="display: flex; gap: 1rem;">
                 <a href="{{ path('app_user_management') }}" class="btn btn-secondary" style="flex: 1;">Annuler</a>
                 <button class="hero-btn-primary" type="submit" style="flex: 1;">
-                    <i class="fa-solid fa-user-plus"></i> Créer Utilisateur
+                    <i class="fa-solid fa-user-plus"></i> CrÃ©er Utilisateur
                 </button>
             </div>
         </form>

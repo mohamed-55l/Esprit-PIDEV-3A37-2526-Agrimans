@@ -15,8 +15,8 @@
 
         {% if app.user %}
             <div style="text-align: center;">
-                Vous êtes connecté en tant que {{ app.user.userIdentifier }}<br>
-                <a href="{{ path('app_logout') }}" class="btn btn-secondary" style="margin-top: 1rem;">Déconnexion</a>
+                Vous Ãªtes connectÃ© en tant que {{ app.user.userIdentifier }}<br>
+                <a href="{{ path('app_logout') }}" class="btn btn-secondary" style="margin-top: 1rem;">DÃ©connexion</a>
             </div>
         {% else %}
             <form method="post">

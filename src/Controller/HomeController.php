@@ -13,18 +13,18 @@ class HomeController extends AbstractController
     {
         $user = $this->getUser();
 
-        // Si l'utilisateur est connecté
+        // Si l'utilisateur est connectÃ©
         if ($user) {
             // Si c'est un admin, rediriger vers le dashboard
             if (in_array('ROLE_ADMIN', $user->getRoles())) {
                 return $this->redirectToRoute('app_admin');
             }
 
-            // Si c'est un utilisateur régulier, rediriger vers le tableau de bord principal
+            // Si c'est un utilisateur rÃ©gulier, rediriger vers le tableau de bord principal
             return $this->redirectToRoute('app_user_dashboard');
         }
 
-        // Si pas connecté, afficher la page d'accueil avec les informations du site
+        // Si pas connectÃ©, afficher la page d'accueil avec les informations du site
         return $this->render('home/index.html.twig');
     }
 }

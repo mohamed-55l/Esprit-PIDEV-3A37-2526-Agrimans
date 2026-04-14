@@ -81,7 +81,8 @@ body {
     height: 28px;
 }
 
-.navbar.shrink .nav-links > .dropdown > a {
+.navbar.shrink .nav-links > .dropdown > a,
+.navbar.shrink .nav-links > a {
     padding: 0.45rem 0.95rem;
     font-size: 0.9rem;
 }
@@ -110,7 +111,8 @@ body {
     gap: 0.2rem;
 }
 
-.nav-links > .dropdown > a {
+.nav-links > .dropdown > a,
+.nav-links > a {
     color: rgba(255, 255, 255, 0.9); /* High visibility white */
     text-decoration: none;
     font-weight: 600;
@@ -123,7 +125,8 @@ body {
     display: inline-block;
 }
 
-.nav-links > .dropdown > a:hover {
+.nav-links > .dropdown > a:hover,
+.nav-links > a:hover {
     color: var(--white);
     background: rgba(255, 255, 255, 0.1);
     transform: translateY(-2px); /* Bouton menu qui se soulève */
