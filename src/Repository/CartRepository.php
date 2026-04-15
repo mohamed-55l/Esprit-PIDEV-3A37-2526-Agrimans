@@ -15,11 +15,13 @@ class CartRepository extends ServiceEntityRepository
 
     public function findOrCreateByBuyerId(int $buyerId): Cart
     {
-        $cart = $this->findOneBy(['buyerId' => $buyerId]);
+        $cart = $this->findOneBy(['user' => $buyerId]);
 
         if (!$cart) {
             $cart = new Cart();
-            $cart->setBuyerId($buyerId);
+            // Assign a user reference without requiring a full fetch
+            $userReference = $this->getEntityManager()->getReference(\App\Entity\User::class, $buyerId);
+            $cart->setUser($userReference);
             $this->getEntityManager()->persist($cart);
             $this->getEntityManager()->flush();
         }

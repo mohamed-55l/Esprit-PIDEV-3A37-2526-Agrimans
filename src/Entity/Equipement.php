@@ -2,9 +2,11 @@
 
 namespace App\Entity;
 
-use App\Repository\EquipementRepository;
 use Doctrine\ORM\Mapping as ORM;
-use Symfony\Component\Validator\Constraints as Assert;
+use Doctrine\Common\Collections\ArrayCollection;
+use Doctrine\Common\Collections\Collection;
+
+use App\Repository\EquipementRepository;
 
 #[ORM\Entity(repositoryClass: EquipementRepository::class)]
 #[ORM\Table(name: 'equipement')]
@@ -15,32 +17,19 @@ class Equipement
     #[ORM\Column(type: 'integer')]
     private ?int $id = null;
 
-    #[ORM\Column(type: 'string', length: 100, nullable: true)]
-    #[Assert\NotBlank(message: "Le nom de l'équipement est obligatoire.")]
-    #[Assert\Length(min: 3, max: 100, minMessage: "Le nom doit comporter au moins {{ limit }} caractères.")]
-    private ?string $nom = null;
-
-    #[ORM\Column(type: 'string', length: 100, nullable: true)]
-    #[Assert\NotBlank(message: "Le type est obligatoire.")]
-    private ?string $type = null;
-
-    #[ORM\Column(type: 'float', nullable: true)]
-    #[Assert\NotBlank(message: "Veuillez spécifier un prix.")]
-    #[Assert\PositiveOrZero(message: "Le prix ne peut pas être un nombre négatif.")]
-    private ?float $prix = null;
-
-    #[ORM\Column(type: 'string', length: 50, nullable: true)]
-    #[Assert\NotBlank(message: "Vous devez préciser la disponibilité.")]
-    #[Assert\Choice(choices: ['Disponible', 'Indisponible', 'En maintenance'], message: "Veuillez choisir un statut valide.")]
-    private ?string $disponibilite = null;
-
-    #[ORM\Column(name: 'user_id', type: 'integer', nullable: true)]
-    private ?int $userId = null;
-
     public function getId(): ?int
     {
         return $this->id;
     }
+
+    public function setId(int $id): self
+    {
+        $this->id = $id;
+        return $this;
+    }
+
+    #[ORM\Column(type: 'string', nullable: true)]
+    private ?string $nom = null;
 
     public function getNom(): ?string
     {
@@ -53,6 +42,9 @@ class Equipement
         return $this;
     }
 
+    #[ORM\Column(type: 'string', nullable: true)]
+    private ?string $type = null;
+
     public function getType(): ?string
     {
         return $this->type;
@@ -63,6 +55,9 @@ class Equipement
         $this->type = $type;
         return $this;
     }
+
+    #[ORM\Column(type: 'float', nullable: true)]
+    private ?float $prix = null;
 
     public function getPrix(): ?float
     {
@@ -75,6 +70,9 @@ class Equipement
         return $this;
     }
 
+    #[ORM\Column(type: 'string', nullable: true)]
+    private ?string $disponibilite = null;
+
     public function getDisponibilite(): ?string
     {
         return $this->disponibilite;
@@ -86,14 +84,81 @@ class Equipement
         return $this;
     }
 
-    public function getUserId(): ?int
+    #[ORM\ManyToOne(targetEntity: User::class)]
+    #[ORM\JoinColumn(name: 'user_id', referencedColumnName: 'id')]
+    private ?User $user = null;
+
+    public function getUser(): ?User
     {
-        return $this->userId;
+        return $this->user;
     }
 
-    public function setUserId(?int $userId): self
+    public function setUser(?User $user): self
     {
-        $this->userId = $userId;
+        $this->user = $user;
         return $this;
     }
+
+    public function addReview(Review $review): self
+    {
+        if (!$this->getReviews()->contains($review)) {
+            $this->getReviews()->add($review);
+        }
+        return $this;
+    }
+
+    public function removeReview(Review $review): self
+    {
+        $this->getReviews()->removeElement($review);
+        return $this;
+    }
+
+    #[ORM\OneToMany(targetEntity: Review::class, mappedBy: 'equipement')]
+    private Collection $reviews;
+
+    /**
+     * @return Collection<int, Review>
+     */
+    public function getReviews(): Collection
+    {
+        if (!$this->reviews instanceof Collection) {
+            $this->reviews = new ArrayCollection();
+        }
+        return $this->reviews;
+    }
+
+    #[ORM\ManyToMany(targetEntity: Garage::class, mappedBy: 'equipements')]
+    private Collection $garages;
+
+    public function __construct()
+    {
+        $this->reviews = new ArrayCollection();
+        $this->garages = new ArrayCollection();
+    }
+
+    /**
+     * @return Collection<int, Garage>
+     */
+    public function getGarages(): Collection
+    {
+        if (!$this->garages instanceof Collection) {
+            $this->garages = new ArrayCollection();
+        }
+        return $this->garages;
+    }
+
+    public function addGarage(Garage $garage): self
+    {
+        if (!$this->getGarages()->contains($garage)) {
+            $this->getGarages()->add($garage);
+        }
+        return $this;
+    }
+
+    public function removeGarage(Garage $garage): self
+    {
+        $this->getGarages()->removeElement($garage);
+        return $this;
+    }
+
 }

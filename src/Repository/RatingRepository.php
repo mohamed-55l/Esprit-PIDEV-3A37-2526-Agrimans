@@ -31,11 +31,11 @@ class RatingRepository extends ServiceEntityRepository
     public function getPriceCategoryAnalysis(int $productId): array
     {
         $results = $this->createQueryBuilder('r')
-            ->select('r.priceCategory, COUNT(r.id) as cnt')
+            ->select('r.price_category as priceCategory, COUNT(r.id) as cnt')
             ->andWhere('r.product = :productId')
-            ->andWhere('r.priceCategory IS NOT NULL')
+            ->andWhere('r.price_category IS NOT NULL')
             ->setParameter('productId', $productId)
-            ->groupBy('r.priceCategory')
+            ->groupBy('r.price_category')
             ->getQuery()
             ->getResult();
 

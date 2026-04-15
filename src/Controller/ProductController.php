@@ -60,7 +60,7 @@ final class ProductController extends AbstractController
 
         if ($form->isSubmitted() && $form->isValid()) {
             $this->handleImageUpload($form, $product, $slugger);
-            $product->setSellerId(1); // userId par dÃ©faut
+            $product->setUser($entityManager->getReference(\App\Entity\User::class, 1)); // userId par dÃ©faut
             $entityManager->persist($product);
             $entityManager->flush();
 

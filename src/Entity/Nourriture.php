@@ -2,12 +2,12 @@
 
 namespace App\Entity;
 
-use App\Repository\NourritureRepository;
-use Doctrine\Common\Collections\ArrayCollection;
-use Doctrine\Common\Collections\Collection;
 use Doctrine\DBAL\Types\Types;
 use Doctrine\ORM\Mapping as ORM;
-use Symfony\Component\Validator\Constraints as Assert;
+use Doctrine\Common\Collections\ArrayCollection;
+use Doctrine\Common\Collections\Collection;
+
+use App\Repository\NourritureRepository;
 
 #[ORM\Entity(repositoryClass: NourritureRepository::class)]
 #[ORM\Table(name: 'nourriture')]
@@ -15,92 +15,239 @@ class Nourriture
 {
     #[ORM\Id]
     #[ORM\GeneratedValue]
-    #[ORM\Column]
+    #[ORM\Column(type: 'integer')]
     private ?int $id = null;
 
-    #[ORM\Column(length: 255)]
-    #[Assert\NotBlank(message: "Le nom est obligatoire.")]
-    #[Assert\Length(min: 2, max: 255, minMessage: "Le nom doit comporter au moins {{ limit }} caractères.", maxMessage: "Le nom ne peut pas dépasser {{ limit }} caractères.")]
+    public function getId(): ?int
+    {
+        return $this->id;
+    }
+
+    public function setId(int $id): self
+    {
+        $this->id = $id;
+        return $this;
+    }
+
+    #[ORM\Column(type: 'string', nullable: false)]
     private ?string $name = null;
 
-    #[ORM\Column(length: 100)]
-    #[Assert\NotBlank(message: "Le type est obligatoire.")]
-    #[Assert\Length(max: 100, maxMessage: "Le type ne peut pas dépasser {{ limit }} caractères.")]
+    public function getName(): ?string
+    {
+        return $this->name;
+    }
+
+    public function setName(string $name): self
+    {
+        $this->name = $name;
+        return $this;
+    }
+
+    #[ORM\Column(type: 'string', nullable: false)]
     private ?string $type = null;
 
-    /** Stored as string to preserve DECIMAL precision; cast to float when needed. */
-    #[ORM\Column(type: Types::DECIMAL, precision: 10, scale: 2)]
-    #[Assert\NotBlank(message: "La quantité est obligatoire.")]
-    #[Assert\Positive(message: "La quantité doit être un nombre positif.")]
-    private ?string $quantity = null;
+    public function getType(): ?string
+    {
+        return $this->type;
+    }
 
-    #[ORM\Column(length: 50, nullable: true)]
-    #[Assert\Length(max: 50, maxMessage: "L'unité ne peut pas dépasser {{ limit }} caractères.")]
+    public function setType(string $type): self
+    {
+        $this->type = $type;
+        return $this;
+    }
+
+    #[ORM\Column(type: 'float', nullable: false)]
+    private ?float $quantity = null;
+
+    public function getQuantity(): ?float
+    {
+        return $this->quantity;
+    }
+
+    public function setQuantity(float $quantity): self
+    {
+        $this->quantity = $quantity;
+        return $this;
+    }
+
+    #[ORM\Column(type: 'string', nullable: true)]
     private ?string $unit = null;
 
-    #[ORM\Column(length: 255, nullable: true)]
-    #[Assert\Length(max: 255, maxMessage: "La valeur nutritive ne peut pas dépasser {{ limit }} caractères.")]
-    private ?string $nutritionalValue = null;
+    public function getUnit(): ?string
+    {
+        return $this->unit;
+    }
 
-    #[ORM\Column(type: Types::DATETIME_MUTABLE, nullable: true)]
-    #[Assert\GreaterThan("today", message: "La date d'expiration doit être dans le futur.")]
-    private ?\DateTimeInterface $expiryDate = null;
+    public function setUnit(?string $unit): self
+    {
+        $this->unit = $unit;
+        return $this;
+    }
 
-    #[ORM\Column(length: 255, nullable: true)]
-    #[Assert\Length(max: 255, maxMessage: "Le fournisseur ne peut pas dépasser {{ limit }} caractères.")]
+    #[ORM\Column(type: 'string', nullable: true)]
+    private ?string $nutritional_value = null;
+
+    public function getNutritional_value(): ?string
+    {
+        return $this->nutritional_value;
+    }
+
+    public function setNutritional_value(?string $nutritional_value): self
+    {
+        $this->nutritional_value = $nutritional_value;
+        return $this;
+    }
+
+    #[ORM\Column(type: 'datetime', nullable: true)]
+    private ?\DateTimeInterface $expiry_date = null;
+
+    public function getExpiry_date(): ?\DateTimeInterface
+    {
+        return $this->expiry_date;
+    }
+
+    public function setExpiry_date(?\DateTimeInterface $expiry_date): self
+    {
+        $this->expiry_date = $expiry_date;
+        return $this;
+    }
+
+    #[ORM\Column(type: 'string', nullable: true)]
     private ?string $supplier = null;
 
-    /** Stored as string to preserve DECIMAL precision; cast to float when needed. */
-    #[ORM\Column(type: Types::DECIMAL, precision: 10, scale: 2, nullable: true)]
-    #[Assert\PositiveOrZero(message: "Le coût doit être un nombre positif ou zéro.")]
-    private ?string $cost = null;
+    public function getSupplier(): ?string
+    {
+        return $this->supplier;
+    }
 
-    #[ORM\Column(type: Types::DATETIME_MUTABLE, nullable: true)]
-    private ?\DateTimeInterface $dateAdded = null;
+    public function setSupplier(?string $supplier): self
+    {
+        $this->supplier = $supplier;
+        return $this;
+    }
 
-    #[ORM\Column(options: ['default' => true])]
-    private bool $isActive = true;
+    #[ORM\Column(type: 'float', nullable: true)]
+    private ?float $cost = null;
 
-    #[ORM\OneToMany(mappedBy: 'nourriture', targetEntity: AnimalNourriture::class, cascade: ['remove'], orphanRemoval: true)]
+    public function getCost(): ?float
+    {
+        return $this->cost;
+    }
+
+    public function setCost(?float $cost): self
+    {
+        $this->cost = $cost;
+        return $this;
+    }
+
+    #[ORM\Column(type: 'datetime', nullable: true)]
+    private ?\DateTimeInterface $date_added = null;
+
+    public function getDate_added(): ?\DateTimeInterface
+    {
+        return $this->date_added;
+    }
+
+    public function setDate_added(?\DateTimeInterface $date_added): self
+    {
+        $this->date_added = $date_added;
+        return $this;
+    }
+
+    #[ORM\Column(type: 'boolean', nullable: false)]
+    private ?bool $is_active = null;
+
+    public function is_active(): ?bool
+    {
+        return $this->is_active;
+    }
+
+    public function setIs_active(bool $is_active): self
+    {
+        $this->is_active = $is_active;
+        return $this;
+    }
+
+    #[ORM\OneToMany(targetEntity: AnimalNourriture::class, mappedBy: 'nourriture')]
     private Collection $animalNourritures;
 
     public function __construct()
     {
-        $this->dateAdded = new \DateTime();
         $this->animalNourritures = new ArrayCollection();
     }
 
-    public function getId(): ?int { return $this->id; }
+    /**
+     * @return Collection<int, AnimalNourriture>
+     */
+    public function getAnimalNourritures(): Collection
+    {
+        if (!$this->animalNourritures instanceof Collection) {
+            $this->animalNourritures = new ArrayCollection();
+        }
+        return $this->animalNourritures;
+    }
 
-    public function getName(): ?string { return $this->name; }
-    public function setName(string $name): static { $this->name = $name; return $this; }
+    public function addAnimalNourriture(AnimalNourriture $animalNourriture): self
+    {
+        if (!$this->getAnimalNourritures()->contains($animalNourriture)) {
+            $this->getAnimalNourritures()->add($animalNourriture);
+        }
+        return $this;
+    }
 
-    public function getType(): ?string { return $this->type; }
-    public function setType(string $type): static { $this->type = $type; return $this; }
+    public function removeAnimalNourriture(AnimalNourriture $animalNourriture): self
+    {
+        $this->getAnimalNourritures()->removeElement($animalNourriture);
+        return $this;
+    }
 
-    public function getQuantity(): ?string { return $this->quantity; }
-    public function setQuantity(string $quantity): static { $this->quantity = $quantity; return $this; }
+    public function getNutritionalValue(): ?string
+    {
+        return $this->nutritional_value;
+    }
 
-    public function getUnit(): ?string { return $this->unit; }
-    public function setUnit(?string $unit): static { $this->unit = $unit; return $this; }
+    public function setNutritionalValue(?string $nutritional_value): static
+    {
+        $this->nutritional_value = $nutritional_value;
 
-    public function getNutritionalValue(): ?string { return $this->nutritionalValue; }
-    public function setNutritionalValue(?string $nutritionalValue): static { $this->nutritionalValue = $nutritionalValue; return $this; }
+        return $this;
+    }
 
-    public function getExpiryDate(): ?\DateTimeInterface { return $this->expiryDate; }
-    public function setExpiryDate(?\DateTimeInterface $expiryDate): static { $this->expiryDate = $expiryDate; return $this; }
+    public function getExpiryDate(): ?\DateTime
+    {
+        return $this->expiry_date;
+    }
 
-    public function getSupplier(): ?string { return $this->supplier; }
-    public function setSupplier(?string $supplier): static { $this->supplier = $supplier; return $this; }
+    public function setExpiryDate(?\DateTime $expiry_date): static
+    {
+        $this->expiry_date = $expiry_date;
 
-    public function getCost(): ?string { return $this->cost; }
-    public function setCost(?string $cost): static { $this->cost = $cost; return $this; }
+        return $this;
+    }
 
-    public function getDateAdded(): ?\DateTimeInterface { return $this->dateAdded; }
-    public function setDateAdded(?\DateTimeInterface $dateAdded): static { $this->dateAdded = $dateAdded; return $this; }
+    public function getDateAdded(): ?\DateTime
+    {
+        return $this->date_added;
+    }
 
-    public function isActive(): bool { return $this->isActive; }
-    public function setIsActive(bool $isActive): static { $this->isActive = $isActive; return $this; }
+    public function setDateAdded(?\DateTime $date_added): static
+    {
+        $this->date_added = $date_added;
 
-    public function getAnimalNourritures(): Collection { return $this->animalNourritures; }
+        return $this;
+    }
+
+    public function isActive(): ?bool
+    {
+        return $this->is_active;
+    }
+
+    public function setIsActive(bool $is_active): static
+    {
+        $this->is_active = $is_active;
+
+        return $this;
+    }
+
 }

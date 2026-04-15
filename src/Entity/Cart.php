@@ -2,10 +2,11 @@
 
 namespace App\Entity;
 
-use App\Repository\CartRepository;
+use Doctrine\ORM\Mapping as ORM;
 use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\Common\Collections\Collection;
-use Doctrine\ORM\Mapping as ORM;
+
+use App\Repository\CartRepository;
 
 #[ORM\Entity(repositoryClass: CartRepository::class)]
 #[ORM\Table(name: 'carts')]
@@ -16,31 +17,38 @@ class Cart
     #[ORM\Column(type: 'integer')]
     private ?int $id = null;
 
-    #[ORM\Column(name: 'buyer_id', type: 'integer')]
-    private ?int $buyerId = null;
-
-    #[ORM\OneToMany(targetEntity: CartItem::class, mappedBy: 'cart', orphanRemoval: true, cascade: ['persist', 'remove'])]
-    private Collection $items;
-
-    public function __construct()
-    {
-        $this->items = new ArrayCollection();
-    }
-
     public function getId(): ?int
     {
         return $this->id;
     }
 
-    public function getBuyerId(): ?int
+    public function setId(int $id): self
     {
-        return $this->buyerId;
+        $this->id = $id;
+        return $this;
     }
 
-    public function setBuyerId(?int $buyerId): self
+    #[ORM\ManyToOne(targetEntity: User::class, inversedBy: 'carts')]
+    #[ORM\JoinColumn(name: 'buyer_id', referencedColumnName: 'id')]
+    private ?User $user = null;
+
+    public function getUser(): ?User
     {
-        $this->buyerId = $buyerId;
+        return $this->user;
+    }
+
+    public function setUser(?User $user): self
+    {
+        $this->user = $user;
         return $this;
+    }
+
+    #[ORM\OneToMany(targetEntity: CartItem::class, mappedBy: 'cart', cascade: ['persist', 'remove'])]
+    private Collection $items;
+
+    public function __construct()
+    {
+        $this->items = new ArrayCollection();
     }
 
     /**
@@ -60,6 +68,15 @@ class Cart
         return $this;
     }
 
+    public function getTotal(): float
+    {
+        $total = 0;
+        foreach ($this->items as $item) {
+            $total += $item->getLineTotal();
+        }
+        return $total;
+    }
+
     public function removeItem(CartItem $item): self
     {
         if ($this->items->removeElement($item)) {
@@ -70,12 +87,4 @@ class Cart
         return $this;
     }
 
-    public function getTotal(): float
-    {
-        $total = 0;
-        foreach ($this->items as $item) {
-            $total += $item->getLineTotal();
-        }
-        return $total;
-    }
 }

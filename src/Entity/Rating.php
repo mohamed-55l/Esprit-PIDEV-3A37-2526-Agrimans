@@ -2,9 +2,12 @@
 
 namespace App\Entity;
 
-use App\Repository\RatingRepository;
+use Doctrine\DBAL\Types\Types;
 use Doctrine\ORM\Mapping as ORM;
-use Symfony\Component\Validator\Constraints as Assert;
+use Doctrine\Common\Collections\ArrayCollection;
+use Doctrine\Common\Collections\Collection;
+
+use App\Repository\RatingRepository;
 
 #[ORM\Entity(repositoryClass: RatingRepository::class)]
 #[ORM\Table(name: 'ratings')]
@@ -15,37 +18,20 @@ class Rating
     #[ORM\Column(type: 'integer')]
     private ?int $id = null;
 
-    #[ORM\ManyToOne(targetEntity: Product::class, inversedBy: 'ratings')]
-    #[ORM\JoinColumn(nullable: false, onDelete: 'CASCADE')]
-    private ?Product $product = null;
-
-    #[ORM\Column(name: 'user_id', type: 'integer', nullable: true)]
-    private ?int $userId = null;
-
-    #[ORM\Column(type: 'integer')]
-    #[Assert\NotBlank(message: "La note est obligatoire.")]
-    #[Assert\Range(min: 1, max: 5, notInRangeMessage: "La note doit être entre {{ min }} et {{ max }}.")]
-    private ?int $rating = null;
-
-    #[ORM\Column(type: 'text', nullable: true)]
-    private ?string $comment = null;
-
-    #[ORM\Column(type: 'string', length: 20, nullable: true)]
-    #[Assert\Choice(choices: ['HIGH', 'GOOD', 'LOW'], message: "Catégorie de prix invalide.")]
-    private ?string $priceCategory = null;
-
-    #[ORM\Column(type: 'datetime')]
-    private ?\DateTimeInterface $createdAt = null;
-
-    public function __construct()
-    {
-        $this->createdAt = new \DateTime();
-    }
-
     public function getId(): ?int
     {
         return $this->id;
     }
+
+    public function setId(int $id): self
+    {
+        $this->id = $id;
+        return $this;
+    }
+
+    #[ORM\ManyToOne(targetEntity: Product::class, inversedBy: 'ratings')]
+    #[ORM\JoinColumn(name: 'product_id', referencedColumnName: 'id')]
+    private ?Product $product = null;
 
     public function getProduct(): ?Product
     {
@@ -58,27 +44,36 @@ class Rating
         return $this;
     }
 
-    public function getUserId(): ?int
+    #[ORM\Column(type: 'integer', nullable: true)]
+    private ?int $user_id = null;
+
+    public function getUser_id(): ?int
     {
-        return $this->userId;
+        return $this->user_id;
     }
 
-    public function setUserId(?int $userId): self
+    public function setUser_id(?int $user_id): self
     {
-        $this->userId = $userId;
+        $this->user_id = $user_id;
         return $this;
     }
+
+    #[ORM\Column(type: 'integer', nullable: false)]
+    private ?int $rating = null;
 
     public function getRating(): ?int
     {
         return $this->rating;
     }
 
-    public function setRating(?int $rating): self
+    public function setRating(int $rating): self
     {
         $this->rating = $rating;
         return $this;
     }
+
+    #[ORM\Column(type: 'text', nullable: true)]
+    private ?string $comment = null;
 
     public function getComment(): ?string
     {
@@ -91,25 +86,68 @@ class Rating
         return $this;
     }
 
+    #[ORM\Column(type: 'string', nullable: true)]
+    private ?string $price_category = null;
+
+    public function getPrice_category(): ?string
+    {
+        return $this->price_category;
+    }
+
+    public function setPrice_category(?string $price_category): self
+    {
+        $this->price_category = $price_category;
+        return $this;
+    }
+
+    #[ORM\Column(type: 'datetime', nullable: false)]
+    private ?\DateTimeInterface $created_at = null;
+
+    public function getCreated_at(): ?\DateTimeInterface
+    {
+        return $this->created_at;
+    }
+
+    public function setCreated_at(\DateTimeInterface $created_at): self
+    {
+        $this->created_at = $created_at;
+        return $this;
+    }
+
+    public function getUserId(): ?int
+    {
+        return $this->user_id;
+    }
+
+    public function setUserId(?int $user_id): static
+    {
+        $this->user_id = $user_id;
+
+        return $this;
+    }
+
     public function getPriceCategory(): ?string
     {
-        return $this->priceCategory;
+        return $this->price_category;
     }
 
-    public function setPriceCategory(?string $priceCategory): self
+    public function setPriceCategory(?string $price_category): static
     {
-        $this->priceCategory = $priceCategory;
+        $this->price_category = $price_category;
+
         return $this;
     }
 
-    public function getCreatedAt(): ?\DateTimeInterface
+    public function getCreatedAt(): ?\DateTime
     {
-        return $this->createdAt;
+        return $this->created_at;
     }
 
-    public function setCreatedAt(?\DateTimeInterface $createdAt): self
+    public function setCreatedAt(\DateTime $created_at): static
     {
-        $this->createdAt = $createdAt;
+        $this->created_at = $created_at;
+
         return $this;
     }
+
 }

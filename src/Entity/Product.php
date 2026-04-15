@@ -2,12 +2,12 @@
 
 namespace App\Entity;
 
-use App\Repository\ProductRepository;
-use Doctrine\Common\Collections\ArrayCollection;
-use Doctrine\Common\Collections\Collection;
 use Doctrine\DBAL\Types\Types;
 use Doctrine\ORM\Mapping as ORM;
-use Symfony\Component\Validator\Constraints as Assert;
+use Doctrine\Common\Collections\ArrayCollection;
+use Doctrine\Common\Collections\Collection;
+
+use App\Repository\ProductRepository;
 
 #[ORM\Entity(repositoryClass: ProductRepository::class)]
 #[ORM\Table(name: 'products')]
@@ -18,70 +18,33 @@ class Product
     #[ORM\Column(type: 'integer')]
     private ?int $id = null;
 
-    #[ORM\Column(type: 'string', length: 255)]
-    #[Assert\NotBlank(message: "Le nom du produit est obligatoire.")]
-    #[Assert\Length(min: 3, max: 255, minMessage: "Le nom doit comporter au moins {{ limit }} caractères.")]
-    private ?string $name = null;
-
-    #[ORM\Column(type: 'text', nullable: true)]
-    #[Assert\NotBlank(message: "La description est obligatoire.")]
-    private ?string $description = null;
-
-    #[ORM\Column(type: 'float')]
-    #[Assert\NotBlank(message: "Le prix est obligatoire.")]
-    #[Assert\Positive(message: "Le prix doit être supérieur à 0.")]
-    private ?float $price = null;
-
-    #[ORM\Column(type: 'integer')]
-    #[Assert\NotBlank(message: "La quantité est obligatoire.")]
-    #[Assert\Positive(message: "La quantité doit être supérieure à 0.")]
-    private ?int $quantity = null;
-
-    #[ORM\Column(type: 'string', length: 255, nullable: true)]
-    private ?string $image = null;
-
-    #[ORM\Column(name: 'seller_id', type: 'integer', nullable: true)]
-    private ?int $sellerId = null;
-
-    #[ORM\Column(type: 'string', length: 50)]
-    #[Assert\NotBlank(message: "La catégorie est obligatoire.")]
-    #[Assert\Choice(choices: ['VEGETABLES', 'FRUITS', 'GRAINS', 'HAY'], message: "Catégorie invalide.")]
-    private ?string $category = null;
-
-    #[ORM\Column(type: 'string', length: 255, nullable: true)]
-    private ?string $supplier = null;
-
-    #[ORM\Column(type: 'date', nullable: true)]
-    #[Assert\GreaterThanOrEqual('today', message: "La date d'expiration ne peut pas être dans le passé.")]
-    private ?\DateTimeInterface $expiryDate = null;
-
-    #[ORM\OneToMany(targetEntity: Rating::class, mappedBy: 'product', orphanRemoval: true)]
-    private Collection $ratings;
-
-    #[ORM\OneToMany(targetEntity: CartItem::class, mappedBy: 'product', orphanRemoval: true)]
-    private Collection $cartItems;
-
-    public function __construct()
-    {
-        $this->ratings = new ArrayCollection();
-        $this->cartItems = new ArrayCollection();
-    }
-
     public function getId(): ?int
     {
         return $this->id;
     }
+
+    public function setId(int $id): self
+    {
+        $this->id = $id;
+        return $this;
+    }
+
+    #[ORM\Column(type: 'string', nullable: false)]
+    private ?string $name = null;
 
     public function getName(): ?string
     {
         return $this->name;
     }
 
-    public function setName(?string $name): self
+    public function setName(string $name): self
     {
         $this->name = $name;
         return $this;
     }
+
+    #[ORM\Column(type: 'text', nullable: true)]
+    private ?string $description = null;
 
     public function getDescription(): ?string
     {
@@ -94,27 +57,36 @@ class Product
         return $this;
     }
 
+    #[ORM\Column(type: 'float', nullable: false)]
+    private ?float $price = null;
+
     public function getPrice(): ?float
     {
         return $this->price;
     }
 
-    public function setPrice(?float $price): self
+    public function setPrice(float $price): self
     {
         $this->price = $price;
         return $this;
     }
+
+    #[ORM\Column(type: 'integer', nullable: false)]
+    private ?int $quantity = null;
 
     public function getQuantity(): ?int
     {
         return $this->quantity;
     }
 
-    public function setQuantity(?int $quantity): self
+    public function setQuantity(int $quantity): self
     {
         $this->quantity = $quantity;
         return $this;
     }
+
+    #[ORM\Column(type: 'string', nullable: true)]
+    private ?string $image = null;
 
     public function getImage(): ?string
     {
@@ -127,27 +99,53 @@ class Product
         return $this;
     }
 
-    public function getSellerId(): ?int
+    #[ORM\ManyToOne(targetEntity: User::class, inversedBy: 'products')]
+    #[ORM\JoinColumn(name: 'seller_id', referencedColumnName: 'id')]
+    private ?User $user = null;
+
+    public function getUser(): ?User
     {
-        return $this->sellerId;
+        return $this->user;
     }
 
-    public function setSellerId(?int $sellerId): self
+    public function setUser(?User $user): self
     {
-        $this->sellerId = $sellerId;
+        $this->user = $user;
         return $this;
     }
+
+    #[ORM\Column(type: 'string', nullable: false)]
+    private ?string $category = null;
 
     public function getCategory(): ?string
     {
         return $this->category;
     }
 
-    public function setCategory(?string $category): self
+    public function setCategory(string $category): self
     {
         $this->category = $category;
         return $this;
     }
+
+    public function getCategoryIcon(): string
+    {
+        $cat = strtolower($this->category ?? '');
+        return match (true) {
+            str_contains($cat, 'fruit') => 'fa-apple-whole',
+            str_contains($cat, 'légume') || str_contains($cat, 'legume') => 'fa-carrot',
+            str_contains($cat, 'céréale') || str_contains($cat, 'cereale') => 'fa-wheat-awn',
+            str_contains($cat, 'laitier') => 'fa-cheese',
+            str_contains($cat, 'viande') => 'fa-drumstick-bite',
+            str_contains($cat, 'semence') => 'fa-seedling',
+            str_contains($cat, 'engrais') => 'fa-leaf',
+            str_contains($cat, 'équipement') || str_contains($cat, 'equipement') => 'fa-tractor',
+            default => 'fa-box',
+        };
+    }
+
+    #[ORM\Column(type: 'string', nullable: true)]
+    private ?string $supplier = null;
 
     public function getSupplier(): ?string
     {
@@ -160,54 +158,68 @@ class Product
         return $this;
     }
 
-    public function getExpiryDate(): ?\DateTimeInterface
+    public function getAverageRating(): float
     {
-        return $this->expiryDate;
+        if ($this->ratings->isEmpty()) {
+            return 0.0;
+        }
+
+        $sum = 0;
+        foreach ($this->ratings as $rating) {
+            $sum += $rating->getRating();
+        }
+
+        return round($sum / $this->ratings->count(), 1);
     }
 
-    public function setExpiryDate(?\DateTimeInterface $expiryDate): self
+    #[ORM\Column(type: 'date', nullable: true)]
+    private ?\DateTimeInterface $expiry_date = null;
+
+    public function getExpiry_date(): ?\DateTimeInterface
     {
-        $this->expiryDate = $expiryDate;
+        return $this->expiry_date;
+    }
+
+    public function setExpiry_date(?\DateTimeInterface $expiry_date): self
+    {
+        $this->expiry_date = $expiry_date;
         return $this;
     }
+
+    #[ORM\OneToMany(targetEntity: Rating::class, mappedBy: 'product')]
+    private Collection $ratings;
 
     /**
      * @return Collection<int, Rating>
      */
     public function getRatings(): Collection
     {
+        if (!$this->ratings instanceof Collection) {
+            $this->ratings = new ArrayCollection();
+        }
         return $this->ratings;
     }
 
     public function addRating(Rating $rating): self
     {
-        if (!$this->ratings->contains($rating)) {
-            $this->ratings->add($rating);
-            $rating->setProduct($this);
+        if (!$this->getRatings()->contains($rating)) {
+            $this->getRatings()->add($rating);
         }
         return $this;
     }
 
     public function removeRating(Rating $rating): self
     {
-        if ($this->ratings->removeElement($rating)) {
-            if ($rating->getProduct() === $this) {
-                $rating->setProduct(null);
-            }
-        }
+        $this->getRatings()->removeElement($rating);
         return $this;
     }
+    #[ORM\OneToMany(targetEntity: CartItem::class, mappedBy: 'product', cascade: ['persist', 'remove'])]
+    private Collection $cartItems;
 
-    public function getAverageRating(): float
+    public function __construct()
     {
-        if ($this->ratings->isEmpty()) {
-            return 0;
-        }
-        $sum = 0;
-        foreach ($this->ratings as $rating) {
-            $sum += $rating->getRating();
-        }
-        return round($sum / $this->ratings->count(), 1);
+        $this->ratings = new ArrayCollection();
+        $this->cartItems = new ArrayCollection();
     }
 
     /**
@@ -218,14 +230,35 @@ class Product
         return $this->cartItems;
     }
 
-    public function getCategoryIcon(): string
+    public function addCartItem(CartItem $cartItem): self
     {
-        return match ($this->category) {
-            'VEGETABLES' => 'fa-carrot',
-            'FRUITS' => 'fa-apple-whole',
-            'GRAINS' => 'fa-wheat-awn',
-            'HAY' => 'fa-seedling',
-            default => 'fa-box',
-        };
+        if (!$this->cartItems->contains($cartItem)) {
+            $this->cartItems->add($cartItem);
+            $cartItem->setProduct($this);
+        }
+        return $this;
     }
+
+    public function removeCartItem(CartItem $cartItem): self
+    {
+        if ($this->cartItems->removeElement($cartItem)) {
+            if ($cartItem->getProduct() === $this) {
+                $cartItem->setProduct(null);
+            }
+        }
+        return $this;
+    }
+
+    public function getExpiryDate(): ?\DateTime
+    {
+        return $this->expiry_date;
+    }
+
+    public function setExpiryDate(?\DateTime $expiry_date): static
+    {
+        $this->expiry_date = $expiry_date;
+
+        return $this;
+    }
+
 }

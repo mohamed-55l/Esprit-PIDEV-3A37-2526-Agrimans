@@ -22,11 +22,11 @@ class ReviewRepository extends ServiceEntityRepository
                ->setParameter('query', '%' . $query . '%');
         }
 
-        $allowedSorts = ['dateReview', 'note'];
+        $allowedSorts = ['date_review', 'note'];
         if (in_array($sortBy, $allowedSorts)) {
             $qb->orderBy('r.' . $sortBy, $sortOrder === 'ASC' ? 'ASC' : 'DESC');
         } else {
-            $qb->orderBy('r.dateReview', 'DESC');
+            $qb->orderBy('r.date_review', 'DESC');
         }
 
         return $qb->getQuery()->getResult();

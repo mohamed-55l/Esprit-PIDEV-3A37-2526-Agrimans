@@ -19,7 +19,7 @@ class ProductRepository extends ServiceEntityRepository
     public function findBySellerId(int $sellerId): array
     {
         return $this->createQueryBuilder('p')
-            ->andWhere('p.sellerId = :sellerId')
+            ->andWhere('p.user = :sellerId')
             ->setParameter('sellerId', $sellerId)
             ->orderBy('p.id', 'DESC')
             ->getQuery()

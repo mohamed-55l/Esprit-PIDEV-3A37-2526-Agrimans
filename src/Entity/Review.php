@@ -2,10 +2,12 @@
 
 namespace App\Entity;
 
-use App\Repository\ReviewRepository;
 use Doctrine\DBAL\Types\Types;
 use Doctrine\ORM\Mapping as ORM;
-use Symfony\Component\Validator\Constraints as Assert;
+use Doctrine\Common\Collections\ArrayCollection;
+use Doctrine\Common\Collections\Collection;
+
+use App\Repository\ReviewRepository;
 
 #[ORM\Entity(repositoryClass: ReviewRepository::class)]
 #[ORM\Table(name: 'review')]
@@ -16,31 +18,19 @@ class Review
     #[ORM\Column(type: 'integer')]
     private ?int $id = null;
 
-        #[ORM\Column(type: Types::TEXT, nullable: true)]
-        #[Assert\NotBlank(message: "Le commentaire ne peut pas être vide.")]
-        #[Assert\Length(min: 10, minMessage: "Votre commentaire doit faire au moins {{ limit }} caractères.")]
-        private ?string $commentaire = null;
-
-    #[ORM\Column(type: 'integer', nullable: true)]
-    #[Assert\NotNull(message: "Veuillez attribuer une note.")]
-    #[Assert\Range(min: 1, max: 5, notInRangeMessage: "La note doit être comprise entre 1 et 5.")]
-    private ?int $note = null;
-
-    #[ORM\Column(name: 'date_review', type: Types::DATE_MUTABLE, nullable: true)]
-    private ?\DateTimeInterface $dateReview = null;
-
-    #[ORM\ManyToOne(targetEntity: Equipement::class)]
-    #[ORM\JoinColumn(name: 'equipement_id', referencedColumnName: 'id', onDelete: 'CASCADE')]
-    #[Assert\NotNull(message: "Veuillez sélectionner un équipement.")]
-    private ?Equipement $equipement = null;
-
-    #[ORM\Column(name: 'user_id', type: 'integer', nullable: true)]
-    private ?int $userId = null;
-
     public function getId(): ?int
     {
         return $this->id;
     }
+
+    public function setId(int $id): self
+    {
+        $this->id = $id;
+        return $this;
+    }
+
+    #[ORM\Column(type: 'text', nullable: true)]
+    private ?string $commentaire = null;
 
     public function getCommentaire(): ?string
     {
@@ -53,6 +43,9 @@ class Review
         return $this;
     }
 
+    #[ORM\Column(type: 'integer', nullable: true)]
+    private ?int $note = null;
+
     public function getNote(): ?int
     {
         return $this->note;
@@ -64,16 +57,23 @@ class Review
         return $this;
     }
 
-    public function getDateReview(): ?\DateTimeInterface
+    #[ORM\Column(type: 'date', nullable: true)]
+    private ?\DateTimeInterface $date_review = null;
+
+    public function getDate_review(): ?\DateTimeInterface
     {
-        return $this->dateReview;
+        return $this->date_review;
     }
 
-    public function setDateReview(?\DateTimeInterface $dateReview): self
+    public function setDate_review(?\DateTimeInterface $date_review): self
     {
-        $this->dateReview = $dateReview;
+        $this->date_review = $date_review;
         return $this;
     }
+
+    #[ORM\ManyToOne(targetEntity: Equipement::class, inversedBy: 'reviews')]
+    #[ORM\JoinColumn(name: 'equipement_id', referencedColumnName: 'id')]
+    private ?Equipement $equipement = null;
 
     public function getEquipement(): ?Equipement
     {
@@ -86,14 +86,36 @@ class Review
         return $this;
     }
 
-    public function getUserId(): ?int
+    #[ORM\ManyToOne(targetEntity: User::class, inversedBy: 'reviews')]
+    #[ORM\JoinColumn(name: 'user_id', referencedColumnName: 'id')]
+    private ?User $user = null;
+
+    public function getUser(): ?User
     {
-        return $this->userId;
+        return $this->user;
     }
 
-    public function setUserId(?int $userId): self
+    public function setUser(?User $user): self
     {
-        $this->userId = $userId;
+        $this->user = $user;
         return $this;
     }
+
+    public function getUserId(): ?int
+    {
+        return $this->user ? $this->user->getId() : null;
+    }
+
+    public function getDateReview(): ?\DateTime
+    {
+        return $this->date_review;
+    }
+
+    public function setDateReview(?\DateTime $date_review): static
+    {
+        $this->date_review = $date_review;
+
+        return $this;
+    }
+
 }

@@ -2,53 +2,39 @@
 
 namespace App\Entity;
 
+use Doctrine\DBAL\Types\Types;
 use Doctrine\ORM\Mapping as ORM;
 use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\Common\Collections\Collection;
-use Symfony\Component\Validator\Constraints as Assert;
 
 use App\Repository\ParcelleRepository;
-use App\Entity\User;
-use App\Entity\Culture;
-
-use App\Validator\ValidCoordinates;
-
-use App\Validator\CulturesSuperficieValid;
 
 #[ORM\Entity(repositoryClass: ParcelleRepository::class)]
 #[ORM\Table(name: 'parcelle')]
-#[ValidCoordinates]
-#[CulturesSuperficieValid]
 class Parcelle
 {
     #[ORM\Id]
     #[ORM\GeneratedValue]
-    #[ORM\Column(name: 'id_parcelle', type: 'integer')]
-    private ?int $id = null;
+    #[ORM\Column(type: 'integer')]
+    private ?int $id_parcelle = null;
+
+    public function getId_parcelle(): ?int
+    {
+        return $this->id_parcelle;
+    }
 
     public function getId(): ?int
     {
-        return $this->id;
+        return $this->id_parcelle;
     }
 
-    public function setId(int $id): self
+    public function setId_parcelle(int $id_parcelle): self
     {
-        $this->id = $id;
+        $this->id_parcelle = $id_parcelle;
         return $this;
     }
 
     #[ORM\Column(type: 'string', nullable: false)]
-    #[Assert\NotBlank(message: 'Le nom de la parcelle est obligatoire.')]
-    #[Assert\Length(
-        min: 3,
-        max: 100,
-        minMessage: 'Le nom doit contenir au moins {{ limit }} caractères.',
-        maxMessage: 'Le nom doit contenir au plus {{ limit }} caractères.'
-    )]
-    #[Assert\Regex(
-        pattern: '/^[\p{Lu}][\p{L}\p{M}\'’\-]*.*$/u',
-        message: 'Le premier mot du nom doit commencer par une majuscule.'
-    )]
     private ?string $nom = null;
 
     public function getNom(): ?string
@@ -63,13 +49,6 @@ class Parcelle
     }
 
     #[ORM\Column(type: 'float', nullable: false)]
-    #[Assert\NotBlank(message: 'La superficie est obligatoire.')]
-    #[Assert\Positive(message: 'La superficie doit être un nombre positif.')]
-    #[Assert\Range(
-        min: 0.01,
-        max: 1000,
-        notInRangeMessage: 'La superficie doit être entre {{ min }} et {{ max }} hectares.'
-    )]
     private ?float $superficie = null;
 
     public function getSuperficie(): ?float
@@ -98,11 +77,7 @@ class Parcelle
     }
 
     #[ORM\Column(type: 'string', nullable: true)]
-    #[Assert\Length(
-        max: 50,
-        maxMessage: 'Le type de sol ne peut pas dépasser {{ limit }} caractères.'
-    )]
-    public ?string $type_sol = null;
+    private ?string $type_sol = null;
 
     public function getType_sol(): ?string
     {
@@ -115,8 +90,8 @@ class Parcelle
         return $this;
     }
 
-    #[ORM\ManyToOne(targetEntity: User::class, inversedBy: 'parcelles')]
-    #[ORM\JoinColumn(name: 'utilisateur_id', referencedColumnName: 'id')]
+    #[ORM\ManyToOne(targetEntity: User::class)]
+    #[ORM\JoinColumn(name: 'utilisateur_id', referencedColumnName: 'id', nullable: true)]
     private ?User $user = null;
 
     public function getUser(): ?User
@@ -130,12 +105,18 @@ class Parcelle
         return $this;
     }
 
+    public function getUtilisateur_id(): ?int
+    {
+        return $this->user ? $this->user->getId() : null;
+    }
+
+    public function setUtilisateur_id(?int $utilisateur_id): self
+    {
+        // Deprecated simple setter
+        return $this;
+    }
+
     #[ORM\Column(type: 'float', nullable: true)]
-    #[Assert\Range(
-        min: -90,
-        max: 90,
-        notInRangeMessage: 'La latitude doit être entre {{ min }} et {{ max }} degrés.'
-    )]
     private ?float $latitude = null;
 
     public function getLatitude(): ?float
@@ -150,11 +131,6 @@ class Parcelle
     }
 
     #[ORM\Column(type: 'float', nullable: true)]
-    #[Assert\Range(
-        min: -180,
-        max: 180,
-        notInRangeMessage: 'La longitude doit être entre {{ min }} et {{ max }} degrés.'
-    )]
     private ?float $longitude = null;
 
     public function getLongitude(): ?float
@@ -168,33 +144,30 @@ class Parcelle
         return $this;
     }
 
-    #[ORM\OneToMany(targetEntity: 'App\Entity\Culture', mappedBy: 'parcelle')]
-    private Collection $cultures;
-
-    public function __construct()
+    public function getIdParcelle(): ?int
     {
-        $this->cultures = new ArrayCollection();
+        return $this->id_parcelle;
     }
 
-    /**
-     * @return Collection<int, Culture>
-     */
-    public function getCultures(): Collection
+    public function getTypeSol(): ?string
     {
-        return $this->cultures;
+        return $this->type_sol;
     }
 
-    public function addCulture(Culture $culture): self
+    public function setTypeSol(?string $type_sol): static
     {
-        if (!$this->getCultures()->contains($culture)) {
-            $this->getCultures()->add($culture);
-        }
+        $this->type_sol = $type_sol;
+
         return $this;
     }
 
-    public function removeCulture(Culture $culture): self
+    public function getUtilisateurId(): ?int
     {
-        $this->getCultures()->removeElement($culture);
+        return $this->user ? $this->user->getId() : null;
+    }
+
+    public function setUtilisateurId(?int $utilisateur_id): static
+    {
         return $this;
     }
 

@@ -61,7 +61,7 @@ class CartService
 
     public function clearCart(int $buyerId): void
     {
-        $cart = $this->cartRepository->findOneBy(['buyerId' => $buyerId]);
+        $cart = $this->cartRepository->findOneBy(['user' => $buyerId]);
         if ($cart) {
             foreach ($cart->getItems() as $item) {
                 $this->em->remove($item);
@@ -120,7 +120,7 @@ class CartService
 
     public function getCartItemCount(int $buyerId): int
     {
-        $cart = $this->cartRepository->findOneBy(['buyerId' => $buyerId]);
+        $cart = $this->cartRepository->findOneBy(['user' => $buyerId]);
         if (!$cart) {
             return 0;
         }

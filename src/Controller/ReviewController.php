@@ -18,7 +18,7 @@ class ReviewController extends AbstractController
     public function index(Request $request, ReviewRepository $reviewRepository): Response
     {
         $query = $request->query->get('q', '');
-        $sortBy = $request->query->get('sort', 'dateReview');
+        $sortBy = $request->query->get('sort', 'date_review');
         $sortOrder = $request->query->get('order', 'DESC');
 
         $reviews = $reviewRepository->searchAndSort($query, $sortBy, $sortOrder);
@@ -51,9 +51,9 @@ class ReviewController extends AbstractController
         $form->handleRequest($request);
 
         if ($form->isSubmitted() && $form->isValid()) {
-            // Remplissage automatique comme demandÃ©
+            // Remplissage automatique comme demandé
             $review->setDateReview(new \DateTime());
-            $review->setUserId(1); // Utilisateur fixÃ© Ã  1
+            $review->setUser($entityManager->getReference(\App\Entity\User::class, 1)); // Utilisateur fixé à 1
 
             $entityManager->persist($review);
             $entityManager->flush();
