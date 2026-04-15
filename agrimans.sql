@@ -3,7 +3,7 @@
 -- https://www.phpmyadmin.net/
 --
 -- Hôte : 127.0.0.1
--- Généré le : mar. 14 avr. 2026 à 11:16
+-- Généré le : mer. 15 avr. 2026 à 19:56
 -- Version du serveur : 10.4.32-MariaDB
 -- Version de PHP : 8.1.25
 
@@ -83,7 +83,7 @@ CREATE TABLE `carts` (
 --
 
 INSERT INTO `carts` (`id`, `buyer_id`) VALUES
-(1, 1);
+(3, 1);
 
 -- --------------------------------------------------------
 
@@ -98,6 +98,13 @@ CREATE TABLE `cart_items` (
   `quantity` int(11) NOT NULL,
   `added_at` timestamp NOT NULL DEFAULT current_timestamp()
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
+
+--
+-- Déchargement des données de la table `cart_items`
+--
+
+INSERT INTO `cart_items` (`id`, `cart_id`, `product_id`, `quantity`, `added_at`) VALUES
+(7, 3, 7, 1, '2026-04-15 16:51:03');
 
 -- --------------------------------------------------------
 
@@ -121,7 +128,8 @@ CREATE TABLE `culture` (
 
 INSERT INTO `culture` (`id_culture`, `nom`, `type_culture`, `date_plantation`, `date_recolte_prevue`, `etat_culture`, `parcelle_id`) VALUES
 (1, 'AZIZ', 'fff', '2026-04-08', '2026-04-10', 'crouii', 6),
-(2, 'Ble', 'cereale', '2026-04-08', '2026-04-10', 'ceeee', NULL);
+(2, 'Ble', 'cereale', '2026-04-08', '2026-04-10', 'ceeee', NULL),
+(3, 'Neee', 'cereal', '2025-02-07', '2027-05-02', 'croissance', 5);
 
 -- --------------------------------------------------------
 
@@ -180,7 +188,8 @@ INSERT INTO `equipement` (`id`, `nom`, `type`, `prix`, `disponibilite`, `user_id
 (41, '888', '888', 10, 'Disponible', NULL),
 (42, 'tracteuuuuuur', 'tracteuuuur', 100000000, 'Indisponible', NULL),
 (44, 'rrrrrrrrrrrrrr', 'rrrrrrrrrrrr', 852, 'En maintenance', NULL),
-(45, '852', '8520', 888, 'Disponible', NULL);
+(45, '852', '8520', 888, 'Disponible', NULL),
+(47, 'oppppppppppp', 'pppppo', 77888, 'Disponible', NULL);
 
 -- --------------------------------------------------------
 
@@ -275,7 +284,8 @@ CREATE TABLE `nourriture` (
 
 INSERT INTO `nourriture` (`id`, `name`, `type`, `quantity`, `unit`, `nutritional_value`, `expiry_date`, `supplier`, `cost`, `date_added`, `is_active`) VALUES
 (1, 'aaa', 'acb', 15.00, 'a', '4', '2026-04-07 19:30:00', 'bhd', 10.00, '2026-04-07 15:30:22', 1),
-(2, 'oooooooooo', 'gfhj', 8520.00, 'hjk', NULL, NULL, '41', 852.00, '2026-04-07 23:13:57', 1);
+(2, 'oooooooooo', 'gfhj', 8520.00, 'hjk', NULL, NULL, '41', 852.00, '2026-04-07 23:13:57', 1),
+(3, 'oooooooooo', 'ooooooooooo', 777.00, 'oooo', '777', '2026-04-15 17:19:00', '7', 777.00, NULL, 0);
 
 -- --------------------------------------------------------
 
@@ -328,7 +338,8 @@ CREATE TABLE `parcelle` (
 
 INSERT INTO `parcelle` (`id_parcelle`, `nom`, `superficie`, `localisation`, `type_sol`, `utilisateur_id`, `latitude`, `longitude`) VALUES
 (5, 'dtfghj', 12.5, 'iergfbhj', 'ehgrvunf,izgbuhzef ', 1, 36.5478, 10.2874),
-(6, 'Aeeeee', 45, 'ffff', 'arft', 2, 30, 10);
+(6, 'Aeeeee', 45, 'ffff', 'arft', 2, 30, 10),
+(8, 'aa', 55, 'aaaa', 'aaa', 1, 30, 10);
 
 -- --------------------------------------------------------
 
@@ -378,7 +389,8 @@ INSERT INTO `products` (`id`, `name`, `description`, `price`, `quantity`, `image
 (2, 'test', 'test', 17, 17, NULL, 1, 'FRUITS', 'mohamed', '2028-12-09'),
 (3, 'batata', '7lowa', 1.2, 398, 'cea9746f-90a6-4574-8e54-b5da1f088e2c-69d4c80980e3c.jpg', 1, 'VEGETABLES', 'lemby', '2027-01-17'),
 (4, 'bsal', 'reb3i', 20, 300, 'pngtree-shallot-or-red-onion-png-transparent-png-image-6402672-69d4c6a261a4a.jpg', 1, 'VEGETABLES', '5lifa', '2027-03-03'),
-(5, 'fa9ous', 'reb3i', 12, 500, 'pngtree-shallot-or-red-onion-png-transparent-png-image-6402672-69d62d332b50d.jpg', 1, 'VEGETABLES', 'kamel', '2026-09-14');
+(5, 'fa9ous', 'reb3i', 12, 500, 'pngtree-shallot-or-red-onion-png-transparent-png-image-6402672-69d62d332b50d.jpg', 1, 'VEGETABLES', 'kamel', '2026-09-14'),
+(7, 'test', 'jnh nj,k', 17, 8, 'lucid-origin-Colorful-farmers-market-outdoor-fresh-vegetables-fruits-wooden-stalls-green-natu-0-69dfc16d918c9.jpg', 1, 'VEGETABLES', 'mohamedd', '2028-02-02');
 
 -- --------------------------------------------------------
 
@@ -424,10 +436,8 @@ CREATE TABLE `review` (
 --
 
 INSERT INTO `review` (`id`, `commentaire`, `note`, `date_review`, `equipement_id`, `user_id`) VALUES
-(10, 'jjjjjjjjjjjjj', 5, '2026-03-02', 29, 1),
-(16, 'poiugfdcvb', 3, '2026-03-26', 38, 4),
-(17, NULL, 3, '2026-04-05', 35, 1),
-(18, 'yghjklm;m:', 5, '2026-04-08', 37, 1);
+(20, 'iyutyhftgdf', 5, '2026-04-15', 38, 1),
+(21, 'iyutyhftgdf', 5, '2026-04-15', 38, 1);
 
 -- --------------------------------------------------------
 
@@ -475,10 +485,8 @@ CREATE TABLE `users` (
 --
 
 INSERT INTO `users` (`id`, `full_name`, `email`, `phone`, `password_hash`, `role`, `created_at`) VALUES
-(1, 'Administrateur', 'admin@agrimans.com', '00000000', '$2a$10$AhmY/l1.QGQIEixPIgp8GO4JEyrhJTDOSLMmkEChquBdZ.z82PQPS', 'ADMIN', '2026-03-06 17:14:24'),
-(2, 'Jean Agriculteur', 'jean@agrimans.com', '22334455', '$2a$10$5JrMpzq4dJGJpE.ywJ/5..3jPpX6j1CRnAi2u6.9y.zJpq2LRvnpO', 'USER', '2026-03-06 17:14:24'),
-(3, 'mohamed', 'hama22vv90@gmail.com', '51037288', '$2a$10$4cmu63xFsmSqcO9d7LWjz.idilKWF/3rrEH1cJIWvewMZMVELH9L.', 'USER', '2026-03-07 01:43:53'),
-(4, 'taha', 'goodg8028@gmail.com', '51037288', '$2a$10$WMIhb3G.9KZuby4nOU0q8u3U3.Ya9uHaagYBwHjWxo0iF4eqGbqPK', 'USER', '2026-03-26 13:15:53');
+(1, 'Admin Agrimans', 'admin@agrimans.com', NULL, '$2y$13$TcozcEQtujZZCt.6V1dbduREHcDrK8Q9ZZfZCQ1j4k0bpzcRrUndK', 'ADMIN', '2026-04-15 17:09:00'),
+(2, 'User Agrimans', 'user@agrimans.com', NULL, '$2y$13$V4EZV031goC8hl/gwpDbQedJcRuPyzZwQzQ5U5fVEW.nujCoFZI8e', 'USER', '2026-04-15 17:09:00');
 
 -- --------------------------------------------------------
 
@@ -492,16 +500,6 @@ CREATE TABLE `user_auth` (
   `roles` longtext CHARACTER SET utf8mb4 COLLATE utf8mb4_bin NOT NULL CHECK (json_valid(`roles`)),
   `password` varchar(255) NOT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
-
---
--- Déchargement des données de la table `user_auth`
---
-
-INSERT INTO `user_auth` (`id`, `email`, `roles`, `password`) VALUES
-(1, 'admin@agrimans.com', '[\"ROLE_ADMIN\"]', '$2y$13$c3b9X6Y3t0KhIK3XTEVVCO.d97zQmmzJmHix9J5hBxhuFXr.naAL.'),
-(2, 'user@agrimans.com', '[\"ROLE_USER\"]', '$2y$13$CXQtkBcmOjBOdDPjEBwTMu2JiKvlXhccbTy7UD5ETVg0iNVvpNGP.'),
-(3, 'test@agrimans.com', '[\"ROLE_ADMIN\"]', '$2y$13$Ll3cUHBxReurue04l8i.zOopqGDlHfk7UCdhpZZ3trB6xITzSsFIe'),
-(4, 'testuser@agrimans.com', '[\"ROLE_USER\"]', '$2y$13$1Lv6vb4GZm3bi8EysmB0mOhdnL.0yyi1oSczh06PXm9dAe4A/vPYu');
 
 -- --------------------------------------------------------
 
@@ -694,25 +692,25 @@ ALTER TABLE `animal_nourriture`
 -- AUTO_INCREMENT pour la table `carts`
 --
 ALTER TABLE `carts`
-  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=2;
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=4;
 
 --
 -- AUTO_INCREMENT pour la table `cart_items`
 --
 ALTER TABLE `cart_items`
-  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=6;
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=8;
 
 --
 -- AUTO_INCREMENT pour la table `culture`
 --
 ALTER TABLE `culture`
-  MODIFY `id_culture` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=3;
+  MODIFY `id_culture` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=4;
 
 --
 -- AUTO_INCREMENT pour la table `equipement`
 --
 ALTER TABLE `equipement`
-  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=47;
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=48;
 
 --
 -- AUTO_INCREMENT pour la table `garage`
@@ -730,7 +728,7 @@ ALTER TABLE `messenger_messages`
 -- AUTO_INCREMENT pour la table `nourriture`
 --
 ALTER TABLE `nourriture`
-  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=3;
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=4;
 
 --
 -- AUTO_INCREMENT pour la table `order`
@@ -748,7 +746,7 @@ ALTER TABLE `order_item`
 -- AUTO_INCREMENT pour la table `parcelle`
 --
 ALTER TABLE `parcelle`
-  MODIFY `id_parcelle` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=8;
+  MODIFY `id_parcelle` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=9;
 
 --
 -- AUTO_INCREMENT pour la table `product`
@@ -760,7 +758,7 @@ ALTER TABLE `product`
 -- AUTO_INCREMENT pour la table `products`
 --
 ALTER TABLE `products`
-  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=7;
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=8;
 
 --
 -- AUTO_INCREMENT pour la table `ratings`
@@ -772,7 +770,7 @@ ALTER TABLE `ratings`
 -- AUTO_INCREMENT pour la table `review`
 --
 ALTER TABLE `review`
-  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=20;
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=22;
 
 --
 -- AUTO_INCREMENT pour la table `user`
@@ -784,7 +782,7 @@ ALTER TABLE `user`
 -- AUTO_INCREMENT pour la table `users`
 --
 ALTER TABLE `users`
-  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=5;
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=8;
 
 --
 -- AUTO_INCREMENT pour la table `user_auth`
