@@ -18,24 +18,43 @@ final class ParcelleController extends AbstractController
     public function index(Request $request, ParcelleRepository $parcelleRepository): Response
     {
         $search = trim((string) $request->query->get('search', ''));
-        $parcelles = $search !== ''
-            ? $parcelleRepository->findBySearchTerm($search)
-            : $parcelleRepository->findAllOrderBySuperficieDesc();
+
+        // Admin voit toutes les parcelles, user voit uniquement les siennes
+        if ($this->isGranted('ROLE_ADMIN')) {
+            $parcelles = $search !== ''
+                ? $parcelleRepository->findBySearchTerm($search)
+                : $parcelleRepository->findAllOrderBySuperficieDesc();
+        } else {
+            $currentUser = $this->getUser();
+            $parcelles = $search !== ''
+                ? $parcelleRepository->findBySearchTermAndUser($search, $currentUser)
+                : $parcelleRepository->findByUser($currentUser);
+        }
 
         return $this->render('parcelle/index.html.twig', [
             'parcelles' => $parcelles,
-            'search' => $search,
+            'search'    => $search,
         ]);
     }
 
     #[Route('/new', name: 'app_parcelle_new', methods: ['GET', 'POST'])]
     public function new(Request $request, EntityManagerInterface $entityManager): Response
     {
-        $parcelle = new Parcelle();
-        $form = $this->createForm(ParcelleType::class, $parcelle);
+        $parcelle    = new Parcelle();
+        $isAdmin     = $this->isGranted('ROLE_ADMIN');
+
+        // Admin peut choisir l'utilisateur, user connecté est auto-assigné
+        $form = $this->createForm(ParcelleType::class, $parcelle, [
+            'show_user_field' => $isAdmin,
+        ]);
         $form->handleRequest($request);
 
         if ($form->isSubmitted() && $form->isValid()) {
+            // Si c'est un user connecté (non-admin), on assigne automatiquement
+            if (!$isAdmin) {
+                $parcelle->setUser($this->getUser());
+            }
+
             $entityManager->persist($parcelle);
             $entityManager->flush();
 
@@ -44,7 +63,8 @@ final class ParcelleController extends AbstractController
 
         return $this->render('parcelle/new.html.twig', [
             'parcelle' => $parcelle,
-            'form' => $form->createView(),
+            'form'     => $form->createView(),
+            'is_admin' => $isAdmin,
         ]);
     }
 
@@ -59,10 +79,19 @@ final class ParcelleController extends AbstractController
     #[Route('/{id}/edit', name: 'app_parcelle_edit', methods: ['GET', 'POST'])]
     public function edit(Request $request, Parcelle $parcelle, EntityManagerInterface $entityManager): Response
     {
-        $form = $this->createForm(ParcelleType::class, $parcelle);
+        $isAdmin = $this->isGranted('ROLE_ADMIN');
+
+        $form = $this->createForm(ParcelleType::class, $parcelle, [
+            'show_user_field' => $isAdmin,
+        ]);
         $form->handleRequest($request);
 
         if ($form->isSubmitted() && $form->isValid()) {
+            // Si user non-admin, on ne change pas l'owner
+            if (!$isAdmin && $parcelle->getUser() === null) {
+                $parcelle->setUser($this->getUser());
+            }
+
             $entityManager->flush();
 
             return $this->redirectToRoute('app_parcelle_index', [], Response::HTTP_SEE_OTHER);
@@ -70,7 +99,8 @@ final class ParcelleController extends AbstractController
 
         return $this->render('parcelle/edit.html.twig', [
             'parcelle' => $parcelle,
-            'form' => $form->createView(),
+            'form'     => $form->createView(),
+            'is_admin' => $isAdmin,
         ]);
     }
 
@@ -85,3 +115,4 @@ final class ParcelleController extends AbstractController
         return $this->redirectToRoute('app_parcelle_index', [], Response::HTTP_SEE_OTHER);
     }
 }
+
