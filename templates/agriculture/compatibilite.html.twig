@@ -1,0 +1,161 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}Compatibilité Sol-Culture | Agrimans{% endblock %}
+
+{% block stylesheets %}
+<style>
+    .compat-page { max-width: 1100px; margin: 2rem auto; padding: 0 1rem; }
+    .compat-hero {
+        background: linear-gradient(135deg, rgba(155,89,182,0.15), rgba(52,152,219,0.08));
+        border: 1px solid rgba(155,89,182,0.25); border-radius: 20px;
+        padding: 2.5rem; margin-bottom: 2rem;
+        display: flex; align-items: center; gap: 1.2rem;
+    }
+    .sol-tabs { display: flex; gap: 0.7rem; flex-wrap: wrap; margin-bottom: 2rem; }
+    .sol-tab {
+        padding: 0.6rem 1.3rem; border-radius: 30px; cursor: pointer;
+        border: 1px solid rgba(255,255,255,0.15); background: rgba(255,255,255,0.04);
+        color: rgba(255,255,255,0.6); font-weight: 500; font-size: 0.9rem;
+        transition: all 0.2s; text-transform: capitalize;
+    }
+    .sol-tab:hover { background: rgba(255,255,255,0.1); color: #fff; }
+    .sol-tab.active { background: rgba(155,89,182,0.3); border-color: #9b59b6; color: #fff; }
+
+    .compat-section { display: none; animation: fadeIn 0.3s ease; }
+    .compat-section.active { display: block; }
+    @keyframes fadeIn { from { opacity:0; transform:translateY(8px); } to { opacity:1; transform:translateY(0); } }
+
+    .compat-columns { display: grid; grid-template-columns: repeat(3, 1fr); gap: 1.2rem; }
+    .compat-col {
+        background: rgba(255,255,255,0.03); border-radius: 14px; padding: 1.4rem;
+        border-top: 3px solid;
+    }
+    .col-compatible  { border-color: #27ae60; }
+    .col-neutre      { border-color: #f39c12; }
+    .col-deconseille { border-color: #e74c3c; }
+
+    .compat-col h4 { font-size: 0.85rem; font-weight: 700; text-transform: uppercase; letter-spacing: 1px; margin-bottom: 1rem; }
+    .col-compatible  h4 { color: #27ae60; }
+    .col-neutre      h4 { color: #f39c12; }
+    .col-deconseille h4 { color: #e74c3c; }
+
+    .badge-culture {
+        display: inline-flex; align-items: center; gap: 5px;
+        margin: 0.3rem 0.2rem; padding: 0.35rem 0.85rem;
+        border-radius: 20px; font-size: 0.82rem; font-weight: 500;
+    }
+    .badge-compatible  { background: rgba(39,174,96,0.15);  border: 1px solid rgba(39,174,96,0.3);  color: #2ecc71; }
+    .badge-neutre      { background: rgba(243,156,18,0.15); border: 1px solid rgba(243,156,18,0.3); color: #f39c12; }
+    .badge-deconseille { background: rgba(231,76,60,0.15);  border: 1px solid rgba(231,76,60,0.3);  color: #e74c3c; }
+
+    .legend {
+        display: flex; gap: 1.5rem; flex-wrap: wrap;
+        background: rgba(255,255,255,0.03); border-radius: 12px;
+        padding: 1rem 1.5rem; margin-bottom: 1.5rem;
+    }
+    .legend-item { display: flex; align-items: center; gap: 0.5rem; font-size: 0.85rem; color: rgba(255,255,255,0.7); }
+    .legend-dot { width: 10px; height: 10px; border-radius: 50%; }
+</style>
+{% endblock %}
+
+{% block body %}
+<div class="compat-page">
+
+    {# Hero #}
+    <div class="compat-hero">
+        <div style="width:60px;height:60px;border-radius:16px;background:rgba(155,89,182,0.3);display:flex;align-items:center;justify-content:center;font-size:1.8rem;">🧪</div>
+        <div>
+            <h1 style="font-size:1.9rem;font-weight:800;color:#fff;margin:0;">Compatibilité Sol - Culture</h1>
+            <p style="color:rgba(255,255,255,0.55);margin:0.3rem 0 0;">Découvrez quelles cultures sont adaptées à votre type de sol</p>
+        </div>
+    </div>
+
+    {# Légende #}
+    <div class="legend">
+        <div class="legend-item"><div class="legend-dot" style="background:#27ae60;"></div> Compatible — Cultures recommandées pour ce sol</div>
+        <div class="legend-item"><div class="legend-dot" style="background:#f39c12;"></div> Neutre — Peut fonctionner avec amendments</div>
+        <div class="legend-item"><div class="legend-dot" style="background:#e74c3c;"></div> Déconseillé — Rendement faible ou risque élevé</div>
+    </div>
+
+    {# Onglets sols #}
+    <div class="sol-tabs" id="solTabs">
+        {% for sol in types_sol %}
+            <button class="sol-tab {% if loop.first %}active{% endif %}"
+                    onclick="showSol('{{ sol }}', this)"
+                    id="tab-{{ sol }}">
+                {{ sol|capitalize }}
+            </button>
+        {% endfor %}
+    </div>
+
+    {# Contenu par sol #}
+    {% for sol, data in matrice %}
+    <div class="compat-section {% if loop.first %}active{% endif %}" id="section-{{ sol }}">
+        <div style="margin-bottom:1rem;">
+            <h2 style="color:#fff;font-size:1.3rem;font-weight:700;">
+                Sol <span style="color:#9b59b6;">{{ sol|capitalize }}</span>
+            </h2>
+            <p style="color:rgba(255,255,255,0.5);font-size:0.9rem;">
+                {{ data.compatible|length }} cultures compatibles · {{ data.neutre|length }} neutres · {{ data.deconseille|length }} déconseillées
+            </p>
+        </div>
+
+        <div class="compat-columns">
+            {# Compatible #}
+            <div class="compat-col col-compatible">
+                <h4><i class="fa-solid fa-circle-check"></i> Recommandées</h4>
+                {% for culture in data.compatible %}
+                    <span class="badge-culture badge-compatible">
+                        <i class="fa-solid fa-seedling" style="font-size:0.7rem;"></i> {{ culture }}
+                    </span>
+                {% else %}
+                    <p style="color:rgba(255,255,255,0.3);font-size:0.85rem;">Aucune</p>
+                {% endfor %}
+            </div>
+
+            {# Neutre #}
+            <div class="compat-col col-neutre">
+                <h4><i class="fa-solid fa-circle-minus"></i> Neutres</h4>
+                {% for culture in data.neutre %}
+                    <span class="badge-culture badge-neutre">
+                        <i class="fa-solid fa-seedling" style="font-size:0.7rem;"></i> {{ culture }}
+                    </span>
+                {% else %}
+                    <p style="color:rgba(255,255,255,0.3);font-size:0.85rem;">Aucune</p>
+                {% endfor %}
+            </div>
+
+            {# Déconseillé #}
+            <div class="compat-col col-deconseille">
+                <h4><i class="fa-solid fa-circle-xmark"></i> Déconseillées</h4>
+                {% for culture in data.deconseille %}
+                    <span class="badge-culture badge-deconseille">
+                        <i class="fa-solid fa-seedling" style="font-size:0.7rem;"></i> {{ culture }}
+                    </span>
+                {% else %}
+                    <p style="color:rgba(255,255,255,0.3);font-size:0.85rem;">Aucune</p>
+                {% endfor %}
+            </div>
+        </div>
+    </div>
+    {% endfor %}
+
+    {# Liens #}
+    <div style="display:flex;gap:1rem;flex-wrap:wrap;margin-top:2rem;">
+        <a href="{{ path('app_agriculture_rendement') }}" style="background:rgba(255,255,255,0.05);border:1px solid rgba(255,255,255,0.1);border-radius:12px;padding:0.8rem 1.5rem;text-decoration:none;color:#fff;">🌾 Calcul Rendement</a>
+        <a href="{{ path('app_agriculture_statistiques') }}" style="background:rgba(255,255,255,0.05);border:1px solid rgba(255,255,255,0.1);border-radius:12px;padding:0.8rem 1.5rem;text-decoration:none;color:#fff;">📊 Statistiques</a>
+    </div>
+</div>
+
+<script>
+function showSol(sol, btn) {
+    // Désactiver tous
+    document.querySelectorAll('.sol-tab').forEach(t => t.classList.remove('active'));
+    document.querySelectorAll('.compat-section').forEach(s => s.classList.remove('active'));
+    // Activer le sélectionné
+    btn.classList.add('active');
+    const section = document.getElementById('section-' + sol);
+    if (section) section.classList.add('active');
+}
+</script>
+{% endblock %}
