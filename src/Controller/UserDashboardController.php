@@ -2,6 +2,8 @@
 
 namespace App\Controller;
 
+use App\Entity\User;
+use App\Repository\AnimalRepository;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Attribute\Route;
@@ -11,16 +13,15 @@ use Symfony\Component\Security\Http\Attribute\IsGranted;
 class UserDashboardController extends AbstractController
 {
     #[Route('/user/dashboard', name: 'app_user_dashboard')]
-    public function index(): Response
+    public function index(AnimalRepository $animalRepository): Response
     {
-        // Dans le futur, nous pourrons injecter les Repositories ici 
-        // pour rÃ©cupÃ©rer les vraies statistiques (par ex: nb de parcelles, nb d'animaux)
-        
-        // Statistiques globales fictives / initialisation
+        $user = $this->getUser();
+        $uid = $user instanceof User ? $user->getId() : null;
+
         $stats = [
             'total_parcelles' => 0,
             'total_cultures' => 0,
-            'total_animaux' => 0,
+            'total_animaux' => $animalRepository->countActive($uid),
             'commandes_en_cours' => 0,
             'alertes' => 0,
         ];

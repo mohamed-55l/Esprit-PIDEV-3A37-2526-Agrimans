@@ -32,7 +32,7 @@
             });
         </script>
     </head>
-    <body>
+    <body{% if app.user and not is_granted('ROLE_ADMIN') %} data-animal-notif-poll="{{ path('waad_animal_notifications_poll') }}"{% endif %}>
         
             <nav class="navbar">
                 <a href="{{ path('app_home') }}" class="logo">
@@ -72,6 +72,8 @@
                                 <a href="{{ path('app_parcelle_index') }}"><i class="fa-solid fa-map"></i> Gestion des Parcelles</a>
                                 <a href="{{ path('app_culture_index') }}"><i class="fa-solid fa-seedling"></i> Suivi des Cultures</a>
                                 <a href="{{ path('waad_animal_index') }}"><i class="fa-solid fa-cow"></i> Gestion des Animaux</a>
+                                <a href="{{ path('waad_animal_stats') }}"><i class="fa-solid fa-chart-pie"></i> Stats &amp; IA élevage</a>
+                                <a href="{{ path('waad_animal_historique') }}"><i class="fa-solid fa-clock-rotate-left"></i> Historique élevage</a>
                                 <a href="{{ path('waad_nourriture_index') }}"><i class="fa-solid fa-bowl-food"></i> Stocks Alimentaires</a>
                             </div>
                         </div>
@@ -109,6 +111,13 @@
                         {% if is_granted('ROLE_ADMIN') %}
                             <!-- Admin has no action buttons in navbar -->
                         {% else %}
+                            <button type="button" id="agrimans-desktop-notif-btn" class="nav-cart-icon" title="Activer les notifications Windows / du navigateur (hors onglet)" style="margin-right:4px; border:none; cursor:pointer; position:relative;" aria-label="Notifications bureau">
+                                <i class="fa-solid fa-desktop"></i>
+                            </button>
+                            <a href="{{ path('waad_animal_notifications') }}" class="nav-cart-icon" title="Notifications élevage" style="margin-right:8px; text-decoration:none; position:relative;">
+                                <i class="fa-solid fa-bell"></i>
+                                {% if animal_notif_unread > 0 %}<span style="position:absolute; top:-4px; right:-4px; background:#e74c3c; font-size:10px; padding:2px 5px; border-radius:10px; line-height:1;">{{ animal_notif_unread }}</span>{% endif %}
+                            </a>
                             <a href="{{ path('app_marketplace_index') }}" class="nav-link-professional" style="margin-right: 10px;"><i class="fa-solid fa-store"></i> Boutique</a>
                             <a href="{{ path('app_marketplace_cart') }}" class="nav-cart-icon" title="Panier"><i class="fa-solid fa-shopping-cart"></i></a>
                         {% endif %}
@@ -132,6 +141,9 @@
                 {% block body %}{% endblock %}
             </main>
         </div>
-        
+
+        {% if app.user and not is_granted('ROLE_ADMIN') %}
+        <script src="{{ asset('js/animal-desktop-notifications.js') }}" defer></script>
+        {% endif %}
     </body>
 </html>

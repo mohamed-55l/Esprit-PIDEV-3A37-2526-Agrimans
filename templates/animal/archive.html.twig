@@ -1,0 +1,41 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}Archives animaux | Agrimans{% endblock %}
+
+{% block body %}
+<div class="content-section" style="max-width: 900px; margin: 2rem auto;">
+    <a href="{{ path('waad_animal_index') }}" style="color: rgba(255,255,255,0.5); text-decoration:none;"><i class="fa-solid fa-arrow-left"></i> Cheptel actif</a>
+    <h1 style="color:#fff; margin:1rem 0;"><i class="fa-solid fa-box-archive"></i> Animaux archivés</h1>
+    <p style="color: rgba(255,255,255,0.6);">Ces fiches ne figurent plus dans la liste principale mais restent consultables.</p>
+
+    <div style="background: rgba(255,255,255,0.03); border-radius:12px; overflow:hidden;">
+        <table style="width:100%; border-collapse:collapse; color:#fff;">
+            <thead style="background: rgba(0,0,0,0.25);">
+            <tr>
+                <th style="padding:1rem; text-align:left;">Nom</th>
+                <th style="padding:1rem; text-align:left;">Espèce</th>
+                <th style="padding:1rem; text-align:left;">Archivé le</th>
+                <th style="padding:1rem; text-align:right;">Actions</th>
+            </tr>
+            </thead>
+            <tbody>
+            {% for animal in animals %}
+                <tr style="border-bottom:1px solid rgba(255,255,255,0.06);">
+                    <td style="padding:0.85rem;">{{ animal.nom }}</td>
+                    <td style="padding:0.85rem;">{{ animal.espece }}</td>
+                    <td style="padding:0.85rem;">{{ animal.deletedAt ? animal.deletedAt|date('d/m/Y H:i') : '' }}</td>
+                    <td style="padding:0.85rem; text-align:right;">
+                        <form method="post" action="{{ path('waad_animal_restore', { id: animal.id }) }}" style="display:inline;">
+                            <input type="hidden" name="_token" value="{{ csrf_token('restore_animal') }}">
+                            <button type="submit" class="btn" style="background: rgba(46,204,113,0.2); color:#2ecc71; border:none; padding:0.4rem 0.8rem; border-radius:6px; cursor:pointer;">Restaurer</button>
+                        </form>
+                    </td>
+                </tr>
+            {% else %}
+                <tr><td colspan="4" style="padding:2rem; text-align:center; opacity:0.5;">Aucun animal archivé.</td></tr>
+            {% endfor %}
+            </tbody>
+        </table>
+    </div>
+</div>
+{% endblock %}

@@ -19,8 +19,19 @@ final class Version20260407231419 extends AbstractMigration
 
     public function up(Schema $schema): void
     {
-        // this up() migration is auto-generated, please modify it to your needs
-        $this->addSql('CREATE TABLE messenger_messages (id BIGINT AUTO_INCREMENT NOT NULL, body LONGTEXT NOT NULL, headers LONGTEXT NOT NULL, queue_name VARCHAR(190) NOT NULL, created_at DATETIME NOT NULL, available_at DATETIME NOT NULL, delivered_at DATETIME DEFAULT NULL, INDEX IDX_75EA56E0FB7336F0E3BD61CE16BA31DBBF396750 (queue_name, available_at, delivered_at, id), PRIMARY KEY(id)) DEFAULT CHARACTER SET utf8mb4 COLLATE `utf8mb4_unicode_ci`');
+        // One-shot legacy migration from an older schema. Skip when the DB was already migrated
+        // (e.g. no fk_animal_user on animal) to avoid errors on DROP FOREIGN KEY / CREATE duplicates.
+        $sm = $this->connection->createSchemaManager();
+        if ($sm->tablesExist(['animal'])) {
+            $fks = $sm->introspectTable('animal')->getForeignKeys();
+            $this->skipIf(
+                !isset($fks['fk_animal_user']),
+                'Base déjà alignée : migration historique Version20260407231419 ignorée (fk_animal_user absente).',
+            );
+        }
+
+        // Table may already exist if Messenger auto_setup ran or a previous deploy created it.
+        $this->addSql('CREATE TABLE IF NOT EXISTS messenger_messages (id BIGINT AUTO_INCREMENT NOT NULL, body LONGTEXT NOT NULL, headers LONGTEXT NOT NULL, queue_name VARCHAR(190) NOT NULL, created_at DATETIME NOT NULL, available_at DATETIME NOT NULL, delivered_at DATETIME DEFAULT NULL, INDEX IDX_75EA56E0FB7336F0E3BD61CE16BA31DBBF396750 (queue_name, available_at, delivered_at, id), PRIMARY KEY(id)) DEFAULT CHARACTER SET utf8mb4 COLLATE `utf8mb4_unicode_ci`');
         $this->addSql('ALTER TABLE animal DROP FOREIGN KEY fk_animal_user');
         $this->addSql('ALTER TABLE cart_item DROP FOREIGN KEY cart_item_ibfk_1');
         $this->addSql('ALTER TABLE cart_item DROP FOREIGN KEY cart_item_ibfk_2');

@@ -1,0 +1,125 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}Statistiques élevage | Agrimans{% endblock %}
+
+{% block javascripts %}
+    {{ parent() }}
+    <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.1/dist/chart.umd.min.js" defer></script>
+    <script src="{{ asset('js/animal-stats-charts.js') }}" defer></script>
+{% endblock %}
+
+{% block body %}
+<div class="content-section animal-stats-page" style="max-width: 1180px; margin: 2rem auto;">
+    <div style="display:flex; justify-content:space-between; align-items:flex-start; flex-wrap:wrap; gap:1rem; margin-bottom:2rem;">
+        <div>
+            <a href="{{ path('waad_animal_index') }}" style="color: rgba(255,255,255,0.5); text-decoration:none;"><i class="fa-solid fa-arrow-left"></i> Liste</a>
+            <h1 style="color:#fff; margin-top:0.5rem;"><i class="fa-solid fa-chart-pie" style="color:var(--primary);"></i> Tableau de bord élevage</h1>
+            <p style="color: rgba(255,255,255,0.6);">Vue d’ensemble du cheptel, graphiques, météo locale et analyse IA optionnelle.</p>
+        </div>
+        <a class="btn btn-primary" href="{{ path('waad_animal_stats', { analyse_ia: 1 }) }}" style="background:var(--primary); border:none; padding:0.65rem 1rem; border-radius:8px; color:#fff; text-decoration:none; font-weight:600;">
+            <i class="fa-solid fa-robot"></i> Lancer l’analyse IA
+        </a>
+    </div>
+
+    {% if weather %}
+        <div style="background: rgba(52, 152, 219, 0.12); border:1px solid rgba(52,152,219,0.35); border-radius:12px; padding:1.25rem; margin-bottom:1.5rem; color:#fff;">
+            <h3 style="margin:0 0 0.5rem 0; font-size:1rem;"><i class="fa-solid fa-cloud-sun"></i> Météo ({{ weather.city }})</h3>
+            <p style="margin:0; color: rgba(255,255,255,0.85);">
+                {{ weather.description|capitalize }} — {{ weather.temp }}°C, humidité {{ weather.humidity }}%, vent {{ weather.wind }} m/s
+            </p>
+        </div>
+    {% else %}
+        <div style="background: rgba(255,255,255,0.05); border-radius:12px; padding:1rem; margin-bottom:1.5rem; color: rgba(255,255,255,0.6);">
+            Météo indisponible. Définissez <code>OPENWEATHER_API_KEY</code> et <code>OPENWEATHER_CITY</code> dans <code>.env.local</code>.
+        </div>
+    {% endif %}
+
+    <script type="application/json" id="animal-stats-chart-data">{{ {
+        par_espece: stats.par_espece,
+        par_sante: stats.par_sante,
+        par_race: stats.par_race,
+        total_actifs: stats.total_actifs,
+        total_archives: stats.total_archives,
+    }|json_encode(constant('JSON_UNESCAPED_UNICODE'))|raw }}</script>
+
+    {% set total_cheptel = stats.total_actifs + stats.total_archives %}
+
+    <div style="display:grid; grid-template-columns: repeat(auto-fit, minmax(180px,1fr)); gap:1rem; margin-bottom:1.75rem;">
+        <div style="background: rgba(255,255,255,0.04); border-radius:12px; padding:1.25rem; color:#fff; border:1px solid rgba(125,191,108,0.25);">
+            <div style="font-size:2rem; font-weight:800; color:var(--light-green);">{{ stats.total_actifs }}</div>
+            <div style="opacity:0.75; font-size:0.9rem;">Animaux actifs</div>
+        </div>
+        <div style="background: rgba(255,255,255,0.04); border-radius:12px; padding:1.25rem; color:#fff; border:1px solid rgba(149,165,166,0.3);">
+            <div style="font-size:2rem; font-weight:800; color:rgba(189,195,199,0.95);">{{ stats.total_archives }}</div>
+            <div style="opacity:0.75; font-size:0.9rem;">Archives</div>
+        </div>
+        <div style="background: rgba(255,255,255,0.04); border-radius:12px; padding:1.25rem; color:#fff; border:1px solid rgba(52,152,219,0.25);">
+            <div style="font-size:2rem; font-weight:800; color:#5dade2;">{{ total_cheptel }}</div>
+            <div style="opacity:0.75; font-size:0.9rem;">Total enregistré (actifs + archives)</div>
+        </div>
+    </div>
+
+    <div class="animal-stats-charts-grid" style="display:grid; grid-template-columns: repeat(2, minmax(280px, 1fr)); gap:1.25rem; margin-bottom:1.75rem;">
+        <div style="background: rgba(255,255,255,0.03); border:1px solid rgba(255,255,255,0.08); border-radius:12px; padding:1rem 1rem 0.5rem;">
+            <h3 style="color:#7DBF6C; font-size:1rem; margin:0 0 0.75rem 0;"><i class="fa-solid fa-cow"></i> Répartition par espèce</h3>
+            <div style="position:relative; height:280px; max-width:100%;">
+                <canvas id="chart-espece" aria-label="Graphique espèces"></canvas>
+            </div>
+        </div>
+        <div style="background: rgba(255,255,255,0.03); border:1px solid rgba(255,255,255,0.08); border-radius:12px; padding:1rem 1rem 0.5rem;">
+            <h3 style="color:#f39c12; font-size:1rem; margin:0 0 0.75rem 0;"><i class="fa-solid fa-heart-pulse"></i> État de santé</h3>
+            <div style="position:relative; height:280px; max-width:100%;">
+                <canvas id="chart-sante" aria-label="Graphique santé"></canvas>
+            </div>
+        </div>
+        <div style="background: rgba(255,255,255,0.03); border:1px solid rgba(255,255,255,0.08); border-radius:12px; padding:1rem 1rem 0.5rem;">
+            <h3 style="color:#3498db; font-size:1rem; margin:0 0 0.75rem 0;"><i class="fa-solid fa-layer-group"></i> Actifs vs archives</h3>
+            <div style="position:relative; height:260px; max-width:100%;">
+                <canvas id="chart-cheptel" aria-label="Graphique cheptel"></canvas>
+            </div>
+        </div>
+        <div style="background: rgba(255,255,255,0.03); border:1px solid rgba(255,255,255,0.08); border-radius:12px; padding:1rem 1rem 0.5rem;">
+            <h3 style="color:#9b59b6; font-size:1rem; margin:0 0 0.75rem 0;"><i class="fa-solid fa-dna"></i> Effectifs par race (top 8 + autres)</h3>
+            <div style="position:relative; height:280px; max-width:100%;">
+                <canvas id="chart-race" aria-label="Graphique races"></canvas>
+            </div>
+        </div>
+    </div>
+
+    <div style="display:grid; grid-template-columns: repeat(auto-fit, minmax(260px, 1fr)); gap:1.25rem; margin-bottom:2rem;">
+        <div style="background: rgba(255,255,255,0.03); border:1px solid rgba(255,255,255,0.08); border-radius:12px; padding:1.25rem;">
+            <h3 style="color:#7DBF6C; font-size:0.95rem; margin:0 0 0.5rem 0;">Détail espèces</h3>
+            <ul style="color: rgba(255,255,255,0.85); margin:0; padding-left:1.2rem; font-size:0.9rem;">
+                {% for espece, n in stats.par_espece %}
+                    <li><strong>{{ espece ?: 'Non renseigné' }}</strong> — {{ n }}</li>
+                {% else %}
+                    <li>Aucune donnée</li>
+                {% endfor %}
+            </ul>
+        </div>
+        <div style="background: rgba(255,255,255,0.03); border:1px solid rgba(255,255,255,0.08); border-radius:12px; padding:1.25rem;">
+            <h3 style="color:#f39c12; font-size:0.95rem; margin:0 0 0.5rem 0;">Détail santé</h3>
+            <ul style="color: rgba(255,255,255,0.85); margin:0; padding-left:1.2rem; font-size:0.9rem;">
+                {% for sante, n in stats.par_sante %}
+                    <li><strong>{{ sante }}</strong> — {{ n }}</li>
+                {% else %}
+                    <li>Aucune donnée</li>
+                {% endfor %}
+            </ul>
+        </div>
+    </div>
+
+    {% if insight is not null %}
+        <div style="background: rgba(155, 89, 182, 0.12); border:1px solid rgba(155,89,182,0.35); border-radius:12px; padding:1.5rem; color: rgba(255,255,255,0.92);">
+            <h3 style="margin-top:0; color:#9b59b6;"><i class="fa-solid fa-wand-magic-sparkles"></i> Retour IA (OpenRouter)</h3>
+            <p style="white-space:pre-wrap; margin:0;">{{ insight }}</p>
+        </div>
+    {% endif %}
+</div>
+
+<style>
+@media (max-width: 720px) {
+    .animal-stats-charts-grid { grid-template-columns: 1fr !important; }
+}
+</style>
+{% endblock %}

@@ -4,23 +4,26 @@
 
 {% block body %}
 <div class="content-section" style="max-width: 1200px; margin: 2rem auto;">
-    <div class="page-header" style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 2rem;">
+    <div class="page-header" style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 2rem; flex-wrap: wrap; gap: 1rem;">
         <div>
             <h1 style="font-size: 2.2rem; font-weight: 700; color: #fff; margin-bottom: 0.5rem;"><i class="fa-solid fa-cow" style="color: var(--primary); margin-right: 10px;"></i> Mes Animaux</h1>
-            <p style="color: rgba(255,255,255,0.6);">Gérer votre cheptel et suivre l'état de santé de vos animaux.</p>
+            <p style="color: rgba(255,255,255,0.6);">Gérer votre cheptel, exporter en PDF et suivre l’historique.</p>
         </div>
-        <div class="page-actions" style="display: flex; gap: 1rem; align-items: center;">
-            <button onclick="document.getElementById('newAnimalForm').style.display='block'" class="btn btn-primary" style="background-color: var(--primary); border: none; padding: 0.7rem 1.2rem; border-radius: 8px; color: #fff; cursor: pointer; font-weight: 600;"><i class="fa-solid fa-plus"></i> Ajouter un Animal</button>
+        <div class="page-actions" style="display: flex; gap: 0.75rem; align-items: center; flex-wrap: wrap;">
+            <a href="{{ path('waad_animal_stats') }}" class="btn btn-primary" style="background: rgba(155,89,182,0.25); border: 1px solid rgba(155,89,182,0.5); padding: 0.65rem 1rem; border-radius: 8px; color: #fff; text-decoration: none; font-weight: 600;"><i class="fa-solid fa-chart-pie"></i> Stats</a>
+            <a href="{{ path('waad_animal_historique') }}" class="btn btn-primary" style="background: rgba(255,255,255,0.08); border: 1px solid rgba(255,255,255,0.15); padding: 0.65rem 1rem; border-radius: 8px; color: #fff; text-decoration: none; font-weight: 600;"><i class="fa-solid fa-clock-rotate-left"></i> Historique</a>
+            <a href="{{ path('waad_animal_archive') }}" class="btn btn-primary" style="background: rgba(255,255,255,0.08); border: 1px solid rgba(255,255,255,0.15); padding: 0.65rem 1rem; border-radius: 8px; color: #fff; text-decoration: none; font-weight: 600;"><i class="fa-solid fa-box-archive"></i> Archives</a>
+            <a href="{{ path('waad_animal_export_pdf') }}" class="btn btn-primary" style="background: rgba(231,76,60,0.2); border: 1px solid rgba(231,76,60,0.45); padding: 0.65rem 1rem; border-radius: 8px; color: #e74c3c; text-decoration: none; font-weight: 600;"><i class="fa-solid fa-file-pdf"></i> PDF</a>
+            <button type="button" onclick="document.getElementById('newAnimalForm').style.display='block'" class="btn btn-primary" style="background-color: var(--primary); border: none; padding: 0.7rem 1.2rem; border-radius: 8px; color: #fff; cursor: pointer; font-weight: 600;"><i class="fa-solid fa-plus"></i> Ajouter</button>
         </div>
     </div>
 
-    {# Formulaire d'ajout caché par défaut #}
     <div id="newAnimalForm" style="display: none; background: rgba(255,255,255,0.03); border: 1px solid rgba(255,255,255,0.08); border-radius: 12px; padding: 2rem; margin-bottom: 2rem;">
         <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 1.5rem;">
             <h3 style="margin: 0; color: #fff;">Inscrire un nouvel animal</h3>
-            <button onclick="document.getElementById('newAnimalForm').style.display='none'" style="background: none; border: none; color: rgba(255,255,255,0.5); cursor: pointer;"><i class="fa-solid fa-times"></i></button>
+            <button type="button" onclick="document.getElementById('newAnimalForm').style.display='none'" style="background: none; border: none; color: rgba(255,255,255,0.5); cursor: pointer;"><i class="fa-solid fa-times"></i></button>
         </div>
-        {{ form_start(form) }}
+        {{ form_start(form, { attr: { enctype: 'multipart/form-data' } }) }}
         <style>
             .animal-form label { display: block; margin-bottom: 0.5rem; color: rgba(255,255,255,0.8); }
             .animal-form input, .animal-form select { width: 100%; margin-bottom: 1rem; background: rgba(255,255,255,0.05); border: 1px solid rgba(255,255,255,0.1); color: #fff; padding: 0.8rem; border-radius: 8px; }
@@ -38,16 +41,24 @@
             <table style="width: 100%; border-collapse: collapse; color: #fff;">
                 <thead style="background: rgba(0,0,0,0.2);">
                     <tr>
-                        <th style="padding: 1.2rem 1rem; text-align: left; font-weight: 600; color: rgba(255,255,255,0.7); text-transform: uppercase; font-size: 0.8rem;">Espèce</th>
-                        <th style="padding: 1.2rem 1rem; text-align: left; font-weight: 600; color: rgba(255,255,255,0.7); text-transform: uppercase; font-size: 0.8rem;">Nom / Id</th>
-                        <th style="padding: 1.2rem 1rem; text-align: left; font-weight: 600; color: rgba(255,255,255,0.7); text-transform: uppercase; font-size: 0.8rem;">Santé</th>
-                        <th style="padding: 1.2rem 1rem; text-align: left; font-weight: 600; color: rgba(255,255,255,0.7); text-transform: uppercase; font-size: 0.8rem;">Date de naissance</th>
-                        <th style="padding: 1.2rem 1rem; text-align: right; font-weight: 600; color: rgba(255,255,255,0.7); text-transform: uppercase; font-size: 0.8rem;">Actions</th>
+                        <th style="padding: 1.2rem 1rem; text-align: left;">Photo</th>
+                        <th style="padding: 1.2rem 1rem; text-align: left;">Espèce</th>
+                        <th style="padding: 1.2rem 1rem; text-align: left;">Nom</th>
+                        <th style="padding: 1.2rem 1rem; text-align: left;">Santé</th>
+                        <th style="padding: 1.2rem 1rem; text-align: left;">Naissance</th>
+                        <th style="padding: 1.2rem 1rem; text-align: right;">Actions</th>
                     </tr>
                 </thead>
                 <tbody>
-                {% for animal in animals %}
+                {% for animal in pagination %}
                     <tr style="border-bottom: 1px solid rgba(255,255,255,0.05); transition: background 0.3s;" onmouseover="this.style.background='rgba(255,255,255,0.05)'" onmouseout="this.style.background='transparent'">
+                        <td style="padding: 1rem;">
+                            {% if animal.imageName %}
+                                <img src="{{ vich_uploader_asset(animal, 'imageFile') }}" alt="" style="width:48px; height:48px; object-fit:cover; border-radius:8px;">
+                            {% else %}
+                                <span style="opacity:0.4;"><i class="fa-solid fa-image"></i></span>
+                            {% endif %}
+                        </td>
                         <td style="padding: 1rem; font-weight: 500;">
                             <div style="display: flex; align-items: center; gap: 10px;">
                                 <div style="width: 32px; height: 32px; border-radius: 8px; background: rgba(243, 156, 18, 0.2); display: flex; align-items: center; justify-content: center; color: #f39c12;">
@@ -58,28 +69,26 @@
                         </td>
                         <td style="padding: 1rem; color: rgba(255,255,255,0.8);">{{ animal.nom }}</td>
                         <td style="padding: 1rem;">
-                            {% if animal.etatSante|lower == 'sain' or animal.etatSante|lower == 'en bonne santé' %}
+                            {% if animal.etatSante and (animal.etatSante|lower == 'sain' or animal.etatSante|lower == 'en bonne santé') %}
                                 <span style="background: rgba(46, 204, 113, 0.2); color: #2ecc71; padding: 4px 10px; border-radius: 20px; font-size: 0.8rem;">{{ animal.etatSante }}</span>
                             {% else %}
-                                <span style="background: rgba(231, 76, 60, 0.2); color: #e74c3c; padding: 4px 10px; border-radius: 20px; font-size: 0.8rem;">{{ animal.etatSante }}</span>
+                                <span style="background: rgba(231, 76, 60, 0.2); color: #e74c3c; padding: 4px 10px; border-radius: 20px; font-size: 0.8rem;">{{ animal.etatSante ?? '—' }}</span>
                             {% endif %}
                         </td>
-                        <td style="padding: 1rem; color: rgba(255,255,255,0.8);">{{ animal.dateNaissance ? animal.dateNaissance|date('d/m/Y') : '' }}</td>
-                        
+                        <td style="padding: 1rem; color: rgba(255,255,255,0.8);">{{ animal.dateNaissance ? animal.dateNaissance|date('d/m/Y') : '—' }}</td>
                         <td style="padding: 1rem; text-align: right;">
                             <div style="display: flex; gap: 0.5rem; justify-content: flex-end;">
                                 <a href="{{ path('waad_animal_show', {'id': animal.id}) }}" class="btn" style="background: rgba(255,255,255,0.1); color: #fff; padding: 0.4rem 0.8rem; border-radius: 6px; text-decoration: none; font-size: 0.85rem;"><i class="fa-solid fa-eye"></i></a>
-                                
-                                <form method="post" action="{{ path('waad_animal_delete', {'id': animal.id}) }}" style="display:inline-block; margin:0;" onsubmit="return confirm('Supprimer cet animal ?');">
-                                    <input type="hidden" name="_token" value="{{ csrf_token('delete' ~ animal.id) }}">
-                                    <button class="btn" style="background: rgba(231, 76, 60, 0.2); color: #e74c3c; border: none; padding: 0.4rem 0.8rem; border-radius: 6px; cursor: pointer; font-size: 0.85rem;"><i class="fa-solid fa-trash"></i></button>
+                                <form method="post" action="{{ path('waad_animal_delete', {'id': animal.id}) }}" style="display:inline-block; margin:0;" onsubmit="return confirm('Archiver cet animal ?');">
+                                    <input type="hidden" name="_token" value="{{ csrf_token('delete_animal') }}">
+                                    <button type="submit" class="btn" style="background: rgba(231, 76, 60, 0.2); color: #e74c3c; border: none; padding: 0.4rem 0.8rem; border-radius: 6px; cursor: pointer; font-size: 0.85rem;"><i class="fa-solid fa-archive"></i></button>
                                 </form>
                             </div>
                         </td>
                     </tr>
                 {% else %}
                     <tr>
-                        <td colspan="5" style="padding: 3rem; text-align: center; color: rgba(255,255,255,0.5);">
+                        <td colspan="6" style="padding: 3rem; text-align: center; color: rgba(255,255,255,0.5);">
                             <i class="fa-solid fa-cow" style="font-size: 3rem; margin-bottom: 1rem; opacity: 0.3;"></i>
                             <p>Aucun animal n'a été trouvé.</p>
                         </td>
@@ -87,6 +96,9 @@
                 {% endfor %}
                 </tbody>
             </table>
+        </div>
+        <div style="padding: 1rem; display:flex; justify-content:center;">
+            {{ knp_pagination_render(pagination) }}
         </div>
     </div>
 </div>
