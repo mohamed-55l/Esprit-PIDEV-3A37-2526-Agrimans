@@ -116,12 +116,13 @@ const COLORS = ['#27ae60','#3498db','#9b59b6','#e67e22','#e74c3c','#1abc9c','#f3
 
 // Donut — Type de sol
 {% if stats.par_type_sol|length > 0 %}
+const solData = {{ stats.par_type_sol|json_encode|raw }};
 new Chart(document.getElementById('chartSol'), {
     type: 'doughnut',
     data: {
-        labels: {{ stats.par_type_sol|keys|json_encode|raw }},
+        labels: Object.keys(solData),
         datasets: [{
-            data: {{ stats.par_type_sol|values|json_encode|raw }},
+            data: Object.values(solData),
             backgroundColor: COLORS,
             borderWidth: 0,
             hoverOffset: 8
@@ -136,13 +137,14 @@ new Chart(document.getElementById('chartSol'), {
 
 // Barres — États cultures
 {% if stats.par_etat|length > 0 %}
+const etatData = {{ stats.par_etat|json_encode|raw }};
 new Chart(document.getElementById('chartEtat'), {
     type: 'bar',
     data: {
-        labels: {{ stats.par_etat|keys|json_encode|raw }},
+        labels: Object.keys(etatData),
         datasets: [{
             label: 'Nombre de cultures',
-            data: {{ stats.par_etat|values|json_encode|raw }},
+            data: Object.values(etatData),
             backgroundColor: COLORS.map(c => c + 'cc'),
             borderColor: COLORS,
             borderWidth: 1,
@@ -161,7 +163,8 @@ new Chart(document.getElementById('chartEtat'), {
 
 // Ligne — Plantations par mois
 const moisLabels = ['Jan','Fév','Mar','Avr','Mai','Juin','Jul','Aoû','Sep','Oct','Nov','Déc'];
-const moisData   = {{ stats.par_mois|values|json_encode|raw }};
+const moisRaw    = {{ stats.par_mois|json_encode|raw }};
+const moisData   = Object.values(moisRaw);
 new Chart(document.getElementById('chartMois'), {
     type: 'line',
     data: {
