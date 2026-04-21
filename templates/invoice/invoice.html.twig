@@ -1,0 +1,70 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="UTF-8">
+    <title>Facture {{ invoiceNumber }}</title>
+    <style>
+        body { font-family: 'Helvetica', 'Arial', sans-serif; color: #333; }
+        .header { text-align: center; margin-bottom: 30px; }
+        .header h1 { color: #198B61; margin: 0; }
+        .details { margin-bottom: 30px; }
+        .details th { text-align: left; padding-right: 20px; }
+        table.items { width: 100%; border-collapse: collapse; margin-bottom: 30px; }
+        table.items th, table.items td { border: 1px solid #ddd; padding: 10px; text-align: left; }
+        table.items th { background-color: #f5f5f5; color: #198B61; }
+        .total { text-align: right; font-size: 1.2em; font-weight: bold; color: #198B61; }
+        .footer { text-align: center; font-size: 0.8em; color: #777; margin-top: 50px; }
+    </style>
+</head>
+<body>
+    <div class="header">
+        <h1>AGRIMANS</h1>
+        <p>Marketplace Agricole</p>
+    </div>
+
+    <div class="details">
+        <table>
+            <tr>
+                <th>Facture N° :</th>
+                <td>{{ invoiceNumber }}</td>
+            </tr>
+            <tr>
+                <th>Date :</th>
+                <td>{{ date|date('d/m/Y H:i') }}</td>
+            </tr>
+        </table>
+    </div>
+
+    <table class="items">
+        <thead>
+            <tr>
+                <th>Description</th>
+                <th>Type</th>
+                <th>Prix Unitaire</th>
+                <th>Quantité</th>
+                <th>Sous-total</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for item in items %}
+                <tr>
+                    <td>{{ item.name }}</td>
+                    <td>{{ item.type }}</td>
+                    <td>{{ item.price|number_format(2, ',', ' ') }} DT</td>
+                    <td>{{ item.quantity }}</td>
+                    <td>{{ item.lineTotal|number_format(2, ',', ' ') }} DT</td>
+                </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+
+    <div class="total">
+        TOTAL À PAYER : {{ total|number_format(2, ',', ' ') }} DT
+    </div>
+
+    <div class="footer">
+        Merci pour votre confiance.<br>
+        Agrimans - La plateforme de l'agriculture moderne.
+    </div>
+</body>
+</html>

@@ -105,7 +105,9 @@
 
                 <div style="margin-top: 1.5rem; display: flex; gap: 1rem;">
                     <a href="{{ path('app_marketplace_index') }}" class="btn btn-secondary"><i class="fa-solid fa-arrow-left"></i> Retour</a>
-                    <a href="{{ path('app_marketplace_product_edit', {'id': product.id}) }}" class="btn btn-primary"><i class="fa-solid fa-pen"></i> Modifier</a>
+                    {% if is_granted('ROLE_ADMIN') %}
+                        <a href="{{ path('app_marketplace_product_edit', {'id': product.id}) }}" class="btn btn-primary"><i class="fa-solid fa-pen"></i> Modifier</a>
+                    {% endif %}
                 </div>
             </div>
 
@@ -160,7 +162,17 @@
                                         </span>
                                     {% endif %}
                                 </div>
-                                <span style="font-size: 0.75rem; color: rgba(255,255,255,0.4);">{{ rating.createdAt|date('d/m/Y H:i') }}</span>
+                                <div style="display: flex; align-items: center; gap: 1rem;">
+                                    <span style="font-size: 0.75rem; color: rgba(255,255,255,0.4);">{{ rating.createdAt|date('d/m/Y H:i') }}</span>
+                                    {% if app.user and (rating.user == app.user or rating.userId == app.user.id) %}
+                                        <form method="POST" action="{{ path('app_marketplace_rating_delete', {'id': rating.id}) }}" style="display: inline; margin: 0;">
+                                            <button type="submit" class="btn btn-sm btn-danger" title="Supprimer cet avis" style="font-size: 0.75rem; padding: 0.25rem 0.5rem;">
+                                                <i class="fa-solid fa-trash"></i> Supprimer
+                                            </button>
+                                            <input type="hidden" name="_token" value="{{ csrf_token('delete' ~ rating.id) }}">
+                                        </form>
+                                    {% endif %}
+                                </div>
                             </div>
                             {% if rating.comment %}
                                 <p style="color: rgba(255,255,255,0.8); font-size: 0.9rem; margin: 0;">{{ rating.comment }}</p>
