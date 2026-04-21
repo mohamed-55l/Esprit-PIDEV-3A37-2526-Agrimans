@@ -1,0 +1,60 @@
+body {
+    margin: 0;
+    font-family: Arial;
+}
+
+.title-bar {
+    background: #0f6b3b;
+    color: white;
+    padding: 10px;
+    display: flex;
+    justify-content: space-between;
+}
+
+.main {
+    display: flex;
+}
+
+.sidebar {
+    width: 220px;
+    height: 570px;
+    background: #0f6b3b;
+    color: white;
+    display: flex;
+    flex-direction: column;
+    padding: 20px;
+}
+
+.menu-btn {
+    margin: 10px 0;
+    text-decoration: none;
+    color: white;
+}
+
+.logout-btn {
+    color: red;
+}
+
+.content {
+    flex: 1;
+    padding: 30px;
+}
+
+.cards {
+    display: flex;
+    gap: 20px;
+}
+
+.card {
+    background: #f1f5f9;
+    padding: 20px;
+    border-radius: 10px;
+}
+
+.big-card {
+    margin-top: 20px;
+    padding: 30px;
+    background: #e2e8f0;
+}
+
+

@@ -107,7 +107,7 @@ class AdminController extends AbstractController
             }
         }
 
-        return $this->render('Update/updateuser.html.twig', [
+        return $this->render('Samir/Update/updateuser.html.twig', [
             'user' => $user,
             'errors' => $errors
         ]);

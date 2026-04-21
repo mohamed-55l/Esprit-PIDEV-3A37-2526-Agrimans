@@ -1,0 +1,84 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="UTF-8">
+    <title>Register</title>
+    <link rel="stylesheet" href="{{ asset('styles/register.css') }}">
+</head>
+<body>
+
+<div class="app-container">
+    <div class="main-card">
+
+        <div class="form-box">
+
+            <h1>S'inscrire</h1>
+            <p class="subtitle">Créer votre compte avec vérification OTP</p>
+
+            {% if errors.csrf is defined %}
+                <div class="error">{{ errors.csrf }}</div>
+            {% endif %}
+
+            <form method="post">
+
+                <input type="hidden" name="_token" value="{{ csrf_token('register') }}">
+
+                <div class="row">
+
+                    <div class="col">
+
+                        <label>Nom et prénom</label>
+                        <input type="text" name="name" value="{{ data.name }}">
+                        <span class="error">{{ errors.name ?? '' }}</span>
+
+                        <label>Email</label>
+                        <input type="email" name="email" value="{{ data.email }}">
+                        <span class="error">{{ errors.email ?? '' }}</span>
+
+                        <label>Téléphone</label>
+                        <input type="text" name="phone" value="{{ data.phone }}">
+                        <span class="error">{{ errors.phone ?? '' }}</span>
+
+                    </div>
+
+                    <div class="col">
+
+                        <label>Mot de passe</label>
+                        <input type="password" name="password">
+
+                        {% if errors.password is defined %}
+                            <ul class="error">
+                                {% for err in errors.password %}
+                                    <li>{{ err }}</li>
+                                {% endfor %}
+                            </ul>
+                        {% endif %}
+
+                        <label>Confirmer</label>
+                        <input type="password" name="confirm">
+                        <span class="error">{{ errors.confirm ?? '' }}</span>
+
+                    </div>
+
+                </div>
+
+                <button class="btn">Envoyer code OTP</button>
+
+            </form>
+
+            <p class="login-link">
+                Déjà un compte ?
+                <a href="{{ path('app_login') }}">Se connecter</a>
+            </p>
+
+        </div>
+
+        <div class="image-box">
+            <img src="{{ asset('images/login.png') }}">
+        </div>
+
+    </div>
+</div>
+
+</body>
+</html>

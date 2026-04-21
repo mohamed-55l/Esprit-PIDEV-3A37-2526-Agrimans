@@ -8,8 +8,7 @@ use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Attribute\Route;
 use Symfony\Component\HttpFoundation\Session\SessionInterface;
-use Symfony\Component\HttpFoundation\Request;
-use Doctrine\ORM\EntityManagerInterface;
+
 class AdminController extends AbstractController
 {
     #[Route('/admin', name: 'admin_dashboard')]
@@ -107,7 +106,7 @@ class AdminController extends AbstractController
             }
         }
 
-        return $this->render('Update/updateuser.html.twig', [
+        return $this->render('Samir/Update/updateuser.html.twig', [
             'user' => $user,
             'errors' => $errors
         ]);
