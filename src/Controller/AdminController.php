@@ -2,6 +2,8 @@
 
 namespace App\Controller;
 
+use App\Repository\CultureRepository;
+use App\Repository\ParcelleRepository;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Attribute\Route;
@@ -16,6 +18,20 @@ class AdminController extends AbstractController
     {
         return $this->render('admin/index.html.twig', [
             'controller_name' => 'AdminController',
+        ]);
+    }
+
+    #[Route('/view-parcelles-cultures', name: 'app_admin_view_parcelles_cultures')]
+    public function viewParcellesCultures(ParcelleRepository $parcelleRepository, CultureRepository $cultureRepository): Response
+    {
+        $parcelles = $parcelleRepository->findAll();
+        $cultures = $cultureRepository->findAll();
+
+        return $this->render('admin/index.html.twig', [
+            'controller_name' => 'AdminController',
+            'view_mode' => 'parcelles_cultures',
+            'parcelles' => $parcelles,
+            'cultures' => $cultures,
         ]);
     }
 }
