@@ -2,7 +2,7 @@
 
 namespace App\Controller;
 
-use App\Entity\Users;
+use App\Entity\User; // ✅ 
 use App\Enum\UserRole;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Response;
@@ -10,24 +10,26 @@ use Symfony\Component\Routing\Attribute\Route;
 use Symfony\Component\HttpFoundation\Session\SessionInterface;
 use Symfony\Component\HttpFoundation\Request;
 use Doctrine\ORM\EntityManagerInterface;
+
 class AdminController extends AbstractController
 {
     #[Route('/admin', name: 'admin_dashboard')]
     public function dashboard(SessionInterface $session, EntityManagerInterface $em): Response
     {
+        // 1. التثبت من الـ Session
         if (!$session->get('user_id')) {
             return $this->redirectToRoute('app_login');
         }
 
         if ($session->get('user_role') !== 'ADMIN') {
-            return new Response("Accès refusé");
+            return new Response("Accès refusé", 403);
         }
 
-        $users = $em->getRepository(Users::class)->findAll();
+        $users = $em->getRepository(User::class)->findAll(); 
 
         $stats = [
             'total_users' => count($users),
-            'total_equipements' => 0,
+            'total_equipements' => 0, 
             'total_reviews' => 0,
             'total_products' => 0,
         ];
@@ -40,17 +42,18 @@ class AdminController extends AbstractController
 
     // ✅ DELETE USER
     #[Route('/user/delete/{id}', name: 'user_delete')]
-    public function delete($id, EntityManagerInterface $em, SessionInterface $session)
+    public function delete($id, EntityManagerInterface $em, SessionInterface $session): Response
     {
         if ($session->get('user_role') !== 'ADMIN') {
-            return new Response("Accès refusé");
+            return new Response("Accès refusé", 403);
         }
 
-        $user = $em->getRepository(Users::class)->find($id);
+        $user = $em->getRepository(User::class)->find($id); // ✅ User بالمفرد
 
         if ($user) {
             $em->remove($user);
             $em->flush();
+            $this->addFlash('success', 'Utilisateur supprimé avec succès.');
         }
 
         return $this->redirectToRoute('admin_dashboard');
@@ -58,22 +61,21 @@ class AdminController extends AbstractController
 
     // ✅ UPDATE USER
     #[Route('/user/update/{id}', name: 'user_update')]
-    public function update($id, Request $request, EntityManagerInterface $em, SessionInterface $session)
+    public function update($id, Request $request, EntityManagerInterface $em, SessionInterface $session): Response
     {
         if ($session->get('user_role') !== 'ADMIN') {
-            return new Response("Accès refusé");
+            return new Response("Accès refusé", 403);
         }
 
-        $user = $em->getRepository(Users::class)->find($id);
+        $user = $em->getRepository(User::class)->find($id); // ✅ User بالمفرد
 
         if (!$user) {
-            return new Response("Utilisateur non trouvé");
+            throw $this->createNotFoundException("Utilisateur non trouvé");
         }
 
         $errors = [];
 
         if ($request->isMethod('POST')) {
-
             $name = $request->request->get('full_name');
             $email = $request->request->get('email');
             $phone = $request->request->get('phone');
@@ -81,35 +83,28 @@ class AdminController extends AbstractController
             $password = $request->request->get('password');
             $confirm = $request->request->get('confirm');
 
-            // validation
+            // Validation 
             if (empty($name)) $errors['full_name'] = "Nom requis";
             if (empty($email)) $errors['email'] = "Email requis";
 
             if (!empty($password) && $password !== $confirm) {
-                $errors['confirm'] = "Mot de passe incorrect";
+                $errors['confirm'] = "Les mots de passe لا تتطابق";
             }
 
             if (empty($errors)) {
-
                 $user->setFullName($name);
                 $user->setEmail($email);
                 $user->setPhone($phone);
 
-                // ROLE
-                if ($role === 'ADMIN') {
-                    $user->setRole(UserRole::ADMIN);
-                } else {
-                    $user->setRole(UserRole::USER);
-                }
+                //   Role
+                $user->setRole($role === 'ADMIN' ? UserRole::ADMIN : UserRole::USER);
 
-                // PASSWORD (optionnel)
                 if (!empty($password)) {
-                    $user->setPasswordHash(
-                        password_hash($password, PASSWORD_BCRYPT)
-                    );
+                    $user->setPasswordHash(password_hash($password, PASSWORD_BCRYPT));
                 }
 
                 $em->flush();
+                $this->addFlash('success', 'Utilisateur mis à jour ✅');
 
                 return $this->redirectToRoute('admin_dashboard');
             }
