@@ -143,7 +143,7 @@ class Garage
 
     #[ORM\ManyToMany(targetEntity: Equipement::class, inversedBy: 'garages')]
     #[ORM\JoinTable(
-        name: 'equipement_geo',
+        name: 'garage_equipement',
         joinColumns: [
             new ORM\JoinColumn(name: 'garage_id', referencedColumnName: 'id')
         ],

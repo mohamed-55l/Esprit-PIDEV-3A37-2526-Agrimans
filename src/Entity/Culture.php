@@ -6,11 +6,14 @@ use Doctrine\DBAL\Types\Types;
 use Doctrine\ORM\Mapping as ORM;
 use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\Common\Collections\Collection;
+use Vich\UploaderBundle\Mapping\Annotation as Vich;
+use Symfony\Component\HttpFoundation\File\File;
 
 use App\Repository\CultureRepository;
 
 #[ORM\Entity(repositoryClass: CultureRepository::class)]
 #[ORM\Table(name: 'culture')]
+#[Vich\Uploadable]
 class Culture
 {
     #[ORM\Id]
@@ -182,6 +185,49 @@ class Culture
         // This setter is deprecated. Use setParcelle() with the object instead.
         // It remains empty to avoid breaking legacy forms that just map parcelle_id without joining.
         return $this;
+    }
+
+    #[ORM\Column(type: 'string', length: 255, nullable: true)]
+    private ?string $infoFileName = null;
+
+    #[Vich\UploadableField(mapping: 'culture_files', fileNameProperty: 'infoFileName')]
+    private ?File $infoFile = null;
+
+    #[ORM\Column(type: 'datetime_immutable', nullable: true)]
+    private ?\DateTimeImmutable $updatedAt = null;
+
+    public function setInfoFile(?File $infoFile = null): void
+    {
+        $this->infoFile = $infoFile;
+
+        if (null !== $infoFile) {
+            $this->updatedAt = new \DateTimeImmutable();
+        }
+    }
+
+    public function getInfoFile(): ?File
+    {
+        return $this->infoFile;
+    }
+
+    public function setInfoFileName(?string $infoFileName): void
+    {
+        $this->infoFileName = $infoFileName;
+    }
+
+    public function getInfoFileName(): ?string
+    {
+        return $this->infoFileName;
+    }
+
+    public function getUpdatedAt(): ?\DateTimeImmutable
+    {
+        return $this->updatedAt;
+    }
+
+    public function setUpdatedAt(?\DateTimeImmutable $updatedAt): void
+    {
+        $this->updatedAt = $updatedAt;
     }
 
 }

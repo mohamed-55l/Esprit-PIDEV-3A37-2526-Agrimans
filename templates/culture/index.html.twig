@@ -44,7 +44,14 @@
                                     <i class="fa-solid fa-wheat-awn"></i>
                                 </div>
                                 <div>
-                                    <div style="font-weight: 600;">{{ culture.nom }}</div>
+                                    <div style="font-weight: 600; display: flex; align-items: center; gap: 8px;">
+                                        {{ culture.nom }}
+                                        {% if culture.infoFileName %}
+                                            <a href="{{ vich_uploader_asset(culture, 'infoFile') }}" target="_blank" title="Voir le manuel" style="color: #e74c3c; font-size: 0.9rem;">
+                                                <i class="fa-solid fa-file-pdf"></i>
+                                            </a>
+                                        {% endif %}
+                                    </div>
                                     <div style="font-size: 0.75rem; color: rgba(255,255,255,0.5);">{{ culture.type_culture }}</div>
                                 </div>
                             </div>
