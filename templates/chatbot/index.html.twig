@@ -1,0 +1,303 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}Assistant IA - Agrimans{% endblock %}
+
+{% block body %}
+    <section class="content-section" style="margin-top: 2rem; max-width: 900px; margin-left: auto; margin-right: auto;">
+        {# Header #}
+        <div style="text-align: center; margin-bottom: 2rem;">
+            <div style="font-size: 3rem; margin-bottom: 1rem;">
+                <i class="fa-solid fa-robot"></i>
+            </div>
+            <h1 style="font-size: 2.5rem; margin-bottom: 0.5rem;">
+                Assistant IA 🤖
+            </h1>
+            <p style="color: rgba(255,255,255,0.7); font-size: 1.1rem;">
+                Trouvez les produits parfaits en posant simplement vos questions
+            </p>
+        </div>
+
+        {# Chat Container #}
+        <div style="
+            background: linear-gradient(135deg, rgba(25, 139, 97, 0.1) 0%, rgba(125, 191, 108, 0.05) 100%);
+            border: 1px solid rgba(125, 191, 108, 0.3);
+            border-radius: 12px;
+            padding: 1.5rem;
+            margin-bottom: 2rem;
+            display: flex;
+            flex-direction: column;
+            height: 600px;
+        ">
+            {# Messages Area #}
+            <div id="chatMessages" style="
+                flex: 1;
+                overflow-y: auto;
+                padding-right: 0.5rem;
+                margin-bottom: 1.5rem;
+                display: flex;
+                flex-direction: column;
+                gap: 1rem;
+            ">
+                {# Welcome Message #}
+                <div style="display: flex; gap: 1rem;">
+                    <div style="
+                        flex-shrink: 0;
+                        width: 36px;
+                        height: 36px;
+                        background: rgba(25, 139, 97, 0.3);
+                        border-radius: 50%;
+                        display: flex;
+                        align-items: center;
+                        justify-content: center;
+                    ">
+                        <i class="fa-solid fa-robot" style="color: #7DBF6C;"></i>
+                    </div>
+                    <div style="
+                        background: rgba(255, 255, 255, 0.05);
+                        border: 1px solid rgba(255, 255, 255, 0.1);
+                        padding: 1rem;
+                        border-radius: 8px;
+                        max-width: 70%;
+                    ">
+                        <p style="margin: 0; color: rgba(255,255,255,0.9); line-height: 1.5;">
+                            Bonjour! 👋 Je suis votre assistant IA Agrimans. Posez-moi des questions comme:
+                        </p>
+                        <ul style="margin: 0.5rem 0 0 1rem; color: rgba(255,255,255,0.7); font-size: 0.95rem;">
+                            <li>"Cherche tomates rouges"</li>
+                            <li>"Fruits moins de 5 TND"</li>
+                            <li>"Quel fournisseur vend du miel?"</li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+
+            {# Input Area #}
+            <form id="chatForm" style="display: flex; gap: 0.75rem;">
+                <input
+                    type="text"
+                    id="messageInput"
+                    placeholder="Posez votre question..."
+                    style="
+                        flex: 1;
+                        padding: 0.75rem 1rem;
+                        border: 1px solid rgba(255,255,255,0.2);
+                        background: rgba(255,255,255,0.05);
+                        color: #fff;
+                        border-radius: 8px;
+                        font-size: 1rem;
+                    "
+                    autocomplete="off"
+                >
+                <button
+                    type="submit"
+                    class="btn btn-primary"
+                    style="padding: 0.75rem 1.5rem; border-radius: 8px;"
+                >
+                    <i class="fa-solid fa-paper-plane"></i> Envoyer
+                </button>
+            </form>
+        </div>
+
+        {# Quick Actions #}
+        <div style="
+            background: rgba(255, 255, 255, 0.03);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            padding: 1.5rem;
+            border-radius: 12px;
+            margin-bottom: 2rem;
+        ">
+            <h3 style="margin-top: 0; margin-bottom: 1rem;">
+                <i class="fa-solid fa-stars"></i> Exemples de questions
+            </h3>
+            <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(250px, 1fr)); gap: 1rem;">
+                <button type="button" class="suggestion-btn" onclick="sendMessage('Cherche tomates')" style="
+                    background: rgba(255, 255, 255, 0.05);
+                    border: 1px solid rgba(125, 191, 108, 0.3);
+                    padding: 1rem;
+                    border-radius: 8px;
+                    color: #fff;
+                    cursor: pointer;
+                    transition: all 0.3s ease;
+                ">
+                    🥬 "Cherche tomates"
+                </button>
+                <button type="button" class="suggestion-btn" onclick="sendMessage('Fruits moins de 5 TND')" style="
+                    background: rgba(255, 255, 255, 0.05);
+                    border: 1px solid rgba(125, 191, 108, 0.3);
+                    padding: 1rem;
+                    border-radius: 8px;
+                    color: #fff;
+                    cursor: pointer;
+                    transition: all 0.3s ease;
+                ">
+                    🍎 "Fruits moins de 5 TND"
+                </button>
+                <button type="button" class="suggestion-btn" onclick="sendMessage('Quel fournisseur vend du miel?')" style="
+                    background: rgba(255, 255, 255, 0.05);
+                    border: 1px solid rgba(125, 191, 108, 0.3);
+                    padding: 1rem;
+                    border-radius: 8px;
+                    color: #fff;
+                    cursor: pointer;
+                    transition: all 0.3s ease;
+                ">
+                    🍯 "Fournisseur miel?"
+                </button>
+                <button type="button" class="suggestion-btn" onclick="sendMessage('Légumes biologiques')" style="
+                    background: rgba(255, 255, 255, 0.05);
+                    border: 1px solid rgba(125, 191, 108, 0.3);
+                    padding: 1rem;
+                    border-radius: 8px;
+                    color: #fff;
+                    cursor: pointer;
+                    transition: all 0.3s ease;
+                ">
+                    🌱 "Légumes biologiques"
+                </button>
+            </div>
+        </div>
+
+        {# Return Link #}
+        <div style="text-align: center;">
+            <a href="{{ path('app_marketplace_index') }}" class="btn btn-outline">
+                <i class="fa-solid fa-store"></i> Retour à la boutique
+            </a>
+        </div>
+    </section>
+
+    <script>
+        const form = document.getElementById('chatForm');
+        const input = document.getElementById('messageInput');
+        const chatMessages = document.getElementById('chatMessages');
+
+        form.addEventListener('submit', function(e) {
+            e.preventDefault();
+            const message = input.value.trim();
+            if (message) {
+                sendMessage(message);
+            }
+        });
+
+        function sendMessage(message) {
+            // Add user message to chat
+            addUserMessage(message);
+            input.value = '';
+
+            // Send to server
+            fetch('{{ path('app_chatbot_message') }}', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                    'X-Requested-With': 'XMLHttpRequest'
+                },
+                body: JSON.stringify({ message: message })
+            })
+            .then(response => response.json())
+            .then(data => {
+                if (data.success) {
+                    addBotMessage(data.response, data.products);
+                } else {
+                    addBotMessage('❌ ' + (data.error || 'Erreur du serveur'), []);
+                }
+                // Scroll to bottom
+                setTimeout(() => {
+                    chatMessages.scrollTop = chatMessages.scrollHeight;
+                }, 100);
+            })
+            .catch(error => {
+                console.error('Error:', error);
+                addBotMessage('❌ Une erreur s\'est produite. Veuillez réessayer.', []);
+            });
+        }
+
+        function addUserMessage(message) {
+            const messageDiv = document.createElement('div');
+            messageDiv.style.cssText = 'display: flex; gap: 1rem; justify-content: flex-end;';
+            messageDiv.innerHTML = `
+                <div style="
+                    background: #198B61;
+                    color: white;
+                    padding: 1rem;
+                    border-radius: 8px;
+                    max-width: 70%;
+                    word-wrap: break-word;
+                ">
+                    ${escapeHtml(message)}
+                </div>
+            `;
+            chatMessages.appendChild(messageDiv);
+        }
+
+        function addBotMessage(response, products) {
+            const messageDiv = document.createElement('div');
+            messageDiv.style.cssText = 'display: flex; gap: 1rem;';
+            
+            let productsHtml = '';
+            if (products && products.length > 0) {
+                productsHtml = '<div style="margin-top: 1rem; display: grid; grid-template-columns: repeat(auto-fit, minmax(150px, 1fr)); gap: 0.5rem;">';
+                products.forEach(product => {
+                    productsHtml += `
+                        <a href="{{ path('app_marketplace_index') }}" style="
+                            background: rgba(125, 191, 108, 0.1);
+                            border: 1px solid rgba(125, 191, 108, 0.3);
+                            padding: 0.75rem;
+                            border-radius: 6px;
+                            text-decoration: none;
+                            color: #fff;
+                            font-size: 0.85rem;
+                            transition: all 0.3s ease;
+                        ">
+                            <div style="font-weight: 600; margin-bottom: 0.25rem;">${escapeHtml(product.name)}</div>
+                            <div style="color: #7DBF6C; font-weight: bold;">${product.price.toFixed(2)} TND</div>
+                        </a>
+                    `;
+                });
+                productsHtml += '</div>';
+            }
+
+            messageDiv.innerHTML = `
+                <div style="
+                    flex-shrink: 0;
+                    width: 36px;
+                    height: 36px;
+                    background: rgba(25, 139, 97, 0.3);
+                    border-radius: 50%;
+                    display: flex;
+                    align-items: center;
+                    justify-content: center;
+                    margin-top: 0.25rem;
+                ">
+                    <i class="fa-solid fa-robot" style="color: #7DBF6C;"></i>
+                </div>
+                <div style="
+                    background: rgba(255, 255, 255, 0.05);
+                    border: 1px solid rgba(255, 255, 255, 0.1);
+                    padding: 1rem;
+                    border-radius: 8px;
+                    max-width: 70%;
+                    flex: 1;
+                ">
+                    <p style="margin: 0; color: rgba(255,255,255,0.9); white-space: pre-wrap; word-wrap: break-word; line-height: 1.5;">
+                        ${escapeHtml(response).replace(/\*\*(.*?)\*\*/g, '<strong style="color: #7DBF6C;">$1</strong>').replace(/\n/g, '<br>')}
+                    </p>
+                    ${productsHtml}
+                </div>
+            `;
+            chatMessages.appendChild(messageDiv);
+        }
+
+        function escapeHtml(text) {
+            const map = {
+                '&': '&amp;',
+                '<': '&lt;',
+                '>': '&gt;',
+                '"': '&quot;',
+                "'": '&#039;'
+            };
+            return text.replace(/[&<>"']/g, m => map[m]);
+        }
+
+        // Focus on input when page loads
+        input.focus();
+    </script>
+{% endblock %}
