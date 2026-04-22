@@ -467,6 +467,27 @@
                     </div>
                 </div>
             </div>
+
+            <!-- NOUVEAUX GRAPHIQUES (ÉQUIPEMENTS & REVIEWS) -->
+            <div class="charts-container" style="grid-template-columns: 1fr 1fr;">
+                <div class="chart-card">
+                    <div class="card-header">
+                        <h3 class="card-title"><i class="fa-solid fa-tractor" style="color: #2ecc71;"></i> Disponibilité des Équipements</h3>
+                    </div>
+                    <div style="height: 300px; width: 100%; display: flex; justify-content: center;">
+                        <canvas id="equipChart"></canvas>
+                    </div>
+                </div>
+
+                <div class="chart-card">
+                    <div class="card-header">
+                        <h3 class="card-title"><i class="fa-solid fa-star" style="color: #f1c40f;"></i> Répartition des Notes (Avis)</h3>
+                    </div>
+                    <div style="height: 300px; width: 100%;">
+                        <canvas id="reviewChart"></canvas>
+                    </div>
+                </div>
+            </div>
         </div>
     {% endif %}
     </main>
@@ -524,6 +545,30 @@
                     }
                 }
             });
+
+            {% if chartEquipement is defined %}
+            // Graphique Equipements (Pie)
+            const equipCtx = document.getElementById('equipChart');
+            if (equipCtx) {
+                new Chart(equipCtx.getContext('2d'), {
+                    type: 'pie',
+                    data: {{ chartEquipement.createView().data|json_encode|raw }},
+                    options: {{ chartEquipement.createView().options|json_encode|raw }}
+                });
+            }
+            {% endif %}
+
+            {% if chartReview is defined %}
+            // Graphique Reviews (Bar)
+            const reviewCtx = document.getElementById('reviewChart');
+            if (reviewCtx) {
+                new Chart(reviewCtx.getContext('2d'), {
+                    type: 'bar',
+                    data: {{ chartReview.createView().data|json_encode|raw }},
+                    options: {{ chartReview.createView().options|json_encode|raw }}
+                });
+            }
+            {% endif %}
         });
     </script>
 </body>

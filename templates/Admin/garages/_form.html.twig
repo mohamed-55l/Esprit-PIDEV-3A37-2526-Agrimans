@@ -1,0 +1,199 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <title>{{ title }} | Admin Agrimans</title>
+    <style>
+        :root {
+            --primary: #198B61;
+            --secondary: #2C3E50;
+            --dark: #12181b;
+            --dark-card: #1e2529;
+            --text-main: #f8f9fa;
+            --text-muted: #9ba4b5;
+            --border: rgba(255,255,255,0.08);
+            --danger: #e74c3c;
+            --sidebar-width: 260px;
+        }
+        * { margin:0; padding:0; box-sizing:border-box; font-family:'Inter',sans-serif; }
+        body { background:var(--dark); color:var(--text-main); display:flex; min-height:100vh; }
+        
+        /* MAIN */
+        .main { margin-left:var(--sidebar-width); flex:1; }
+        .topbar { height:70px; padding:0 2rem; display:flex; align-items:center; justify-content:space-between; background:var(--dark-card); border-bottom:1px solid var(--border); }
+        .topbar-title { font-size:1.1rem; font-weight:600; }
+        .content { padding:2rem; }
+
+        .admin-form-container {
+            max-width: 800px;
+            margin: 0 auto;
+            background: #1e2529;
+            border: 1px solid rgba(255,255,255,0.08);
+            border-radius: 16px;
+            padding: 2.5rem;
+        }
+        .admin-form-container h1 {
+            color: #198B61;
+            font-size: 1.8rem;
+            margin-bottom: 2rem;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+        
+        .form-group {
+            margin-bottom: 1.5rem;
+        }
+        .form-group label {
+            display: block;
+            margin-bottom: 0.5rem;
+            color: #f8f9fa;
+            font-weight: 500;
+            font-size: 0.95rem;
+        }
+        .form-control {
+            width: 100%;
+            padding: 0.8rem 1rem;
+            background: rgba(0,0,0,0.2);
+            border: 1px solid rgba(255,255,255,0.15);
+            border-radius: 8px;
+            color: white;
+            font-family: inherit;
+            font-size: 0.95rem;
+            transition: all 0.2s;
+        }
+        .form-control:focus {
+            outline: none;
+            border-color: #198B61;
+            box-shadow: 0 0 0 2px rgba(25, 139, 97, 0.2);
+        }
+        
+        .checkbox-group {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+            gap: 10px;
+            background: rgba(0,0,0,0.1);
+            padding: 15px;
+            border-radius: 8px;
+            border: 1px solid rgba(255,255,255,0.05);
+        }
+        .checkbox-group > div {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+        
+        .btn-submit {
+            background: #198B61;
+            color: white;
+            border: none;
+            padding: 0.8rem 1.5rem;
+            border-radius: 8px;
+            font-weight: 600;
+            cursor: pointer;
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            transition: all 0.2s;
+        }
+        .btn-submit:hover { background: #147350; }
+        
+        .btn-back {
+            background: rgba(255,255,255,0.1);
+            color: white;
+            text-decoration: none;
+            padding: 0.8rem 1.5rem;
+            border-radius: 8px;
+            font-weight: 600;
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            margin-left: 10px;
+        }
+        .btn-back:hover { background: rgba(255,255,255,0.15); }
+
+        .help-text { font-size: 0.8rem; color: #9ba4b5; margin-top: 5px; }
+    </style>
+</head>
+<body>
+
+{% include 'admin/_sidebar.html.twig' with {active: 'garages'} %}
+
+<main class="main">
+    <header class="topbar">
+        <div class="topbar-title">
+            <a href="{{ path('admin_garage_index') }}" style="color:var(--text-muted);text-decoration:none;">Garages</a>
+            <span style="color:var(--text-muted);margin:0 0.5rem;">/</span>
+            <span style="color:white;">{{ title }}</span>
+        </div>
+    </header>
+    <div class="content">
+
+<div class="admin-form-container">
+    <h1>
+        <i class="fa-solid fa-warehouse"></i> {{ title }}
+    </h1>
+
+    {{ form_start(form, {'attr': {'novalidate': 'novalidate'}}) }}
+        
+        <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 1.5rem;">
+            <div class="form-group">
+                {{ form_label(form.nom) }}
+                {{ form_widget(form.nom) }}
+                <div style="color: #e74c3c; font-size: 0.85rem; margin-top: 5px;">{{ form_errors(form.nom) }}</div>
+            </div>
+            <div class="form-group">
+                {{ form_label(form.capacite) }}
+                {{ form_widget(form.capacite) }}
+                <div style="color: #e74c3c; font-size: 0.85rem; margin-top: 5px;">{{ form_errors(form.capacite) }}</div>
+            </div>
+        </div>
+
+        <div class="form-group">
+            {{ form_label(form.adresse) }}
+            {{ form_widget(form.adresse) }}
+        </div>
+
+        <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 1.5rem;">
+            <div class="form-group">
+                {{ form_label(form.latitude) }}
+                {{ form_widget(form.latitude) }}
+            </div>
+            <div class="form-group">
+                {{ form_label(form.longitude) }}
+                {{ form_widget(form.longitude) }}
+            </div>
+        </div>
+
+        <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 1.5rem;">
+            <div class="form-group">
+                {{ form_label(form.responsable) }}
+                {{ form_widget(form.responsable) }}
+            </div>
+            <div class="form-group">
+                {{ form_label(form.telephone) }}
+                {{ form_widget(form.telephone) }}
+            </div>
+        </div>
+
+        <div class="form-group" style="margin-top: 1rem;">
+            <h3 style="font-size: 1.1rem; color: #f1c40f; margin-bottom: 10px;"><i class="fa-solid fa-tractor"></i> Assigner des Équipements</h3>
+            <p class="help-text" style="margin-bottom: 10px;">Sélectionnez les équipements à stocker dans ce garage. (La sélection est optionnelle)</p>
+            {{ form_widget(form.equipements) }}
+        </div>
+
+        <div style="margin-top: 2rem; border-top: 1px solid rgba(255,255,255,0.1); padding-top: 1.5rem;">
+            <button type="submit" class="btn-submit">
+                <i class="fa-solid fa-save"></i> Enregistrer
+            </button>
+            <a href="{{ path('admin_garage_index') }}" class="btn-back">
+                <i class="fa-solid fa-xmark"></i> Annuler
+            </a>
+        </div>
+        
+    {{ form_end(form) }}
+        </div>
+    </div>
+</main>
+</body>
+</html>

@@ -26,9 +26,12 @@
             <i class="fa-solid fa-store"></i> Boutique
         </a>
 
-        <div class="nav-section">Équipements & Avis</div>
+        <div class="nav-section">Équipements & Garages</div>
         <a href="{{ path('admin_equipement_index') }}" class="nav-item {{ active == 'equipements' ? 'active' : '' }}">
             <i class="fa-solid fa-tractor"></i> Équipements
+        </a>
+        <a href="{{ path('admin_garage_index') }}" class="nav-item {{ active == 'garages' ? 'active' : '' }}">
+            <i class="fa-solid fa-warehouse"></i> Garages
         </a>
         <a href="{{ path('admin_review_index') }}" class="nav-item {{ active == 'reviews' ? 'active' : '' }}">
             <i class="fa-solid fa-star"></i> Avis & Reviews

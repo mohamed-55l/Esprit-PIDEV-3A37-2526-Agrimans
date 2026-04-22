@@ -5,8 +5,9 @@
     <title>AGRI Samir - Login</title>
     <link rel="stylesheet" href="{{ asset('styles/login.css') }}">
 
-    <!-- ✅ reCAPTCHA script -->
+    <!-- reCAPTCHA désactivé temporairement
     <script src="https://www.google.com/recaptcha/api.js" async defer></script>
+    -->
 </head>
 <body>
 
@@ -28,8 +29,9 @@
                 <label>Mot de passe</label>
                 <input type="password" name="password" placeholder="Mot de passe" required>
 
-                <!-- ✅ reCAPTCHA -->
+                <!-- reCAPTCHA désactivé temporairement
                 <div class="g-recaptcha" data-sitekey="{{ recaptcha_site_key }}"></div>
+                -->
 
                 {% if error %}
                     <p class="error">{{ error }}</p>

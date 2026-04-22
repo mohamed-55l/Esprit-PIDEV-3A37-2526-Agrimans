@@ -1,0 +1,49 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}Demander un Équipement | Agrimans{% endblock %}
+
+{% block body %}
+<section class="content-section" style="margin-top: 2rem;">
+
+    <div style="display: flex; justify-content: space-between; align-items: flex-start; margin-bottom: 2.5rem;">
+        <div>
+            <h1 style="font-size: 2rem; font-weight: 800; margin-bottom: 0.5rem;">
+                <i class="fa-solid fa-paper-plane" style="color: var(--primary); margin-right: 10px;"></i>Demander un Équipement
+            </h1>
+            <p style="color: rgba(255,255,255,0.6);">
+                Envoyez une demande directement à l'administrateur pour obtenir un nouvel équipement.
+            </p>
+        </div>
+        <a href="{{ path('user_equipement_index') }}" class="btn-outline" style="padding: 0.6rem 1.2rem; border-radius: 12px; font-size: 0.9rem;">
+            <i class="fa-solid fa-arrow-left"></i> Retour
+        </a>
+    </div>
+
+    {% for msg in app.flashes('danger') %}
+        <div style="padding: 0.9rem 1.2rem; background: rgba(231,76,60,0.1); border: 1px solid rgba(231,76,60,0.3); border-radius: 10px; margin-bottom: 1.5rem; color: #e74c3c; font-size: 0.9rem;">
+            <i class="fa-solid fa-triangle-exclamation"></i> {{ msg }}
+        </div>
+    {% endfor %}
+
+    <div style="background: rgba(255,255,255,0.03); border: 1px solid rgba(255,255,255,0.1); border-radius: 16px; padding: 2rem; max-width: 600px; margin: 0 auto;">
+        <form method="POST" action="{{ path('user_equipement_request') }}">
+            <div style="margin-bottom: 1.5rem;">
+                <label for="equipement_name" style="display: block; font-weight: 500; margin-bottom: 0.5rem; color: rgba(255,255,255,0.8);">Type d'équipement demandé *</label>
+                <input type="text" id="equipement_name" name="equipement_name" required placeholder="Ex: Tracteur JD 5000, Moissonneuse..." 
+                       style="width: 100%; padding: 0.8rem 1rem; background: rgba(0,0,0,0.2); border: 1px solid rgba(255,255,255,0.2); border-radius: 10px; color: white; font-family: inherit;">
+            </div>
+
+            <div style="margin-bottom: 2rem;">
+                <label for="message" style="display: block; font-weight: 500; margin-bottom: 0.5rem; color: rgba(255,255,255,0.8);">Justification / Message *</label>
+                <textarea id="message" name="message" rows="5" required placeholder="Expliquez brièvement pourquoi vous avez besoin de cet équipement..."
+                          style="width: 100%; padding: 0.8rem 1rem; background: rgba(0,0,0,0.2); border: 1px solid rgba(255,255,255,0.2); border-radius: 10px; color: white; font-family: inherit; resize: vertical;"></textarea>
+            </div>
+
+            <button type="submit" class="hero-btn-primary" style="width: 100%; justify-content: center; font-size: 1.1rem; padding: 0.8rem;">
+                <i class="fa-solid fa-paper-plane"></i> Envoyer la demande
+            </button>
+        </form>
+    </div>
+
+</section>
+{% endblock %}

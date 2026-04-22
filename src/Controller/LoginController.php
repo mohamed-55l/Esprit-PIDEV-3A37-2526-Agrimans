@@ -31,30 +31,12 @@ class LoginController extends AbstractController
             $email = $request->request->get('email');
             $password = $request->request->get('password');
 
-            // ✅ reCAPTCHA token
-            $recaptchaResponse = $request->request->get('g-recaptcha-response');
+            // 🚀 reCAPTCHA temporairement désactivé pour faciliter les tests et la soutenance
+            $recaptchaValid = true;
 
-            if (!$recaptchaResponse) {
-                $error = "Veuillez valider le reCAPTCHA.";
+            if (!$recaptchaValid) {
+                $error = "reCAPTCHA invalide.";
             } else {
-
-                // 🔐 Vérification Google
-                $response = $client->request(
-                    'POST',
-                    'https://www.google.com/recaptcha/api/siteverify',
-                    [
-                        'body' => [
-                            'secret' => $_ENV['RECAPTCHA_SECRET_KEY'],
-                            'response' => $recaptchaResponse,
-                        ]
-                    ]
-                );
-
-                $data = $response->toArray();
-
-                if (!$data['success']) {
-                    $error = "reCAPTCHA invalide.";
-                } else {
 
                     // 🔍 chercher user 
                     $user = $em->getRepository(Users::class)->findOneBy([
@@ -92,7 +74,6 @@ class LoginController extends AbstractController
                             }
                         }
                     }
-                }
             }
         }
 
@@ -119,6 +100,6 @@ class LoginController extends AbstractController
     {
         $tokenStorage->setToken(null);
         $session->invalidate();
-        return $this->redirectToRoute('app_login');
+        return $this->redirectToRoute('app_home');
     }
 }

@@ -71,6 +71,51 @@
             <div class="flash flash-success"><i class="fa-solid fa-check-circle"></i> {{ msg }}</div>
         {% endfor %}
 
+        <!-- Alertes Statistiques (Avis Négatifs) -->
+        {% set alert_equipements = [] %}
+        {% set checked_eqs = [] %}
+        
+        {% for review in reviews %}
+            {% if review.equipement and review.equipement.id not in checked_eqs %}
+                {% set eq = review.equipement %}
+                {% set checked_eqs = checked_eqs|merge([eq.id]) %}
+                
+                {% set negative_count = 0 %}
+                {% for eq_review in eq.reviews %}
+                    {% if eq_review.commentaire|sentiment == 'Négatif' %}
+                        {% set negative_count = negative_count + 1 %}
+                    {% endif %}
+                {% endfor %}
+                
+                {% if negative_count >= 3 %}
+                    {% set alert_equipements = alert_equipements|merge([{'eq': eq, 'count': negative_count}]) %}
+                {% endif %}
+            {% endif %}
+        {% endfor %}
+
+        {% if alert_equipements|length > 0 %}
+            <div style="background: rgba(231,76,60,0.1); border-left: 4px solid var(--danger); padding: 1.5rem; border-radius: 10px; margin-bottom: 2rem;">
+                <h4 style="color: var(--danger); font-size: 1.1rem; margin-bottom: 1rem;">
+                    <i class="fa-solid fa-triangle-exclamation"></i> Alerte Qualité Équipements
+                </h4>
+                <p style="font-size: 0.9rem; color: var(--text-muted); margin-bottom: 1rem;">
+                    Les équipements suivants ont accumulé 3 avis négatifs ou plus. Une action de votre part est requise.
+                </p>
+                <div style="display: flex; flex-direction: column; gap: 0.5rem;">
+                    {% for alert in alert_equipements %}
+                        <div style="display: flex; justify-content: space-between; align-items: center; background: rgba(0,0,0,0.2); padding: 0.8rem 1rem; border-radius: 8px;">
+                            <div>
+                                <strong style="color: white;">{{ alert.eq.nom }}</strong> ({{ alert.eq.type }})
+                            </div>
+                            <div style="color: var(--danger); font-weight: bold; font-size: 0.9rem;">
+                                {{ alert.count }} avis négatifs <i class="fa-solid fa-thumbs-down"></i>
+                            </div>
+                        </div>
+                    {% endfor %}
+                </div>
+            </div>
+        {% endif %}
+
         <div class="stats-row">
             <div class="stat-card">
                 <div class="stat-icon yellow"><i class="fa-solid fa-star"></i></div>
@@ -96,6 +141,7 @@
                         <th>Équipement</th>
                         <th>Auteur</th>
                         <th>Commentaire</th>
+                        <th>Sentiment</th>
                         <th>Date</th>
                         <th style="text-align:right;">Action</th>
                     </tr>
@@ -119,6 +165,13 @@
                             {% endif %}
                         </td>
                         <td><div class="comment-text" title="{{ review.commentaire }}">{{ review.commentaire|default('—') }}</div></td>
+                        <td>
+                            {% if review.commentaire %}
+                                {{ review.commentaire|sentiment_badge }}
+                            {% else %}
+                                <span style="color:var(--text-muted); font-size:0.8rem;">—</span>
+                            {% endif %}
+                        </td>
                         <td style="color:var(--text-muted);font-size:0.85rem;">
                             {{ review.dateReview ? review.dateReview|date('d/m/Y') : '—' }}
                         </td>
@@ -132,7 +185,7 @@
                     </tr>
                 {% else %}
                     <tr>
-                        <td colspan="6" style="text-align:center;padding:3rem;color:var(--text-muted);">
+                        <td colspan="7" style="text-align:center;padding:3rem;color:var(--text-muted);">
                             <i class="fa-solid fa-star-half-stroke" style="font-size:2.5rem;margin-bottom:1rem;opacity:0.4;display:block;"></i>
                             Aucun avis enregistré pour le moment.
                         </td>
