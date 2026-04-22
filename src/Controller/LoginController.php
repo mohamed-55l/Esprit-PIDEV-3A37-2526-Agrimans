@@ -10,16 +10,19 @@ use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\HttpFoundation\Session\SessionInterface;
 use Symfony\Component\Routing\Annotation\Route;
-use Symfony\Contracts\HttpClient\HttpClientInterface; 
+use Symfony\Contracts\HttpClient\HttpClientInterface;
+use Symfony\Component\Security\Core\Authentication\Token\Storage\TokenStorageInterface;
+use Symfony\Component\Security\Http\Authenticator\Token\PostAuthenticationToken;
 
 class LoginController extends AbstractController
 {
-    #[Route('/', name: 'app_login')]
+    #[Route('/login', name: 'app_login')]
     public function index(
         Request $request,
         EntityManagerInterface $em,
         SessionInterface $session,
-        HttpClientInterface $client
+        HttpClientInterface $client,
+        TokenStorageInterface $tokenStorage
     ): Response {
         
         $error = null;
