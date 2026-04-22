@@ -12,6 +12,9 @@
             <h1 style="font-size: 2.2rem; font-weight: 700; color: #fff; margin-bottom: 0.5rem;"><i class="fa-solid fa-map" style="color: var(--primary); margin-right: 10px;"></i> {{ parcelle.nom }}</h1>
         </div>
         <div class="page-actions" style="display: flex; gap: 1rem;">
+            <a href="{{ path('app_parcelle_ai_recommendation', {'id': parcelle.id}) }}" class="btn" style="background: linear-gradient(45deg, #9b59b6, #3498db); color: #fff; padding: 0.6rem 1.2rem; border-radius: 8px; text-decoration: none; font-weight: 600; box-shadow: 0 4px 15px rgba(155, 89, 182, 0.3);">
+                <i class="fa-solid fa-wand-magic-sparkles"></i> Recommandation IA
+            </a>
             <a href="{{ path('app_parcelle_edit', {'id': parcelle.id}) }}" class="btn" style="background: rgba(52, 152, 219, 0.2); color: #3498db; padding: 0.6rem 1.2rem; border-radius: 8px; text-decoration: none; font-weight: 600;">
                 <i class="fa-solid fa-pen"></i> Modifier
             </a>

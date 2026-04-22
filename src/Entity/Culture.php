@@ -108,7 +108,7 @@ class Culture
     }
 
     #[ORM\ManyToOne(targetEntity: Parcelle::class)]
-    #[ORM\JoinColumn(name: 'parcelle_id', referencedColumnName: 'id_parcelle', nullable: true)]
+    #[ORM\JoinColumn(name: 'parcelle_id', referencedColumnName: 'id_parcelle', nullable: true, onDelete: 'SET NULL')]
     private ?Parcelle $parcelle = null;
 
     public function getParcelle(): ?Parcelle
