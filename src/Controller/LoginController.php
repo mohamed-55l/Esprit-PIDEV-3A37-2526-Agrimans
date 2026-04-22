@@ -14,7 +14,7 @@ use Symfony\Contracts\HttpClient\HttpClientInterface;
 
 class LoginController extends AbstractController
 {
-    #[Route('/', name: 'app_login')]
+    #[Route('/login', name: 'app_login')]
     public function index(
         Request $request,
         EntityManagerInterface $em,
