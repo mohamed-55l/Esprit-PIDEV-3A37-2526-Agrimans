@@ -14,124 +14,36 @@
     <style>
         :root {
             --primary: #198B61;
-            --primary-hover: #147350;
-            --secondary: #2C3E50;
             --dark: #12181b;
             --dark-card: #1e2529;
             --text-main: #f8f9fa;
             --text-muted: #9ba4b5;
-            --border-color: rgba(255, 255, 255, 0.08);
+            --border: rgba(255,255,255,0.08);
             --danger: #e74c3c;
             --warning: #f1c40f;
             --success: #2ecc71;
-            --sidebar-width: 280px;
+            --sidebar-width: 260px;
         }
+        * { margin:0; padding:0; box-sizing:border-box; font-family:'Inter',sans-serif; }
+        body { background:var(--dark); color:var(--text-main); display:flex; min-height:100vh; }
 
-        * {
-            margin: 0;
-            padding: 0;
-            box-sizing: border-box;
-            font-family: 'Inter', sans-serif;
-        }
+        /* ── SIDEBAR (version compacte unifiée) ── */
+        .sidebar { width:var(--sidebar-width); background:var(--dark-card); border-right:1px solid var(--border); position:fixed; height:100vh; display:flex; flex-direction:column; z-index:100; }
+        .sidebar-header { padding:1.2rem 1rem; border-bottom:1px solid var(--border); display:flex; align-items:center; gap:.8rem; }
+        .sidebar-header i { color:var(--danger); font-size:1.4rem; }
+        .sidebar-header span { font-size:1.05rem; font-weight:700; color:white; }
+        .sidebar-header sup { color:var(--danger); font-size:.6rem; vertical-align:top; }
+        .sidebar-nav { padding:1rem .8rem; flex:1; overflow-y:auto; }
+        .nav-item { display:flex; align-items:center; gap:.8rem; padding:.7rem 1rem; border-radius:10px; text-decoration:none; color:var(--text-muted); font-weight:500; font-size:.875rem; transition:all .25s; margin-bottom:.2rem; }
+        .nav-item:hover, .nav-item.active { background:rgba(231,76,60,.1); color:var(--danger); }
+        .nav-item i { width:18px; text-align:center; font-size:1rem; }
+        .nav-section { font-size:.68rem; text-transform:uppercase; letter-spacing:1px; color:var(--text-muted); padding:.9rem .5rem .3rem; font-weight:600; }
+        .sidebar-footer { padding:.8rem; border-top:1px solid var(--border); }
+        .nav-item-logout:hover { background:rgba(231,76,60,.15); color:var(--danger); }
 
-        body {
-            background-color: var(--dark);
-            color: var(--text-main);
-            display: flex;
-            min-height: 100vh;
-            overflow-x: hidden;
-        }
-
-        /* Sidebar Styles */
-        .sidebar {
-            width: var(--sidebar-width);
-            background-color: var(--dark-card);
-            border-right: 1px solid var(--border-color);
-            display: flex;
-            flex-direction: column;
-            position: fixed;
-            height: 100vh;
-            left: 0;
-            top: 0;
-            z-index: 100;
-        }
-
-        .sidebar-header {
-            padding: 1.5rem;
-            display: flex;
-            align-items: center;
-            gap: 1rem;
-            border-bottom: 1px solid var(--border-color);
-        }
-
-        .sidebar-nav {
-            padding: 1.5rem 1rem;
-            flex: 1;
-            overflow-y: auto;
-        }
-
-        .nav-section-title {
-            text-transform: uppercase;
-            font-size: 0.75rem;
-            color: var(--text-muted);
-            letter-spacing: 1px;
-            margin-bottom: 1rem;
-            margin-top: 1.5rem;
-            padding-left: 0.5rem;
-            font-weight: 600;
-        }
-
-        .nav-section-title:first-child {
-            margin-top: 0;
-        }
-
-        .nav-item {
-            display: flex;
-            align-items: center;
-            gap: 1rem;
-            padding: 0.8rem 1rem;
-            color: var(--text-muted);
-            text-decoration: none;
-            border-radius: 10px;
-            margin-bottom: 0.3rem;
-            transition: all 0.3s ease;
-            font-weight: 500;
-        }
-
-        .nav-item:hover, .nav-item.active {
-            background-color: rgba(25, 139, 97, 0.1);
-            color: var(--primary);
-        }
-
-        .nav-item i {
-            width: 20px;
-            text-align: center;
-            font-size: 1.1rem;
-        }
-
-        .sidebar-footer {
-            padding: 1.5rem;
-            border-top: 1px solid var(--border-color);
-        }
-
-        /* Main Content Styles */
-        .main-content {
-            margin-left: var(--sidebar-width);
-            flex: 1;
-            display: flex;
-            flex-direction: column;
-            min-height: 100vh;
-        }
-
-        .topbar {
-            height: 80px;
-            padding: 0 2rem;
-            display: flex;
-            align-items: center;
-            justify-content: space-between;
-            background-color: var(--dark-card);
-            border-bottom: 1px solid var(--border-color);
-        }
+        /* ── MAIN ── */
+        .main-content { margin-left:var(--sidebar-width); flex:1; display:flex; flex-direction:column; min-height:100vh; }
+        .topbar { height:72px; padding:0 2rem; display:flex; align-items:center; justify-content:space-between; background:var(--dark-card); border-bottom:1px solid var(--border); }
 
         .topbar-search {
             position: relative;
@@ -369,57 +281,7 @@
 </head>
 <body>
 
-    <!-- Sidebar -->
-    <aside class="sidebar">
-        <div class="sidebar-header">
-            <i class="fa-solid fa-shield-halved" style="color: var(--danger); font-size: 1.5rem;"></i>
-            <span style="font-size: 1.2rem; font-weight: 700; color: white;">AGRIMANS <span style="color:var(--danger); font-size:0.8rem; vertical-align:top;">PRO</span></span>
-        </div>
-
-        <div class="sidebar-nav">
-            <a href="{{ path('app_admin') }}" class="nav-item active" style="color: var(--danger); background-color: rgba(231, 76, 60, 0.1);">
-                <i class="fa-solid fa-gauge-high"></i>
-                Tableau de Bord
-            </a>
-            
-            <div class="nav-section-title">Administration</div>
-            <a href="{{ path('app_user_management') }}" class="nav-item">
-                <i class="fa-solid fa-users"></i>
-                Utilisateurs
-            </a>
-            <a href="{{ path('app_marketplace_index') }}" class="nav-item">
-                <i class="fa-solid fa-store"></i>
-                Boutique
-            </a>
-            <a href="{{ path('app_marketplace_stats') }}" class="nav-item">
-                <i class="fa-solid fa-chart-line"></i>
-                Statistiques Ventes
-            </a>
-            <div class="nav-section-title">Équipements & Avis</div>
-            <a href="{{ path('admin_equipement_index') }}" class="nav-item">
-                <i class="fa-solid fa-tractor"></i>
-                Gestion Équipements
-            </a>
-            <a href="{{ path('admin_review_index') }}" class="nav-item">
-                <i class="fa-solid fa-star"></i>
-                Avis & Reviews
-            </a>
-
-            <div class="nav-section-title">Agriculture</div>
-            <a href="{{ path('app_admin_view_parcelles_cultures') }}" class="nav-item">
-                <i class="fa-solid fa-eye"></i>
-                Visualisation Parcelle & Culture
-            </a>
-            
-        </div>
-
-        <div class="sidebar-footer">
-            <a href="{{ path('app_home') }}" class="nav-item" style="color: var(--text-muted);">
-                <i class="fa-solid fa-arrow-left"></i>
-                Retour au site
-            </a>
-        </div>
-    </aside>
+    {% include 'admin/_sidebar.html.twig' with {active: 'dashboard'} %}
 
     <!-- Main Content -->
     <main class="main-content">

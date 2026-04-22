@@ -114,24 +114,6 @@ class LoginController extends AbstractController
         ]);
     }
 
-    #[Route('/admin', name: 'admin_dashboard')]
-    public function adminDashboard(SessionInterface $session, EntityManagerInterface $em): Response
-    {
-        if (!$session->get('user_id')) {
-            return $this->redirectToRoute('app_login');
-        }
-
-        if ($session->get('user_role') !== 'ADMIN') {
-            return new Response("Accès refusé");
-        }
-
-        $users = $em->getRepository(Users::class)->findAll();
-
-        return $this->render('admin/dashboard.html.twig', [
-            'users' => $users
-        ]);
-    }
-
     #[Route('/logout', name: 'app_logout')]
     public function logout(SessionInterface $session, TokenStorageInterface $tokenStorage): Response
     {
