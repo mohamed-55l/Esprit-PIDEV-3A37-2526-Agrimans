@@ -1,0 +1,65 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}Gestion des Packs{% endblock %}
+
+{% block body %}
+    <section class="content-section" style="margin-top: 2rem;">
+        <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 2rem;">
+            <h2><i class="fa-solid fa-gift"></i> Gestion des Packs (Admin)</h2>
+            <a href="{{ path('app_admin_bundle_new') }}" class="btn btn-primary">
+                <i class="fa-solid fa-plus"></i> Nouveau Pack
+            </a>
+        </div>
+
+        {# Flash messages #}
+        {% for type, messages in app.flashes %}
+            {% for message in messages %}
+                <div style="padding: 1rem; margin-bottom: 1rem; border-radius: 8px; background: {{ type == 'success' ? 'rgba(125, 191, 108, 0.2)' : 'rgba(231, 76, 60, 0.2)' }}; border: 1px solid {{ type == 'success' ? '#7DBF6C' : '#e74c3c' }};">
+                    <i class="fa-solid {{ type == 'success' ? 'fa-check-circle' : 'fa-exclamation-circle' }}"></i> {{ message }}
+                </div>
+            {% endfor %}
+        {% endfor %}
+
+        <div class="glass-card" style="padding: 1.5rem; overflow-x: auto;">
+            <table class="styled-table" style="width: 100%;">
+                <thead>
+                    <tr>
+                        <th>Id</th>
+                        <th>Nom</th>
+                        <th>Prix Original</th>
+                        <th>Prix Pack</th>
+                        <th>Remise</th>
+                        <th>Statut</th>
+                        <th>Actions</th>
+                    </tr>
+                </thead>
+                <tbody>
+                {% for product_bundle in product_bundles %}
+                    <tr>
+                        <td>{{ product_bundle.id }}</td>
+                        <td>{{ product_bundle.name }}</td>
+                        <td>{{ product_bundle.originalPrice }} DT</td>
+                        <td><span style="color: var(--primary-color); font-weight: bold;">{{ product_bundle.bundlePrice }} DT</span></td>
+                        <td>-{{ product_bundle.discountPercentage }}%</td>
+                        <td>
+                            {% if product_bundle.isActive %}
+                                <span class="badge badge-success">Actif</span>
+                            {% else %}
+                                <span class="badge badge-danger">Inactif</span>
+                            {% endif %}
+                        </td>
+                        <td>
+                            <a href="{{ path('app_admin_bundle_show', {'id': product_bundle.id}) }}" class="btn btn-sm btn-info" style="padding: 0.2rem 0.5rem;"><i class="fa-solid fa-eye"></i></a>
+                            <a href="{{ path('app_admin_bundle_edit', {'id': product_bundle.id}) }}" class="btn btn-sm btn-primary" style="padding: 0.2rem 0.5rem;"><i class="fa-solid fa-pen"></i></a>
+                        </td>
+                    </tr>
+                {% else %}
+                    <tr>
+                        <td colspan="7" style="text-align: center; padding: 2rem; color: rgba(255,255,255,0.5);">Aucun pack trouvé</td>
+                    </tr>
+                {% endfor %}
+                </tbody>
+            </table>
+        </div>
+    </section>
+{% endblock %}

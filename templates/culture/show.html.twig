@@ -53,6 +53,22 @@
                 </p>
             </div>
         </div>
+        
+        {% if culture.infoFileName %}
+        <div style="margin-top: 2rem; padding-top: 2rem; border-top: 1px solid rgba(255,255,255,0.1);">
+            <p style="color: rgba(255,255,255,0.5); font-size: 0.85rem; text-transform: uppercase; margin-bottom: 0.5rem;">Fichier de formation</p>
+            <a href="{{ vich_uploader_asset(culture, 'infoFile') }}" target="_blank" style="display: inline-flex; align-items: center; gap: 10px; background: rgba(52, 152, 219, 0.1); padding: 1rem; border-radius: 8px; text-decoration: none; border: 1px solid rgba(52, 152, 219, 0.3); width: 100%; transition: all 0.3s;" class="pdf-download-link">
+                <div style="width: 40px; height: 40px; border-radius: 8px; background: #3498db; display: flex; align-items: center; justify-content: center; color: white;">
+                    <i class="fa-solid fa-file-pdf"></i>
+                </div>
+                <div style="flex: 1;">
+                    <div style="color: #fff; font-weight: 600; font-size: 1.1rem;">Manuel de culture.pdf</div>
+                    <div style="color: rgba(255,255,255,0.6); font-size: 0.85rem;">Cliquez pour voir ou télécharger le document</div>
+                </div>
+                <i class="fa-solid fa-download" style="color: #3498db;"></i>
+            </a>
+        </div>
+        {% endif %}
 
         <div style="margin-top: 2rem; padding-top: 2rem; border-top: 1px solid rgba(255,255,255,0.1);">
             <p style="color: rgba(255,255,255,0.5); font-size: 0.85rem; text-transform: uppercase; margin-bottom: 0.5rem;">Parcelle Assignée</p>
@@ -91,6 +107,10 @@
     a[href*='app_parcelle_show']:hover {
         background: rgba(25, 139, 97, 0.2) !important;
         border-color: var(--primary) !important;
+    }
+    .pdf-download-link:hover {
+        background: rgba(52, 152, 219, 0.2) !important;
+        border-color: #3498db !important;
     }
 </style>
 {% endblock %}

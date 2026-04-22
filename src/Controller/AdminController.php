@@ -4,12 +4,15 @@ namespace App\Controller;
 
 use App\Entity\User; // ✅ 
 use App\Enum\UserRole;
+use Doctrine\ORM\EntityManagerInterface;
+use App\Repository\CultureRepository;
+use App\Repository\ParcelleRepository;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
+use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Attribute\Route;
 use Symfony\Component\HttpFoundation\Session\SessionInterface;
-use Symfony\Component\HttpFoundation\Request;
-use Doctrine\ORM\EntityManagerInterface;
+
 
 class AdminController extends AbstractController
 {
@@ -35,8 +38,8 @@ class AdminController extends AbstractController
         ];
 
         return $this->render('admin/index.html.twig', [
+            'stats' => $stats,
             'users' => $users,
-            'stats' => $stats
         ]);
     }
 
@@ -59,7 +62,6 @@ class AdminController extends AbstractController
         return $this->redirectToRoute('admin_dashboard');
     }
 
-    // ✅ UPDATE USER
     #[Route('/user/update/{id}', name: 'user_update')]
     public function update($id, Request $request, EntityManagerInterface $em, SessionInterface $session): Response
     {

@@ -25,23 +25,42 @@
         <div style="color: #e74c3c; font-size: 0.85rem; margin-top: 0.3rem;">{{ form_errors(form.type_sol) }}</div>
     </div>
 
-    <div class="form-group">
-        {{ form_label(form.latitude) }}
-        {{ form_widget(form.latitude) }}
-        <div style="color: #e74c3c; font-size: 0.85rem; margin-top: 0.3rem;">{{ form_errors(form.latitude) }}</div>
+    <div class="form-group" style="display: grid; grid-template-columns: 1fr 1fr; gap: 1rem;">
+        <div>
+            {{ form_label(form.latitude) }}
+            {{ form_widget(form.latitude) }}
+            <div style="color: #e74c3c; font-size: 0.85rem; margin-top: 0.3rem;">{{ form_errors(form.latitude) }}</div>
+        </div>
+        <div>
+            {{ form_label(form.longitude) }}
+            {{ form_widget(form.longitude) }}
+            <div style="color: #e74c3c; font-size: 0.85rem; margin-top: 0.3rem;">{{ form_errors(form.longitude) }}</div>
+        </div>
     </div>
 
-    <div class="form-group">
-        {{ form_label(form.longitude) }}
-        {{ form_widget(form.longitude) }}
-        <div style="color: #e74c3c; font-size: 0.85rem; margin-top: 0.3rem;">{{ form_errors(form.longitude) }}</div>
+    {# Carte d'aide pour choisir les coordonnées #}
+    <div style="margin-bottom: 1.5rem;">
+        <p style="color: rgba(255,255,255,0.7); font-size: 0.85rem; margin-bottom: 0.5rem;"><i class="fa-solid fa-crosshairs"></i> Astuce : Cliquez sur la carte pour définir les coordonnées (Optionnel)</p>
+        <div id="form-map" style="height: 250px; border-radius: 8px; border: 1px solid rgba(255,255,255,0.1); z-index: 1;"></div>
     </div>
 
-    <div class="form-group">
-        {{ form_label(form.user) }}
-        {{ form_widget(form.user) }}
-        <div style="color: #e74c3c; font-size: 0.85rem; margin-top: 0.3rem;">{{ form_errors(form.user) }}</div>
-    </div>
+    {# Champ user : visible uniquement pour l'admin #}
+    {% if is_granted('ROLE_ADMIN') and form.user is defined %}
+        <div class="form-group">
+            <div style="background: rgba(52,152,219,0.1); border: 1px solid rgba(52,152,219,0.3); border-radius: 10px; padding: 0.8rem 1rem; margin-bottom: 0.8rem; font-size: 0.85rem; color: rgba(255,255,255,0.7);">
+                <i class="fa-solid fa-user-tie" style="color: #3498db; margin-right: 6px;"></i>
+                <strong>Mode Admin :</strong> Vous pouvez assigner cette parcelle à n'importe quel utilisateur.
+            </div>
+            {{ form_label(form.user) }}
+            {{ form_widget(form.user) }}
+            <div style="color: #e74c3c; font-size: 0.85rem; margin-top: 0.3rem;">{{ form_errors(form.user) }}</div>
+        </div>
+    {% else %}
+        <div style="background: rgba(25,139,97,0.1); border: 1px solid rgba(25,139,97,0.3); border-radius: 10px; padding: 0.8rem 1rem; margin-bottom: 1rem; font-size: 0.85rem; color: rgba(255,255,255,0.7);">
+            <i class="fa-solid fa-circle-check" style="color: #27ae60; margin-right: 6px;"></i>
+            Cette parcelle sera automatiquement assignée à votre compte (<strong>{{ app.user.email }}</strong>).
+        </div>
+    {% endif %}
 
-    <button class="btn btn-primary">{{ button_label|default('Save') }}</button>
+    <button class="btn btn-primary">{{ button_label|default('Enregistrer') }}</button>
 {{ form_end(form) }}

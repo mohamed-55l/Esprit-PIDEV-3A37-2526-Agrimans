@@ -1,0 +1,18 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}Nouveau Pack{% endblock %}
+
+{% block body %}
+    <section class="content-section" style="margin-top: 2rem;">
+        <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 2rem;">
+            <h2><i class="fa-solid fa-plus"></i> Créer un nouveau Pack</h2>
+            <a href="{{ path('app_admin_bundle_index') }}" class="btn btn-secondary">
+                <i class="fa-solid fa-arrow-left"></i> Retour à la liste
+            </a>
+        </div>
+
+        <div class="glass-card" style="padding: 2rem; max-width: 800px; margin: 0 auto;">
+            {{ include('admin_bundle/_form.html.twig') }}
+        </div>
+    </section>
+{% endblock %}

@@ -1,0 +1,192 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}Statistiques Agricoles | Agrimans{% endblock %}
+
+{% block stylesheets %}
+<style>
+    .stats-page { max-width: 1200px; margin: 2rem auto; padding: 0 1rem; }
+    .stats-hero {
+        background: linear-gradient(135deg, rgba(52,152,219,0.15), rgba(155,89,182,0.08));
+        border: 1px solid rgba(52,152,219,0.25); border-radius: 20px;
+        padding: 2.5rem; margin-bottom: 2rem;
+        display: flex; align-items: center; gap: 1.2rem;
+    }
+    .kpi-grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 1.2rem; margin-bottom: 2rem; }
+    .kpi-card {
+        background: rgba(255,255,255,0.04); border: 1px solid rgba(255,255,255,0.08);
+        border-radius: 16px; padding: 1.5rem; text-align: center;
+        transition: transform 0.2s, box-shadow 0.2s;
+    }
+    .kpi-card:hover { transform: translateY(-4px); box-shadow: 0 8px 20px rgba(0,0,0,0.2); }
+    .kpi-icon { font-size: 2rem; margin-bottom: 0.7rem; }
+    .kpi-val { font-size: 2.5rem; font-weight: 800; color: #fff; line-height: 1; }
+    .kpi-label { font-size: 0.8rem; color: rgba(255,255,255,0.5); margin-top: 0.4rem; text-transform: uppercase; letter-spacing: 0.5px; }
+    .chart-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 1.5rem; margin-bottom: 1.5rem; }
+    .chart-card {
+        background: rgba(255,255,255,0.03); border: 1px solid rgba(255,255,255,0.08);
+        border-radius: 16px; padding: 1.5rem;
+    }
+    .chart-card h3 { font-size: 1rem; font-weight: 700; color: rgba(255,255,255,0.9); margin-bottom: 1.2rem; }
+    .chart-full { grid-column: 1 / -1; }
+</style>
+{% endblock %}
+
+{% block body %}
+<div class="stats-page">
+
+    {# Hero #}
+    <div class="stats-hero">
+        <div style="width:60px;height:60px;border-radius:16px;background:rgba(52,152,219,0.3);display:flex;align-items:center;justify-content:center;font-size:1.8rem;">📊</div>
+        <div>
+            <h1 style="font-size:1.9rem;font-weight:800;color:#fff;margin:0;">Statistiques Agricoles</h1>
+            <p style="color:rgba(255,255,255,0.55);margin:0.3rem 0 0;">Vue d'ensemble de vos parcelles et cultures</p>
+        </div>
+    </div>
+
+    {# KPIs #}
+    <div class="kpi-grid">
+        <div class="kpi-card" style="border-color:rgba(25,139,97,0.3);">
+            <div class="kpi-icon">🗺️</div>
+            <div class="kpi-val" style="color:#27ae60;">{{ stats.kpi.nb_parcelles }}</div>
+            <div class="kpi-label">Parcelles</div>
+        </div>
+        <div class="kpi-card" style="border-color:rgba(52,152,219,0.3);">
+            <div class="kpi-icon">📐</div>
+            <div class="kpi-val" style="color:#3498db;">{{ stats.kpi.superficie_totale }}</div>
+            <div class="kpi-label">Hectares totaux</div>
+        </div>
+        <div class="kpi-card" style="border-color:rgba(155,89,182,0.3);">
+            <div class="kpi-icon">🌱</div>
+            <div class="kpi-val" style="color:#9b59b6;">{{ stats.kpi.nb_cultures }}</div>
+            <div class="kpi-label">Cultures suivies</div>
+        </div>
+        <div class="kpi-card" style="border-color:rgba(230,126,34,0.3);">
+            <div class="kpi-icon">🌾</div>
+            <div class="kpi-val" style="color:#e67e22;">{{ stats.kpi.recoltes_proches }}</div>
+            <div class="kpi-label">Récoltes (30 jours)</div>
+        </div>
+    </div>
+
+    {# Graphiques #}
+    <div class="chart-grid">
+        {# Donut — Type de sol #}
+        <div class="chart-card">
+            <h3><i class="fa-solid fa-chart-pie" style="color:#3498db;margin-right:8px;"></i> Parcelles par type de sol</h3>
+            {% if stats.par_type_sol|length > 0 %}
+                <canvas id="chartSol" height="220"></canvas>
+            {% else %}
+                <p style="color:rgba(255,255,255,0.3);text-align:center;padding:3rem 0;">Aucune donnée</p>
+            {% endif %}
+        </div>
+
+        {# Barres — États cultures #}
+        <div class="chart-card">
+            <h3><i class="fa-solid fa-chart-bar" style="color:#27ae60;margin-right:8px;"></i> Cultures par état</h3>
+            {% if stats.par_etat|length > 0 %}
+                <canvas id="chartEtat" height="220"></canvas>
+            {% else %}
+                <p style="color:rgba(255,255,255,0.3);text-align:center;padding:3rem 0;">Aucune donnée</p>
+            {% endif %}
+        </div>
+
+        {# Ligne — Plantations par mois #}
+        <div class="chart-card chart-full">
+            <h3><i class="fa-solid fa-chart-line" style="color:#e67e22;margin-right:8px;"></i> Cultures plantées par mois</h3>
+            <canvas id="chartMois" height="120"></canvas>
+        </div>
+    </div>
+
+    {# Lien retour #}
+    <div style="display:flex;gap:1rem;flex-wrap:wrap;margin-top:0.5rem;">
+        <a href="{{ path('app_agriculture_rendement') }}" style="background:rgba(255,255,255,0.05);border:1px solid rgba(255,255,255,0.1);border-radius:12px;padding:0.8rem 1.5rem;text-decoration:none;color:#fff;">
+            🌾 Calcul Rendement
+        </a>
+        <a href="{{ path('app_agriculture_calendrier') }}" style="background:rgba(255,255,255,0.05);border:1px solid rgba(255,255,255,0.1);border-radius:12px;padding:0.8rem 1.5rem;text-decoration:none;color:#fff;">
+            📅 Calendrier Cultural
+        </a>
+    </div>
+</div>
+
+<script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.min.js"></script>
+<script>
+Chart.defaults.color = 'rgba(255,255,255,0.6)';
+Chart.defaults.borderColor = 'rgba(255,255,255,0.07)';
+
+const COLORS = ['#27ae60','#3498db','#9b59b6','#e67e22','#e74c3c','#1abc9c','#f39c12','#2ecc71'];
+
+// Donut — Type de sol
+{% if stats.par_type_sol|length > 0 %}
+const solData = {{ stats.par_type_sol|json_encode|raw }};
+new Chart(document.getElementById('chartSol'), {
+    type: 'doughnut',
+    data: {
+        labels: Object.keys(solData),
+        datasets: [{
+            data: Object.values(solData),
+            backgroundColor: COLORS,
+            borderWidth: 0,
+            hoverOffset: 8
+        }]
+    },
+    options: {
+        plugins: { legend: { position: 'bottom', labels: { padding: 15, usePointStyle: true } } },
+        cutout: '65%'
+    }
+});
+{% endif %}
+
+// Barres — États cultures
+{% if stats.par_etat|length > 0 %}
+const etatData = {{ stats.par_etat|json_encode|raw }};
+new Chart(document.getElementById('chartEtat'), {
+    type: 'bar',
+    data: {
+        labels: Object.keys(etatData),
+        datasets: [{
+            label: 'Nombre de cultures',
+            data: Object.values(etatData),
+            backgroundColor: COLORS.map(c => c + 'cc'),
+            borderColor: COLORS,
+            borderWidth: 1,
+            borderRadius: 8
+        }]
+    },
+    options: {
+        plugins: { legend: { display: false } },
+        scales: {
+            y: { beginAtZero: true, ticks: { stepSize: 1 }, grid: { color: 'rgba(255,255,255,0.05)' } },
+            x: { grid: { display: false } }
+        }
+    }
+});
+{% endif %}
+
+// Ligne — Plantations par mois
+const moisLabels = ['Jan','Fév','Mar','Avr','Mai','Juin','Jul','Aoû','Sep','Oct','Nov','Déc'];
+const moisRaw    = {{ stats.par_mois|json_encode|raw }};
+const moisData   = Object.values(moisRaw);
+new Chart(document.getElementById('chartMois'), {
+    type: 'line',
+    data: {
+        labels: moisLabels,
+        datasets: [{
+            label: 'Cultures plantées',
+            data: moisData,
+            borderColor: '#e67e22',
+            backgroundColor: 'rgba(230,126,34,0.12)',
+            tension: 0.4,
+            fill: true,
+            pointBackgroundColor: '#e67e22',
+            pointRadius: 5
+        }]
+    },
+    options: {
+        plugins: { legend: { display: false } },
+        scales: {
+            y: { beginAtZero: true, ticks: { stepSize: 1 }, grid: { color: 'rgba(255,255,255,0.05)' } },
+            x: { grid: { display: false } }
+        }
+    }
+});
+</script>
+{% endblock %}

@@ -105,7 +105,9 @@
 
                 <div style="margin-top: 1.5rem; display: flex; gap: 1rem;">
                     <a href="{{ path('app_marketplace_index') }}" class="btn btn-secondary"><i class="fa-solid fa-arrow-left"></i> Retour</a>
-                    <a href="{{ path('app_marketplace_product_edit', {'id': product.id}) }}" class="btn btn-primary"><i class="fa-solid fa-pen"></i> Modifier</a>
+                    {% if is_granted('ROLE_ADMIN') %}
+                        <a href="{{ path('app_marketplace_product_edit', {'id': product.id}) }}" class="btn btn-primary"><i class="fa-solid fa-pen"></i> Modifier</a>
+                    {% endif %}
                 </div>
             </div>
 
@@ -148,8 +150,9 @@
                     <h3 style="margin-bottom: 1rem;"><i class="fa-solid fa-comments"></i> Avis ({{ product.ratings|length }})</h3>
 
                     {% for rating in product.ratings %}
-                        <div style="padding: 1rem; margin-bottom: 1rem; background: rgba(255,255,255,0.05); border-radius: 8px; border-left: 3px solid var(--primary-color);">
-                            <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 0.5rem;">
+                        <div id="rating-{{ rating.id }}" style="padding: 1rem; margin-bottom: 1rem; background: rgba(255,255,255,0.05); border-radius: 8px; border-left: 3px solid var(--primary-color);">
+                            <div style="display: flex; justify-content: space-between; align-items: flex-start; margin-bottom: 0.5rem;">
+                                {# Stars + Author #}
                                 <div>
                                     {% for i in 1..5 %}
                                         <i class="fa-{{ i <= rating.rating ? 'solid' : 'regular' }} fa-star" style="color: #f1c40f; font-size: 0.9rem;"></i>
@@ -159,11 +162,95 @@
                                             {{ rating.priceCategory }}
                                         </span>
                                     {% endif %}
+                                    <div style="font-size: 0.75rem; color: rgba(255,255,255,0.5); margin-top: 0.25rem;">
+                                        {% if rating.user %}
+                                            <i class="fa-solid fa-user"></i>
+                                            {{ rating.user.prenom ?? rating.user.nom ?? 'Utilisateur' }}
+                                        {% endif %}
+                                        &nbsp;·&nbsp; {{ rating.createdAt|date('d/m/Y H:i') }}
+                                    </div>
                                 </div>
-                                <span style="font-size: 0.75rem; color: rgba(255,255,255,0.4);">{{ rating.createdAt|date('d/m/Y H:i') }}</span>
+
+                                {# Actions (owner only) #}
+                                {% if app.user and (rating.user == app.user or rating.userId == app.user.id) %}
+                                    <div style="display: flex; gap: 0.4rem; flex-shrink: 0;">
+                                        {# Edit button #}
+                                        <button type="button"
+                                                onclick="toggleEditForm({{ rating.id }})"
+                                                class="btn" title="Modifier"
+                                                style="font-size: 0.75rem; padding: 0.25rem 0.5rem; background: rgba(52,152,219,0.15); border: 1px solid #3498db; color: #3498db;">
+                                            <i class="fa-solid fa-pen"></i>
+                                        </button>
+                                        {# Delete button #}
+                                        <form method="POST" action="{{ path('app_marketplace_rating_delete', {'id': rating.id}) }}" style="display: inline; margin: 0;">
+                                            <button type="submit" class="btn" title="Supprimer"
+                                                    onclick="return confirm('Supprimer cet avis ?')"
+                                                    style="font-size: 0.75rem; padding: 0.25rem 0.5rem; background: rgba(231,76,60,0.15); border: 1px solid #e74c3c; color: #e74c3c;">
+                                                <i class="fa-solid fa-trash"></i>
+                                            </button>
+                                            <input type="hidden" name="_token" value="{{ csrf_token('delete' ~ rating.id) }}">
+                                        </form>
+                                    </div>
+                                {% endif %}
                             </div>
+
+                            {# Comment #}
                             {% if rating.comment %}
-                                <p style="color: rgba(255,255,255,0.8); font-size: 0.9rem; margin: 0;">{{ rating.comment }}</p>
+                                <p style="color: rgba(255,255,255,0.8); font-size: 0.9rem; margin: 0.5rem 0;">{{ rating.comment }}</p>
+                            {% endif %}
+
+                            {# Like / Dislike bar #}
+                            <div style="display: flex; align-items: center; gap: 0.75rem; margin-top: 0.6rem;">
+                                {# Like #}
+                                <form method="POST" action="{{ path('app_marketplace_rating_like', {'id': rating.id}) }}" style="margin: 0;">
+                                    <input type="hidden" name="vote" value="like">
+                                    <button type="submit" class="btn"
+                                            style="font-size: 0.8rem; padding: 0.2rem 0.6rem;
+                                                   background: rgba(125,191,108,0.15);
+                                                   border: 1px solid rgba(125,191,108,0.5);
+                                                   color: #7DBF6C; cursor: pointer;">
+                                        <i class="fa-solid fa-thumbs-up"></i>
+                                        <span>{{ rating.upvotes }}</span>
+                                    </button>
+                                </form>
+                                {# Dislike #}
+                                <form method="POST" action="{{ path('app_marketplace_rating_like', {'id': rating.id}) }}" style="margin: 0;">
+                                    <input type="hidden" name="vote" value="dislike">
+                                    <button type="submit" class="btn"
+                                            style="font-size: 0.8rem; padding: 0.2rem 0.6rem;
+                                                   background: rgba(231,76,60,0.15);
+                                                   border: 1px solid rgba(231,76,60,0.4);
+                                                   color: #e74c3c; cursor: pointer;">
+                                        <i class="fa-solid fa-thumbs-down"></i>
+                                        <span>{{ rating.downvotes }}</span>
+                                    </button>
+                                </form>
+                            </div>
+
+                            {# Inline Edit Form (hidden by default) #}
+                            {% if app.user and (rating.user == app.user or rating.userId == app.user.id) %}
+                                <div id="edit-form-{{ rating.id }}" style="display:none; margin-top: 0.75rem; padding: 0.75rem; background: rgba(255,255,255,0.04); border-radius: 6px; border: 1px solid rgba(255,255,255,0.1);">
+                                    <form method="POST" action="{{ path('app_marketplace_rating_edit', {'id': rating.id}) }}">
+                                        <input type="hidden" name="_token" value="{{ csrf_token('edit-rating-' ~ rating.id) }}">
+                                        <div style="display: flex; gap: 0.5rem; margin-bottom: 0.5rem; flex-wrap: wrap;">
+                                            {% for i in 1..5 %}
+                                                <label style="cursor: pointer; display: flex; align-items: center; gap: 0.25rem; font-size: 0.85rem;">
+                                                    <input type="radio" name="rating" value="{{ i }}" {{ rating.rating == i ? 'checked' : '' }}>
+                                                    {{ i }} <i class="fa-solid fa-star" style="color: #f1c40f; font-size: 0.75rem;"></i>
+                                                </label>
+                                            {% endfor %}
+                                        </div>
+                                        <textarea name="comment" rows="2" class="form-control" style="width: 100%; margin-bottom: 0.5rem; font-size: 0.85rem;">{{ rating.comment }}</textarea>
+                                        <div style="display: flex; gap: 0.5rem;">
+                                            <button type="submit" class="btn btn-primary" style="font-size: 0.8rem; padding: 0.3rem 0.8rem;">
+                                                <i class="fa-solid fa-save"></i> Enregistrer
+                                            </button>
+                                            <button type="button" onclick="toggleEditForm({{ rating.id }})" class="btn btn-secondary" style="font-size: 0.8rem; padding: 0.3rem 0.8rem;">
+                                                Annuler
+                                            </button>
+                                        </div>
+                                    </form>
+                                </div>
                             {% endif %}
                         </div>
                     {% else %}
@@ -173,4 +260,11 @@
             </div>
         </div>
     </section>
+
+    <script>
+    function toggleEditForm(id) {
+        const form = document.getElementById('edit-form-' + id);
+        form.style.display = form.style.display === 'none' ? 'block' : 'none';
+    }
+    </script>
 {% endblock %}

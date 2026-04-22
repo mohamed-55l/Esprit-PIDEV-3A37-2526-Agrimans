@@ -1,0 +1,59 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <title>Modifier Équipement | Admin Agrimans</title>
+    <style>
+        :root { --primary:#198B61; --dark:#12181b; --dark-card:#1e2529; --text-main:#f8f9fa; --text-muted:#9ba4b5; --border:rgba(255,255,255,0.08); --danger:#e74c3c; }
+    </style>
+</head>
+<body>
+{% include 'admin/_sidebar.html.twig' with {active: 'equipements'} %}
+<main class="main">
+    <header class="topbar">
+        <div style="font-size:1rem;font-weight:600;">
+            <a href="{{ path('admin_equipement_index') }}" style="color:var(--text-muted);text-decoration:none;">Équipements</a>
+            <span style="color:var(--text-muted);margin:0 0.5rem;">/</span>
+            <span style="color:white;">Modifier — {{ equipement.nom }}</span>
+        </div>
+    </header>
+    <div class="content">
+        <h1 class="page-title"><i class="fa-solid fa-pen" style="color:#e67e22;margin-right:8px;"></i>Modifier l'Équipement</h1>
+        <p class="page-sub">Modifiez les informations de <strong>{{ equipement.nom }}</strong>.</p>
+
+        <div class="form-card">
+            <div class="edit-banner">
+                <i class="fa-solid fa-pen-to-square"></i>
+                Vous modifiez l'équipement <strong>{{ equipement.nom }}</strong> (ID: {{ equipement.id }})
+            </div>
+            {{ form_start(form, {attr: {novalidate: 'novalidate'}}) }}
+                <div class="form-group">
+                    {{ form_label(form.nom) }}
+                    {{ form_widget(form.nom) }}
+                    {{ form_errors(form.nom) }}
+                </div>
+                <div class="form-group">
+                    {{ form_label(form.type) }}
+                    {{ form_widget(form.type) }}
+                    {{ form_errors(form.type) }}
+                </div>
+                <div class="form-group">
+                    {{ form_label(form.prix) }}
+                    {{ form_widget(form.prix) }}
+                    {{ form_errors(form.prix) }}
+                </div>
+                <div class="form-group">
+                    {{ form_label(form.disponibilite) }}
+                    {{ form_widget(form.disponibilite) }}
+                    {{ form_errors(form.disponibilite) }}
+                </div>
+                <div class="form-actions">
+                    <button type="submit" class="btn btn-primary"><i class="fa-solid fa-save"></i> Enregistrer</button>
+                    <a href="{{ path('admin_equipement_index') }}" class="btn btn-secondary"><i class="fa-solid fa-times"></i> Annuler</a>
+                </div>
+            {{ form_end(form) }}
+        </div>
+    </div>
+</main>
+</body>
+</html>
