@@ -10,7 +10,7 @@ use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\HttpFoundation\Session\SessionInterface;
 use Symfony\Component\Routing\Annotation\Route;
-use Symfony\Contracts\HttpClient\HttpClientInterface; 
+use Symfony\Contracts\HttpClient\HttpClientInterface;
 
 class LoginController extends AbstractController
 {
@@ -53,8 +53,8 @@ class LoginController extends AbstractController
                     $error = "reCAPTCHA invalide.";
                 } else {
 
-                    // 🔍 chercher user 
-                    $user = $em->getRepository(Users::class)->findOneBy([
+                    // 🔍 chercher user
+                    $user = $em->getRepository(User::class)->findOneBy([
                         'email' => $email
                     ]);
 
@@ -114,7 +114,7 @@ class LoginController extends AbstractController
             return new Response("Accès refusé");
         }
 
-        $users = $em->getRepository(Users::class)->findAll();
+        $users = $em->getRepository(User::class)->findAll();
 
         return $this->render('admin/dashboard.html.twig', [
             'users' => $users

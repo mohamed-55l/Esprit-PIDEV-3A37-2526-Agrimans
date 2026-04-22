@@ -5,7 +5,7 @@ security:
         
     # https://symfony.com/doc/current/security.html#loading-the-user-the-user-provider
     providers:
-       
+        # 🔴 NOUVEAU: ربطنا الـ sécurité بالـ Entity الجديدة متاعك "Users"
         app_user_provider:
             entity:
                 class: App\Entity\Users
@@ -17,7 +17,7 @@ security:
             security: false
         main:
             lazy: true
-            
+            # 🔴 NOUVEAU: استعملنا الـ provider اللي صنعناه الفوق
             provider: app_user_provider
 
             # activate different ways to authenticate

@@ -39,52 +39,44 @@
                 
                 <div class="form-grid">
                     
-                    {% set is_pending = app.session.get('pending_user') %}
-
                     <div class="form-group">
                         <label>Nom et prénom</label>
-                        <input type="text" name="name" value="{{ is_pending ? is_pending.name : (data.name ?? '') }}" {% if is_pending %}readonly{% endif %} required>
+                        <input type="text" name="name" value="{{ data.name ?? '' }}" required>
                     </div>
-
                     <div class="form-group">
                         <label>Mot de passe</label>
-                        <input type="password" name="password" value="{{ is_pending ? is_pending.password : '' }}" required>
+                        <input type="password" name="password" {% if not app.session.get('pending_user') %}required{% endif %}>
                     </div>
 
                     <div class="form-group">
                         <label>Adresse email</label>
-                        <input type="email" name="email" value="{{ is_pending ? is_pending.email : (data.email ?? '') }}" {% if is_pending %}readonly{% endif %} required>
+                        <input type="email" name="email" value="{{ data.email ?? '' }}" required>
                     </div>
-
                     <div class="form-group">
                         <label>Confirmer mot de passe</label>
-                        <input type="password" name="confirm" value="{{ is_pending ? is_pending.password : '' }}" required>
+                        <input type="password" name="confirm" {% if not app.session.get('pending_user') %}required{% endif %}>
                     </div>
 
                     <div class="form-group">
                         <label>Téléphone</label>
-                        <input type="text" name="phone" value="{{ is_pending ? is_pending.phone : (data.phone ?? '') }}" {% if is_pending %}readonly{% endif %} required>
+                        <input type="text" name="phone" value="{{ data.phone ?? '' }}" required>
                     </div>
                     
                     <div class="form-group hidden-mobile"></div>
 
                     <div class="form-group">
                         <label>Code de vérification</label>
-                        <input type="text" name="otp" maxlength="6" placeholder="Entrez le code reçu" {% if not is_pending %}disabled{% endif %}>
+                        <input type="text" name="otp" maxlength="6">
                     </div>
                     
                     <div class="form-group flex-bottom">
-                        <button type="submit" name="action" value="send_otp" class="btn btn-secondary" formnovalidate {% if is_pending %}disabled style="opacity: 0.5; cursor: not-allowed;"{% endif %}>
-                            {% if is_pending %}✓ Code envoyé{% else %}Envoyer code{% endif %}
-                        </button>
+                        <button type="submit" name="action" value="send_otp" class="btn btn-secondary" formnovalidate>Envoyer code</button>
                     </div>
 
                 </div>
 
                 <div class="form-footer">
-                    <button type="submit" name="action" value="register" class="btn btn-primary" {% if not is_pending %}disabled style="opacity: 0.5; cursor: not-allowed;"{% endif %}>
-                        Register
-                    </button>
+                    <button type="submit" name="action" value="register" class="btn btn-primary">Register</button>
                     <p class="login-link">Vous avez déjà un compte ? <a href="{{ path('app_login') }}">Se connecter</a></p>
                 </div>
                 
@@ -92,7 +84,7 @@
         </div>
 
         <div class="image-box">
-            <img src="{{ asset('images/login.png') }}" alt="Agrimans Background">
+            <img src="{{ asset('images/login.') }}" alt="Agrimans Background">
         </div>
 
     </div>

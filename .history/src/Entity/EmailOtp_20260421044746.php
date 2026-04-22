@@ -39,14 +39,14 @@ class EmailOtp
         return $this;
     }
 
-    public function getCode(): ?string
+    public function getCode(): ?int
     {
         return $this->code;
     }
 
-    public function setCode(string|int $code): static
+    public function setCode(int $code): static
     {
-        $this->code = (string)$code;
+        $this->code = $code;
 
         return $this;
     }

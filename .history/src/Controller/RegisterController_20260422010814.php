@@ -2,7 +2,7 @@
 
 namespace App\Controller;
 
-use App\Entity\Users; 
+use App\Entity\Users; // 🔴 استعملنا Users هوني
 use App\Entity\EmailOtp;
 use App\Enum\UserRole;
 use App\Service\EmailService;

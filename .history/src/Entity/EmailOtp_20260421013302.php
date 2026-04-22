@@ -8,19 +8,19 @@ use Doctrine\ORM\Mapping as ORM;
 #[ORM\Entity(repositoryClass: EmailOtpRepository::class)]
 class EmailOtp
 {
-     #[ORM\Id]
+    #[ORM\Id]
     #[ORM\GeneratedValue]
     #[ORM\Column]
     private ?int $id = null;
 
-    #[ORM\Column(length: 100)]
+    #[ORM\Column(length: 255)]
     private ?string $email = null;
 
-    #[ORM\Column(length: 10)]
-    private ?string $code = null;
+    #[ORM\Column]
+    private ?int $code = null;
 
-    #[ORM\Column(type: 'datetime')]
-    private ?\DateTimeInterface $expiry = null;
+    #[ORM\Column]
+    private ?\DateTime $expiry = null;
 
     public function getId(): ?int
     {
@@ -39,14 +39,14 @@ class EmailOtp
         return $this;
     }
 
-    public function getCode(): ?string
+    public function getCode(): ?int
     {
         return $this->code;
     }
 
-    public function setCode(string|int $code): static
+    public function setCode(int $code): static
     {
-        $this->code = (string)$code;
+        $this->code = $code;
 
         return $this;
     }

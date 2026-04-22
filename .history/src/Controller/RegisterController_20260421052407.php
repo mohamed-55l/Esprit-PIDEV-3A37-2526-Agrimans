@@ -2,7 +2,7 @@
 
 namespace App\Controller;
 
-use App\Entity\Users; 
+use App\Entity\User;
 use App\Entity\EmailOtp;
 use App\Enum\UserRole;
 use App\Service\EmailService;
@@ -12,7 +12,8 @@ use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\HttpFoundation\Session\SessionInterface;
 use Symfony\Component\Routing\Annotation\Route;
-use Symfony\Component\PasswordHasher\Hasher\UserPasswordHasherInterface;
+use Symfony\Component\Mailer\MailerInterface;
+use Symfony\Component\Mime\Email;
 
 class RegisterController extends AbstractController
 {
@@ -21,8 +22,7 @@ class RegisterController extends AbstractController
         Request $request,
         EntityManagerInterface $em,
         SessionInterface $session,
-        EmailService $emailService,
-        UserPasswordHasherInterface $passwordHasher
+        EmailService $emailService
     ): Response {
 
         $errors = [];
@@ -32,20 +32,13 @@ class RegisterController extends AbstractController
             'phone' => ''
         ];
 
-        // Vider la session si l'utilisateur rafraîchit la page (GET)
-        if ($request->isMethod('GET')) {
-            $session->remove('pending_user');
-        }
-
         if ($request->isMethod('POST')) {
 
             $action = $request->request->get('action');
 
-            // Récupérer les données
             $data['name'] = trim($request->request->get('name'));
             $data['email'] = trim($request->request->get('email'));
             $data['phone'] = trim($request->request->get('phone'));
-            
             $password = $request->request->get('password');
             $confirm = $request->request->get('confirm');
             $otpCode = $request->request->get('otp');
@@ -54,20 +47,13 @@ class RegisterController extends AbstractController
             if ($action === 'send_otp') {
 
                 if (empty($data['email'])) {
-                    $errors['email'] = "L'email est requis.";
-                } else {
-                    // 🔴 VÉRIFICATION : Est-ce que l'email existe déjà dans la base ?
-                    $existingUser = $em->getRepository(Users::class)->findOneBy(['email' => $data['email']]);
-                    if ($existingUser) {
-                        $errors['email'] = "Cet email est déjà utilisé. Veuillez vous connecter.";
-                    }
+                    $errors['email'] = "Email requis";
                 }
 
                 if ($password !== $confirm) {
-                    $errors['confirm'] = "Les mots de passe ne correspondent pas.";
+                    $errors['confirm'] = "Mot de passe incorrect";
                 }
 
-                // S'il n'y a pas d'erreur, on génère et on envoie l'OTP
                 if (empty($errors)) {
 
                     $code = random_int(100000, 999999);
@@ -82,17 +68,17 @@ class RegisterController extends AbstractController
 
                     try {
                         $emailService->sendOtp($data['email'], (string)$code);
-                        $this->addFlash('success', 'Code OTP envoyé avec succès à votre email.');
+                        $this->addFlash('success', 'Code OTP envoyé avec succès à votre email');
+
                     } catch (\Exception $e) {
-                        $errors['email'] = "Erreur lors de l'envoi de l'email : " . $e->getMessage();
+                        $errors['email'] = "Erreur envoi email : " . $e->getMessage();
                     }
 
-                    // Sauvegarder dans la session temporairement
                     $session->set('pending_user', [
                         'name' => $data['name'],
                         'email' => $data['email'],
                         'phone' => $data['phone'],
-                        'password' => $password
+                        'password' => password_hash($password, PASSWORD_BCRYPT)
                     ]);
                 }
             }
@@ -103,29 +89,23 @@ class RegisterController extends AbstractController
                 $pending = $session->get('pending_user');
 
                 if (!$pending) {
-                    $errors['otp'] = "Veuillez d'abord demander un code OTP.";
-                } elseif ($password !== $confirm) {
-                    $errors['confirm'] = "Les mots de passe ne correspondent pas.";
+                    $errors['otp'] = "Envoyer OTP d'abord";
                 } else {
 
                     $otp = $em->getRepository(EmailOtp::class)->findOneBy([
                         'email' => $pending['email'],
-                        'code' => (string)$otpCode
+                        'code' => (int)$otpCode
                     ]);
 
                     if (!$otp || $otp->getExpiry() < new \DateTime()) {
-                        $errors['otp'] = "Code OTP invalide ou expiré.";
+                        $errors['otp'] = "OTP invalide ou expiré";
                     } else {
 
-                        $user = new Users(); // 🔴 Création avec la classe Users
+                        $user = new User();
                         $user->setFullName($pending['name']);
                         $user->setEmail($pending['email']);
                         $user->setPhone($pending['phone']);
-                        
-                        // Prendre le mot de passe actuel du formulaire
-                        $hashedPassword = $passwordHasher->hashPassword($user, $password);
-                        $user->setPasswordHash($hashedPassword);
-                        
+                        $user->setPasswordHash($pending['password']);
                         $user->setRole(UserRole::USER);
                         $user->setCreatedAt(new \DateTimeImmutable());
 
@@ -133,10 +113,8 @@ class RegisterController extends AbstractController
                         $em->remove($otp);
                         $em->flush();
 
-                        // Nettoyer la session
                         $session->remove('pending_user');
 
-                        // Redirection vers la page de connexion
                         return $this->redirectToRoute('app_login');
                     }
                 }

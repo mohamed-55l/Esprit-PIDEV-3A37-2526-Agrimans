@@ -2,7 +2,7 @@
 
 namespace App\Controller;
 
-use App\Entity\Users; 
+use App\Entity\Users; // 🔴 تبدلت هوني لـ Users
 use App\Entity\EmailOtp;
 use App\Enum\UserRole;
 use App\Service\EmailService;
@@ -32,7 +32,7 @@ class RegisterController extends AbstractController
             'phone' => ''
         ];
 
-        // Vider la session si l'utilisateur rafraîchit la page (GET)
+        // 🔴 NOUVEAU : Si l'utilisateur actualise la page (GET), on vide la session
         if ($request->isMethod('GET')) {
             $session->remove('pending_user');
         }
@@ -55,19 +55,12 @@ class RegisterController extends AbstractController
 
                 if (empty($data['email'])) {
                     $errors['email'] = "L'email est requis.";
-                } else {
-                    // 🔴 VÉRIFICATION : Est-ce que l'email existe déjà dans la base ?
-                    $existingUser = $em->getRepository(Users::class)->findOneBy(['email' => $data['email']]);
-                    if ($existingUser) {
-                        $errors['email'] = "Cet email est déjà utilisé. Veuillez vous connecter.";
-                    }
                 }
 
                 if ($password !== $confirm) {
                     $errors['confirm'] = "Les mots de passe ne correspondent pas.";
                 }
 
-                // S'il n'y a pas d'erreur, on génère et on envoie l'OTP
                 if (empty($errors)) {
 
                     $code = random_int(100000, 999999);
@@ -87,7 +80,7 @@ class RegisterController extends AbstractController
                         $errors['email'] = "Erreur lors de l'envoi de l'email : " . $e->getMessage();
                     }
 
-                    // Sauvegarder dans la session temporairement
+                    // Sauvegarder dans la session
                     $session->set('pending_user', [
                         'name' => $data['name'],
                         'email' => $data['email'],
@@ -117,12 +110,12 @@ class RegisterController extends AbstractController
                         $errors['otp'] = "Code OTP invalide ou expiré.";
                     } else {
 
-                        $user = new Users(); // 🔴 Création avec la classe Users
+                        $user = new Users(); // 🔴 تبدلت هوني لـ Users
                         $user->setFullName($pending['name']);
                         $user->setEmail($pending['email']);
                         $user->setPhone($pending['phone']);
                         
-                        // Prendre le mot de passe actuel du formulaire
+                        // Prendre le mot de passe actuel du formulaire (au cas où il a été modifié)
                         $hashedPassword = $passwordHasher->hashPassword($user, $password);
                         $user->setPasswordHash($hashedPassword);
                         
@@ -133,10 +126,8 @@ class RegisterController extends AbstractController
                         $em->remove($otp);
                         $em->flush();
 
-                        // Nettoyer la session
                         $session->remove('pending_user');
 
-                        // Redirection vers la page de connexion
                         return $this->redirectToRoute('app_login');
                     }
                 }

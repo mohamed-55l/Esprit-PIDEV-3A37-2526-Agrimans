@@ -2,7 +2,7 @@
 
 namespace App\Controller;
 
-use App\Entity\Users;
+use App\Entity\Users; 
 use App\Enum\UserRole;
 use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
@@ -10,7 +10,7 @@ use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\HttpFoundation\Session\SessionInterface;
 use Symfony\Component\Routing\Annotation\Route;
-use Symfony\Contracts\HttpClient\HttpClientInterface; 
+use Symfony\Component\Contracts\HttpClient\HttpClientInterface;
 
 class LoginController extends AbstractController
 {
@@ -114,6 +114,7 @@ class LoginController extends AbstractController
             return new Response("Accès refusé");
         }
 
+        // 🔍 Récupérer tous les utilisateurs
         $users = $em->getRepository(Users::class)->findAll();
 
         return $this->render('admin/dashboard.html.twig', [
