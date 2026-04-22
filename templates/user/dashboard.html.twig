@@ -12,6 +12,7 @@
         <div class="hero-actions">
             <a href="{{ path('app_parcelle_index') }}" class="hero-btn-primary"><i class="fa-solid fa-map"></i> Voir mes Parcelles</a>
             <a href="{{ path('waad_animal_index') }}" class="btn btn-glow"><i class="fa-solid fa-cow"></i> Gérer mon Élevage</a>
+            <a href="{{ path('user_equipement_index') }}" class="btn btn-glow" style="background:rgba(125,191,108,0.12);border:1px solid rgba(125,191,108,0.3);"><i class="fa-solid fa-tractor"></i> Mes Équipements</a>
         </div>
     </div>
 </section>
@@ -68,6 +69,30 @@
                 {{ stats.commandes_en_cours }} <span style="font-size: 1rem; color: rgba(255,255,255,0.6); font-weight: 500;">commandes actives</span>
             </div>
             <a href="{{ path('app_marketplace_index') }}" class="feature-link">Marketplace <i class="fa-solid fa-arrow-right" style="margin-left: 5px; font-size:0.8rem;"></i></a>
+        </div>
+
+        <!-- Stat: Mes Équipements -->
+        <div class="feature-card visible" style="transform:translateY(0); opacity:1;">
+            <div class="feature-icon-wrapper">
+                <i class="feature-icon fa-solid fa-tractor"></i>
+                <h3 class="feature-title">Mes Équipements</h3>
+            </div>
+            <div style="font-size: 1rem; color: rgba(255,255,255,0.7); margin-bottom: 1rem;">
+                Équipements qui vous ont été assignés par l'administration.
+            </div>
+            <a href="{{ path('user_equipement_index') }}" class="feature-link">Voir mes équipements <i class="fa-solid fa-arrow-right" style="margin-left: 5px; font-size:0.8rem;"></i></a>
+        </div>
+
+        <!-- Stat: Mes Avis -->
+        <div class="feature-card visible" style="transform:translateY(0); opacity:1;">
+            <div class="feature-icon-wrapper">
+                <i class="feature-icon fa-solid fa-star" style="color: #f1c40f;"></i>
+                <h3 class="feature-title">Mes Avis</h3>
+            </div>
+            <div style="font-size: 1rem; color: rgba(255,255,255,0.7); margin-bottom: 1rem;">
+                Consultez, modifiez ou supprimez vos avis sur vos équipements.
+            </div>
+            <a href="{{ path('user_review_index') }}" class="feature-link">Voir mes avis <i class="fa-solid fa-arrow-right" style="margin-left: 5px; font-size:0.8rem;"></i></a>
         </div>
 
     </div>

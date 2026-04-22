@@ -395,6 +395,16 @@
                 <i class="fa-solid fa-chart-line"></i>
                 Statistiques Ventes
             </a>
+
+            <div class="nav-section-title">Équipements & Avis</div>
+            <a href="{{ path('admin_equipement_index') }}" class="nav-item">
+                <i class="fa-solid fa-tractor"></i>
+                Gestion Équipements
+            </a>
+            <a href="{{ path('admin_review_index') }}" class="nav-item">
+                <i class="fa-solid fa-star"></i>
+                Avis & Reviews
+            </a>
             
         </div>
 
@@ -445,7 +455,7 @@
                     <div class="stat-icon blue">
                         <i class="fa-solid fa-users"></i>
                     </div>
-                    <div class="stat-value">{{ stats.total_users|default('24') }}</div>
+                    <div class="stat-value">{{ stats.total_users|default(0) }}</div>
                     <div class="stat-label">Utilisateurs Inscrits</div>
                 </div>
 
@@ -453,24 +463,24 @@
                     <div class="stat-icon green">
                         <i class="fa-solid fa-bag-shopping"></i>
                     </div>
-                    <div class="stat-value">{{ stats.total_products|default('142') }}</div>
+                    <div class="stat-value">{{ stats.total_products|default('—') }}</div>
                     <div class="stat-label">Produits en Boutique</div>
                 </div>
 
-                <div class="stat-card">
-                    <div class="stat-icon purple">
-                        <i class="fa-solid fa-credit-card"></i>
+                <div class="stat-card" style="cursor:pointer;" onclick="location.href='{{ path('admin_equipement_index') }}'">
+                    <div class="stat-icon" style="background:rgba(25,139,97,0.12);color:#2ecc71;">
+                        <i class="fa-solid fa-tractor"></i>
                     </div>
-                    <div class="stat-value">{{ stats.total_sales|default('2,450 €') }}</div>
-                    <div class="stat-label">Ventes du Mois</div>
+                    <div class="stat-value">{{ stats.total_equipements|default(0) }}</div>
+                    <div class="stat-label">Équipements</div>
                 </div>
 
-                <div class="stat-card">
-                    <div class="stat-icon red">
-                        <i class="fa-solid fa-triangle-exclamation"></i>
+                <div class="stat-card" style="cursor:pointer;" onclick="location.href='{{ path('admin_review_index') }}'">
+                    <div class="stat-icon" style="background:rgba(241,196,15,0.12);color:#f1c40f;">
+                        <i class="fa-solid fa-star"></i>
                     </div>
-                    <div class="stat-value">{{ stats.total_alerts|default('2') }}</div>
-                    <div class="stat-label">Alertes Système</div>
+                    <div class="stat-value">{{ stats.total_reviews|default(0) }}</div>
+                    <div class="stat-label">Avis Utilisateurs</div>
                 </div>
             </div>
 
@@ -499,13 +509,13 @@
                             <i class="fa-solid fa-user-plus"></i>
                             <span>Créer Utilisateur</span>
                         </a>
-                        <a href="{{ path('app_marketplace_index') }}" class="action-btn">
-                            <i class="fa-solid fa-store"></i>
-                            <span>Voir Boutique</span>
+                        <a href="{{ path('admin_equipement_index') }}" class="action-btn">
+                            <i class="fa-solid fa-tractor"></i>
+                            <span>Gérer Équipements</span>
                         </a>
-                        <a href="#" class="action-btn">
-                            <i class="fa-solid fa-download"></i>
-                            <span>Exporter</span>
+                        <a href="{{ path('admin_review_index') }}" class="action-btn">
+                            <i class="fa-solid fa-star"></i>
+                            <span>Gérer les Avis</span>
                         </a>
                     </div>
                 </div>

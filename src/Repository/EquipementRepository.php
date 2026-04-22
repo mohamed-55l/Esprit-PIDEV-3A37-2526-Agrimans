@@ -58,4 +58,32 @@ class EquipementRepository extends ServiceEntityRepository
             'repartition' => $repartition
         ];
     }
+
+    /**
+     * Récupère les équipements assignés à un utilisateur spécifique
+     */
+    public function findByUser(\App\Entity\User $user): array
+    {
+        return $this->createQueryBuilder('e')
+            ->andWhere('e.user = :user')
+            ->setParameter('user', $user)
+            ->orderBy('e.nom', 'ASC')
+            ->getQuery()
+            ->getResult();
+    }
+
+    /**
+     * Récupère tous les équipements en chargeant l’utilisateur associé par LEFT JOIN.
+     * Cela évite les erreurs de proxy Doctrine quand un user_id pointe vers
+     * un utilisateur supprimé (retourne null au lieu de lever une exception).
+     */
+    public function findAllWithUser(): array
+    {
+        return $this->createQueryBuilder('e')
+            ->leftJoin('e.user', 'u')
+            ->addSelect('u')
+            ->orderBy('e.nom', 'ASC')
+            ->getQuery()
+            ->getResult();
+    }
 }

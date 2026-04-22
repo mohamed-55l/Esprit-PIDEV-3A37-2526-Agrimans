@@ -1,0 +1,94 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}Mes Avis | Agrimans{% endblock %}
+
+{% block body %}
+<section class="content-section" style="margin-top: 2rem;">
+
+    <div style="display: flex; justify-content: space-between; align-items: flex-start; margin-bottom: 2.5rem; flex-wrap: wrap; gap: 1rem;">
+        <div>
+            <h1 style="font-size: 2rem; font-weight: 800; margin-bottom: 0.5rem;">
+                <i class="fa-solid fa-star" style="color: #f1c40f; margin-right: 10px;"></i>Mes Avis
+            </h1>
+            <p style="color: rgba(255,255,255,0.6);">Retrouvez tous les avis que vous avez rédigés sur vos équipements.</p>
+        </div>
+        <a href="{{ path('user_equipement_index') }}" class="hero-btn-primary" style="font-size: 0.9rem;">
+            <i class="fa-solid fa-tractor"></i> Mes Équipements
+        </a>
+    </div>
+
+    {% for msg in app.flashes('success') %}
+        <div style="padding: 0.9rem 1.2rem; background: rgba(46,204,113,0.1); border: 1px solid rgba(46,204,113,0.3); border-radius: 10px; margin-bottom: 1.5rem; color: #2ecc71; font-size: 0.9rem;">
+            <i class="fa-solid fa-check-circle"></i> {{ msg }}
+        </div>
+    {% endfor %}
+
+    {% if reviews is empty %}
+        <div style="text-align: center; padding: 5rem 2rem; background: rgba(255,255,255,0.03); border: 1px solid rgba(255,255,255,0.08); border-radius: 20px;">
+            <i class="fa-solid fa-star-half-stroke" style="font-size: 4rem; opacity: 0.2; margin-bottom: 1.5rem; display: block;"></i>
+            <h3 style="font-size: 1.3rem; margin-bottom: 0.5rem;">Aucun avis rédigé</h3>
+            <p style="color: rgba(255,255,255,0.5); font-size: 0.9rem; margin-bottom: 1.5rem;">Vous n'avez pas encore laissé d'avis sur vos équipements.</p>
+            <a href="{{ path('user_equipement_index') }}" class="hero-btn-primary">
+                <i class="fa-solid fa-tractor"></i> Voir mes équipements
+            </a>
+        </div>
+    {% else %}
+        <div style="display: flex; flex-direction: column; gap: 1.2rem;">
+            {% for review in reviews %}
+            <div style="background: rgba(255,255,255,0.04); border: 1px solid rgba(255,255,255,0.1); border-radius: 16px; padding: 1.5rem; display: flex; gap: 1.5rem; flex-wrap: wrap; transition: border-color 0.2s;"
+                 onmouseover="this.style.borderColor='rgba(241,196,15,0.3)'" onmouseout="this.style.borderColor='rgba(255,255,255,0.1)'">
+
+                <!-- Stars column -->
+                <div style="flex-shrink: 0; display: flex; flex-direction: column; align-items: center; gap: 0.5rem; min-width: 70px;">
+                    <div style="font-size: 2rem; font-weight: 800; color: #f1c40f;">{{ review.note }}</div>
+                    <div style="display: flex; gap: 2px;">
+                        {% for i in 1..5 %}
+                            <i class="fa-solid fa-star" style="font-size: 0.7rem; color: {{ i <= review.note ? '#f1c40f' : 'rgba(255,255,255,0.15)' }};"></i>
+                        {% endfor %}
+                    </div>
+                    <div style="font-size: 0.72rem; color: rgba(255,255,255,0.4);">sur 5</div>
+                </div>
+
+                <!-- Separator -->
+                <div style="width: 1px; background: rgba(255,255,255,0.08);"></div>
+
+                <!-- Content -->
+                <div style="flex: 1; min-width: 200px;">
+                    <div style="display: flex; align-items: center; gap: 0.75rem; margin-bottom: 0.75rem; flex-wrap: wrap;">
+                        <span style="font-size: 1rem; font-weight: 700;">{{ review.equipement ? review.equipement.nom : 'Équipement supprimé' }}</span>
+                        {% if review.equipement %}
+                            <span style="font-size: 0.78rem; color: rgba(255,255,255,0.4); background: rgba(255,255,255,0.05); padding: 2px 8px; border-radius: 20px;">{{ review.equipement.type }}</span>
+                        {% endif %}
+                        <span style="font-size: 0.78rem; color: rgba(255,255,255,0.4); margin-left: auto;">
+                            <i class="fa-solid fa-calendar-alt"></i> {{ review.dateReview ? review.dateReview|date('d/m/Y') : '—' }}
+                        </span>
+                    </div>
+                    <p style="color: rgba(255,255,255,0.7); font-size: 0.9rem; line-height: 1.6;">
+                        {{ review.commentaire|default('Aucun commentaire.') }}
+                    </p>
+                </div>
+
+                <!-- Actions -->
+                <div style="flex-shrink: 0; display: flex; flex-direction: column; gap: 0.5rem; justify-content: center;">
+                    <a href="{{ path('user_review_edit', {id: review.id}) }}"
+                       style="display: inline-flex; align-items: center; gap: 6px; background: rgba(52,152,219,0.12); border: 1px solid rgba(52,152,219,0.3); color: #5dade2; padding: 0.45rem 0.9rem; border-radius: 8px; text-decoration: none; font-size: 0.83rem; font-weight: 600; transition: all 0.2s; white-space: nowrap;"
+                       onmouseover="this.style.background='rgba(52,152,219,0.2)'" onmouseout="this.style.background='rgba(52,152,219,0.12)'">
+                        <i class="fa-solid fa-pen"></i> Modifier
+                    </a>
+                    <form method="post" action="{{ path('user_review_delete', {id: review.id}) }}"
+                          onsubmit="return confirm('Supprimer cet avis ?');">
+                        <input type="hidden" name="_token" value="{{ csrf_token('delete_rev_' ~ review.id) }}">
+                        <button type="submit"
+                                style="width: 100%; display: inline-flex; align-items: center; justify-content: center; gap: 6px; background: rgba(231,76,60,0.12); border: 1px solid rgba(231,76,60,0.3); color: #e74c3c; padding: 0.45rem 0.9rem; border-radius: 8px; font-size: 0.83rem; font-weight: 600; cursor: pointer; transition: all 0.2s; white-space: nowrap;"
+                                onmouseover="this.style.background='rgba(231,76,60,0.22)'" onmouseout="this.style.background='rgba(231,76,60,0.12)'">
+                            <i class="fa-solid fa-trash"></i> Supprimer
+                        </button>
+                    </form>
+                </div>
+            </div>
+            {% endfor %}
+        </div>
+    {% endif %}
+
+</section>
+{% endblock %}
