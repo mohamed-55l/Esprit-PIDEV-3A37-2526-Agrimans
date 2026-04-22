@@ -2,7 +2,7 @@
 
 namespace App\Controller;
 
-use App\Entity\User;
+use App\Entity\Users;
 use App\Enum\UserRole;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Response;
@@ -23,10 +23,18 @@ class AdminController extends AbstractController
             return new Response("Accès refusé");
         }
 
-        $users = $em->getRepository(User::class)->findAll();
+        $users = $em->getRepository(Users::class)->findAll();
 
-        return $this->render('admin/dashboard.html.twig', [
-            'users' => $users
+        $stats = [
+            'total_users' => count($users),
+            'total_equipements' => 0,
+            'total_reviews' => 0,
+            'total_products' => 0,
+        ];
+
+        return $this->render('admin/index.html.twig', [
+            'users' => $users,
+            'stats' => $stats
         ]);
     }
 
@@ -38,7 +46,7 @@ class AdminController extends AbstractController
             return new Response("Accès refusé");
         }
 
-        $user = $em->getRepository(User::class)->find($id);
+        $user = $em->getRepository(Users::class)->find($id);
 
         if ($user) {
             $em->remove($user);
@@ -56,7 +64,7 @@ class AdminController extends AbstractController
             return new Response("Accès refusé");
         }
 
-        $user = $em->getRepository(User::class)->find($id);
+        $user = $em->getRepository(Users::class)->find($id);
 
         if (!$user) {
             return new Response("Utilisateur non trouvé");

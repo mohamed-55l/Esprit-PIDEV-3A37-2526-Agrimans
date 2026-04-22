@@ -10,16 +10,19 @@ use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\HttpFoundation\Session\SessionInterface;
 use Symfony\Component\Routing\Annotation\Route;
-use Symfony\Contracts\HttpClient\HttpClientInterface; 
+use Symfony\Contracts\HttpClient\HttpClientInterface;
+use Symfony\Component\Security\Core\Authentication\Token\Storage\TokenStorageInterface;
+use Symfony\Component\Security\Http\Authenticator\Token\PostAuthenticationToken;
 
 class LoginController extends AbstractController
 {
-    #[Route('/', name: 'app_login')]
+    #[Route('/login', name: 'app_login')]
     public function index(
         Request $request,
         EntityManagerInterface $em,
         SessionInterface $session,
-        HttpClientInterface $client
+        HttpClientInterface $client,
+        TokenStorageInterface $tokenStorage
     ): Response {
         $error = null;
 
@@ -67,16 +70,25 @@ class LoginController extends AbstractController
                             $error = "Mot de passe incorrect";
                         } else {
 
+                            // Handle role properly whether it's an Enum or a string
+                            $role = $user->getRole();
+                            $roleValue = $role instanceof \App\Enum\UserRole ? $role->value : $role;
+
                             // ✅ SESSION
                             $session->set('user_id', $user->getId());
                             $session->set('user_name', $user->getFullName());
-                            $session->set('user_role', $user->getRole()->value);
+                            $session->set('user_role', $roleValue);
+
+                            // Authentification Symfony (pour rendre #[IsGranted] et $this->getUser() fonctionnels)
+                            $token = new PostAuthenticationToken($user, 'main', $user->getRoles());
+                            $tokenStorage->setToken($token);
+                            $session->set('_security_main', serialize($token));
 
                             // 🚀 REDIRECTION
-                            if ($user->getRole() === UserRole::ADMIN) {
+                            if ($roleValue === 'ADMIN') {
                                 return $this->redirectToRoute('admin_dashboard');
                             } else {
-                                return $this->redirectToRoute('app_home');
+                                return $this->redirectToRoute('app_user_dashboard');
                             }
                         }
                     }
@@ -90,12 +102,11 @@ class LoginController extends AbstractController
         ]);
     }
 
-    #[Route('/home', name: 'app_home')]
+    #[Route('/', name: 'app_home')]
     public function home(SessionInterface $session): Response
     {
-        if (!$session->get('user_id')) {
-            return $this->redirectToRoute('app_login');
-        }
+        // On permet l'accès à la page d'accueil sans être connecté
+
 
         return $this->render('home/index.html.twig', [
             'user_name' => $session->get('user_name'),
@@ -122,8 +133,9 @@ class LoginController extends AbstractController
     }
 
     #[Route('/logout', name: 'app_logout')]
-    public function logout(SessionInterface $session): Response
+    public function logout(SessionInterface $session, TokenStorageInterface $tokenStorage): Response
     {
+        $tokenStorage->setToken(null);
         $session->invalidate();
         return $this->redirectToRoute('app_login');
     }

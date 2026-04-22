@@ -44,8 +44,9 @@
                 <!-- Role -->
                 <label>Rôle</label>
                 <select name="role">
-                    <option value="USER" {{ user.role.value == 'USER' ? 'selected' : '' }}>USER</option>
-                    <option value="ADMIN" {{ user.role.value == 'ADMIN' ? 'selected' : '' }}>ADMIN</option>
+                    {% set currentRole = user.role.value is defined ? user.role.value : user.role %}
+                    <option value="USER" {{ currentRole == 'USER' ? 'selected' : '' }}>USER</option>
+                    <option value="ADMIN" {{ currentRole == 'ADMIN' ? 'selected' : '' }}>ADMIN</option>
                 </select>
 
                 <!-- Password -->

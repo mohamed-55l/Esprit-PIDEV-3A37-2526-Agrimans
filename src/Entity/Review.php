@@ -86,16 +86,16 @@ class Review
         return $this;
     }
 
-    #[ORM\ManyToOne(targetEntity: User::class, inversedBy: 'reviews')]
+    #[ORM\ManyToOne(targetEntity: Users::class)]
     #[ORM\JoinColumn(name: 'user_id', referencedColumnName: 'id')]
-    private ?User $user = null;
+    private ?Users $user = null;
 
-    public function getUser(): ?User
+    public function getUser(): ?Users
     {
         return $this->user;
     }
 
-    public function setUser(?User $user): self
+    public function setUser(?Users $user): self
     {
         $this->user = $user;
         return $this;
