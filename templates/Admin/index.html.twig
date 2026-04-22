@@ -2,31 +2,36 @@
 <html lang="fr">
 <head>
     <meta charset="UTF-8">
-    <title>Admin Dashboard - Agrimans</title>
-    <!-- Add FontAwesome -->
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Dashboard Administrateur | Agrimans</title>
+    
+    <!-- Fonts & Icons -->
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
-    <!-- Add Chart.js -->
+    <!-- Chart.js -->
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+
     <style>
         :root {
-            --primary: #198b61;
-            --primary-dark: #126345;
-            --secondary: #f4f6f8;
-            --dark: #121619;
+            --primary: #198B61;
+            --primary-hover: #147350;
+            --secondary: #2C3E50;
+            --dark: #12181b;
             --dark-card: #1e2529;
-            --text-main: #e4e6eb;
+            --text-main: #f8f9fa;
             --text-muted: #9ba4b5;
             --border-color: rgba(255, 255, 255, 0.08);
             --danger: #e74c3c;
+            --warning: #f1c40f;
             --success: #2ecc71;
-            --sidebar-width: 260px;
+            --sidebar-width: 280px;
         }
 
         * {
             margin: 0;
             padding: 0;
             box-sizing: border-box;
-            font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+            font-family: 'Inter', sans-serif;
         }
 
         body {
@@ -42,30 +47,21 @@
             width: var(--sidebar-width);
             background-color: var(--dark-card);
             border-right: 1px solid var(--border-color);
-            position: fixed;
-            height: 100vh;
             display: flex;
             flex-direction: column;
+            position: fixed;
+            height: 100vh;
+            left: 0;
+            top: 0;
             z-index: 100;
         }
 
         .sidebar-header {
-            height: 80px;
+            padding: 1.5rem;
             display: flex;
             align-items: center;
-            padding: 0 2rem;
+            gap: 1rem;
             border-bottom: 1px solid var(--border-color);
-            gap: 10px;
-        }
-
-        .logo {
-            font-size: 1.5rem;
-            font-weight: 800;
-            color: white;
-            letter-spacing: 1px;
-            display: flex;
-            align-items: center;
-            gap: 10px;
         }
 
         .sidebar-nav {
@@ -75,18 +71,24 @@
         }
 
         .nav-section-title {
-            font-size: 0.75rem;
             text-transform: uppercase;
-            letter-spacing: 1.5px;
+            font-size: 0.75rem;
             color: var(--text-muted);
-            margin: 1.5rem 0 0.8rem 1rem;
+            letter-spacing: 1px;
+            margin-bottom: 1rem;
+            margin-top: 1.5rem;
+            padding-left: 0.5rem;
             font-weight: 600;
+        }
+
+        .nav-section-title:first-child {
+            margin-top: 0;
         }
 
         .nav-item {
             display: flex;
             align-items: center;
-            gap: 12px;
+            gap: 1rem;
             padding: 0.8rem 1rem;
             color: var(--text-muted);
             text-decoration: none;
@@ -265,7 +267,7 @@
         .stat-card:hover {
             transform: translateY(-5px);
             box-shadow: 0 10px 20px rgba(0,0,0,0.2);
-            border-color: rgba(231, 76, 60, 0.4);
+            border-color: rgba(231, 76, 60, 0.4); /* Danger color for admin hover */
         }
 
         .stat-icon {
@@ -297,92 +299,113 @@
             font-weight: 500;
         }
 
-        /* Table */
-        .table-container {
-            background: var(--dark-card);
+        /* Charts Section */
+        .charts-container {
+            display: grid;
+            grid-template-columns: 2fr 1fr;
+            gap: 1.5rem;
+            margin-bottom: 2rem;
+        }
+
+        .chart-card {
+            background-color: var(--dark-card);
             border: 1px solid var(--border-color);
             border-radius: 16px;
             padding: 1.5rem;
-            overflow-x: auto;
         }
-        table {
-            width: 100%;
-            border-collapse: collapse;
-            color: var(--text-light);
+
+        .card-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 1.5rem;
         }
-        th, td {
-            padding: 12px 15px;
-            text-align: left;
-            border-bottom: 1px solid var(--border-color);
-        }
-        th {
-            background-color: rgba(255,255,255,0.02);
+
+        .card-title {
+            font-size: 1.1rem;
             font-weight: 600;
-            color: var(--text-muted);
-            text-transform: uppercase;
-            font-size: 0.8rem;
-            letter-spacing: 1px;
+            color: white;
         }
-        tr:hover td {
-            background-color: rgba(255,255,255,0.01);
+
+        /* Quick Actions Grid */
+        .actions-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 1rem;
         }
-        .btn {
-            padding: 6px 12px;
-            border-radius: 6px;
+
+        .action-btn {
+            background-color: rgba(255,255,255,0.03);
+            border: 1px solid var(--border-color);
+            border-radius: 12px;
+            padding: 1rem;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            gap: 0.8rem;
+            color: var(--text-main);
             text-decoration: none;
+            transition: all 0.3s ease;
+            text-align: center;
             font-size: 0.9rem;
-            display: inline-block;
-            margin-right: 5px;
-            border: none;
-            cursor: pointer;
-            transition: all 0.2s;
         }
-        .btn.update { background-color: rgba(52, 152, 219, 0.15); color: #3498db; }
-        .btn.update:hover { background-color: rgba(52, 152, 219, 0.3); }
-        .btn.delete { background-color: rgba(231, 76, 60, 0.15); color: #e74c3c; }
-        .btn.delete:hover { background-color: rgba(231, 76, 60, 0.3); }
+
+        .action-btn i {
+            font-size: 1.5rem;
+            color: var(--danger);
+        }
+
+        .action-btn:hover {
+            background-color: rgba(231, 76, 60, 0.1);
+            border-color: var(--danger);
+            transform: translateY(-2px);
+        }
+
+        @media (max-width: 992px) {
+            .charts-container { grid-template-columns: 1fr; }
+        }
     </style>
 </head>
 <body>
+
     <!-- Sidebar -->
     <aside class="sidebar">
         <div class="sidebar-header">
-            <div class="logo">
-                <i class="fa-solid fa-leaf" style="color: var(--primary-color);"></i>
-                Agrimans
-            </div>
+            <i class="fa-solid fa-shield-halved" style="color: var(--danger); font-size: 1.5rem;"></i>
+            <span style="font-size: 1.2rem; font-weight: 700; color: white;">AGRIMANS <span style="color:var(--danger); font-size:0.8rem; vertical-align:top;">PRO</span></span>
         </div>
 
         <div class="sidebar-nav">
-            <div class="nav-section-title">Principal</div>
-            <a href="{{ path('admin_dashboard') }}" class="nav-item active">
-                <i class="fa-solid fa-house"></i>
-                Dashboard
+            <a href="{{ path('app_admin') }}" class="nav-item active" style="color: var(--danger); background-color: rgba(231, 76, 60, 0.1);">
+                <i class="fa-solid fa-gauge-high"></i>
+                Tableau de Bord
             </a>
             
-            <div class="nav-section-title">Utilisateurs</div>
-            <a href="#" class="nav-item">
+            <div class="nav-section-title">Administration</div>
+            <a href="{{ path('app_user_management') }}" class="nav-item">
                 <i class="fa-solid fa-users"></i>
-                Gestion Utilisateurs
+                Utilisateurs
             </a>
-            <a href="{{ path('app_create_admin') }}" class="nav-item">
-                <i class="fa-solid fa-user-shield"></i>
-                Créer Admin
+            <a href="{{ path('app_marketplace_index') }}" class="nav-item">
+                <i class="fa-solid fa-store"></i>
+                Boutique
             </a>
-            <a href="{{ path('app_create_user') }}" class="nav-item">
-                <i class="fa-solid fa-user-plus"></i>
-                Créer Utilisateur
+            <a href="{{ path('app_marketplace_stats') }}" class="nav-item">
+                <i class="fa-solid fa-chart-line"></i>
+                Statistiques Ventes
             </a>
 
-            <div class="nav-section-title">Modules</div>
-            <a href="#" class="nav-item">
+            <div class="nav-section-title">Équipements & Avis</div>
+            <a href="{{ path('admin_equipement_index') }}" class="nav-item">
                 <i class="fa-solid fa-tractor"></i>
-                Équipements (À venir)
+                Gestion Équipements
             </a>
-            <a href="#" class="nav-item">
-                <i class="fa-solid fa-store"></i>
-                Boutique (À venir)
+            <a href="{{ path('admin_review_index') }}" class="nav-item">
+                <i class="fa-solid fa-star"></i>
+                Avis & Reviews
             </a>
+            
         </div>
 
         <div class="sidebar-footer">
@@ -405,12 +428,13 @@
             <div class="user-menu">
                 <div class="user-profile">
                     <div class="avatar">
-                        A
+                        {{ app.user ? app.user.userIdentifier|slice(0,1)|upper : 'A' }}
                     </div>
                     <div class="user-info">
-                        <span class="user-name">Administrateur</span>
+                        <span class="user-name">{{ app.user ? app.user.userIdentifier : 'Administrateur' }}</span>
                         <span class="user-role" style="color: var(--danger);">Super Admin</span>
                     </div>
+                    <i class="fa-solid fa-chevron-down" style="color: var(--text-muted); font-size: 0.8rem;"></i>
                 </div>
                 <a href="{{ path('app_logout') }}" class="icon-btn" style="margin-left: 0.5rem;" title="Déconnexion">
                     <i class="fa-solid fa-sign-out-alt"></i>
@@ -422,7 +446,7 @@
         <div class="dashboard-container">
             <div class="page-header">
                 <h1 class="page-title">Dashboard Administrateur</h1>
-                <p class="page-subtitle">Gérez l'application et administrez les utilisateurs.</p>
+                <p class="page-subtitle">Gérez l'application, surveillez l'activité et administrez les utilisateurs.</p>
             </div>
 
             <!-- Stat Cards Grid -->
@@ -443,7 +467,7 @@
                     <div class="stat-label">Produits en Boutique</div>
                 </div>
 
-                <div class="stat-card">
+                <div class="stat-card" style="cursor:pointer;" onclick="location.href='{{ path('admin_equipement_index') }}'">
                     <div class="stat-icon" style="background:rgba(25,139,97,0.12);color:#2ecc71;">
                         <i class="fa-solid fa-tractor"></i>
                     </div>
@@ -451,7 +475,7 @@
                     <div class="stat-label">Équipements</div>
                 </div>
 
-                <div class="stat-card">
+                <div class="stat-card" style="cursor:pointer;" onclick="location.href='{{ path('admin_review_index') }}'">
                     <div class="stat-icon" style="background:rgba(241,196,15,0.12);color:#f1c40f;">
                         <i class="fa-solid fa-star"></i>
                     </div>
@@ -460,57 +484,99 @@
                 </div>
             </div>
 
-            <!-- Main Actions & Table -->
-            <div class="table-container">
-                <div class="card-header" style="margin-bottom: 20px; display: flex; justify-content: space-between; align-items: center;">
-                    <h3 class="card-title">Liste des Utilisateurs</h3>
-                    <div>
-                        <a href="{{ path('app_create_admin') }}" class="btn update"><i class="fa-solid fa-plus"></i> Admin</a>
-                        <a href="{{ path('app_create_user') }}" class="btn update" style="background: #2ecc71;"><i class="fa-solid fa-plus"></i> Utilisateur</a>
+            <!-- Main Charts & Actions -->
+            <div class="charts-container">
+                <div class="chart-card">
+                    <div class="card-header">
+                        <h3 class="card-title">Évolution des Inscriptions</h3>
+                    </div>
+                    <!-- Chart Canvas -->
+                    <div style="height: 300px; width: 100%;">
+                        <canvas id="adminChart"></canvas>
                     </div>
                 </div>
-                
-                <table>
-                    <thead>
-                        <tr>
-                            <th>ID</th>
-                            <th>Nom</th>
-                            <th>Email</th>
-                            <th>Phone</th>
-                            <th>Role</th>
-                            <th>Date Création</th>
-                            <th>Actions</th>
-                        </tr>
-                    </thead>
-                    <tbody>
-                    {% for user in users %}
-                        <tr>
-                            <td>{{ user.id }}</td>
-                            <td>{{ user.fullName }}</td>
-                            <td>{{ user.email }}</td>
-                            <td>{{ user.phone }}</td>
-                            <td>
-                                {% set r = user.role.value is defined ? user.role.value : user.role %}
-                                <span style="padding: 4px 8px; border-radius: 4px; font-size: 0.8rem; background: {{ r == 'ADMIN' ? 'rgba(231, 76, 60, 0.2)' : 'rgba(52, 152, 219, 0.2)' }}; color: {{ r == 'ADMIN' ? '#e74c3c' : '#3498db' }};">
-                                    {{ r }}
-                                </span>
-                            </td>
-                            <td>{{ user.createdAt|date('d/m/Y H:i') }}</td>
-                            <td>
-                                <a href="{{ path('user_update', {id: user.id}) }}" class="btn update"><i class="fa-solid fa-pen"></i></a>
-                                <a href="{{ path('user_delete', {id: user.id}) }}" class="btn delete" onclick="return confirm('Êtes-vous sûr de vouloir supprimer cet utilisateur ?')"><i class="fa-solid fa-trash"></i></a>
-                            </td>
-                        </tr>
-                    {% else %}
-                        <tr>
-                            <td colspan="7" style="text-align: center; padding: 20px;">Aucun utilisateur trouvé dans la base de données.</td>
-                        </tr>
-                    {% endfor %}
-                    </tbody>
-                </table>
-            </div>
 
+                <div class="chart-card">
+                    <div class="card-header">
+                        <h3 class="card-title">Actions Rapides</h3>
+                    </div>
+                    <div class="actions-grid">
+                        <a href="{{ path('app_create_admin') }}" class="action-btn">
+                            <i class="fa-solid fa-user-shield"></i>
+                            <span>Créer Admin</span>
+                        </a>
+                        <a href="{{ path('app_create_user') }}" class="action-btn">
+                            <i class="fa-solid fa-user-plus"></i>
+                            <span>Créer Utilisateur</span>
+                        </a>
+                        <a href="{{ path('admin_equipement_index') }}" class="action-btn">
+                            <i class="fa-solid fa-tractor"></i>
+                            <span>Gérer Équipements</span>
+                        </a>
+                        <a href="{{ path('admin_review_index') }}" class="action-btn">
+                            <i class="fa-solid fa-star"></i>
+                            <span>Gérer les Avis</span>
+                        </a>
+                    </div>
+                </div>
+            </div>
         </div>
     </main>
+
+    <!-- Chart Config -->
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            const ctx = document.getElementById('adminChart');
+            if (!ctx) return;
+            
+            // Gradient for chart line
+            let gradient = ctx.getContext('2d').createLinearGradient(0, 0, 0, 400);
+            gradient.addColorStop(0, 'rgba(52, 152, 219, 0.5)');
+            gradient.addColorStop(1, 'rgba(52, 152, 219, 0.0)');
+
+            new Chart(ctx.getContext('2d'), {
+                type: 'bar',
+                data: {
+                    labels: ['Jan', 'Fév', 'Mar', 'Avr', 'Mai', 'Juin'],
+                    datasets: [{
+                        label: 'Nouveaux Utilisateurs',
+                        data: [5, 12, 8, 15, 22, 18],
+                        backgroundColor: '#3498db',
+                        borderRadius: 6,
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    plugins: {
+                        legend: { display: false },
+                        tooltip: {
+                            backgroundColor: '#1e2529',
+                            titleColor: '#fff',
+                            bodyColor: '#fff',
+                            borderColor: 'rgba(255,255,255,0.1)',
+                            borderWidth: 1,
+                            padding: 10,
+                            displayColors: false
+                        }
+                    },
+                    scales: {
+                        y: {
+                            beginAtZero: true,
+                            grid: {
+                                color: 'rgba(255, 255, 255, 0.05)',
+                                drawBorder: false
+                            },
+                            ticks: { color: '#9ba4b5' }
+                        },
+                        x: {
+                            grid: { display: false },
+                            ticks: { color: '#9ba4b5' }
+                        }
+                    }
+                }
+            });
+        });
+    </script>
 </body>
 </html>
