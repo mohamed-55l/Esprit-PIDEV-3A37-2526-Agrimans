@@ -8,7 +8,9 @@ use App\Form\AssignEquipementType;
 use App\Form\EquipementType;
 use App\Repository\EquipementRepository;
 use App\Repository\ReviewRepository;
-use App\Repository\UserRepository;
+use App\Repository\UsersRepository;
+use App\Entity\Users;
+use App\Enum\UserRole;
 use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Request;
@@ -24,20 +26,23 @@ class AdminController extends AbstractController
     // DASHBOARD PRINCIPAL
     // ─────────────────────────────────────────────────────────────────────────
 
-    #[Route('', name: 'app_admin')]
+    #[Route('', name: 'admin_dashboard')]
     public function index(
         EquipementRepository $equipementRepository,
         ReviewRepository $reviewRepository,
-        UserRepository $userRepository
+        UsersRepository $userRepository
     ): Response {
+        $users = $userRepository->findAll();
+
         $stats = [
             'total_equipements' => $equipementRepository->count([]),
             'total_reviews'     => $reviewRepository->count([]),
-            'total_users'       => $userRepository->count([]),
+            'total_users'       => count($users),
         ];
 
         return $this->render('admin/index.html.twig', [
             'stats' => $stats,
+            'users' => $users,
         ]);
     }
 
@@ -148,5 +153,74 @@ class AdminController extends AbstractController
         }
 
         return $this->redirectToRoute('admin_review_index');
+    }
+
+    // ─────────────────────────────────────────────────────────────────────────
+    // GESTION DES UTILISATEURS (Admin)
+    // ─────────────────────────────────────────────────────────────────────────
+
+    #[Route('/user/delete/{id}', name: 'user_delete')]
+    public function deleteUser($id, EntityManagerInterface $em)
+    {
+        $user = $em->getRepository(Users::class)->find($id);
+
+        if ($user) {
+            $em->remove($user);
+            $em->flush();
+        }
+
+        return $this->redirectToRoute('admin_dashboard');
+    }
+
+    #[Route('/user/update/{id}', name: 'user_update')]
+    public function updateUser($id, Request $request, EntityManagerInterface $em)
+    {
+        $user = $em->getRepository(Users::class)->find($id);
+
+        if (!$user) {
+            return new Response("Utilisateur non trouvé");
+        }
+
+        $errors = [];
+
+        if ($request->isMethod('POST')) {
+            $name = $request->request->get('full_name');
+            $email = $request->request->get('email');
+            $phone = $request->request->get('phone');
+            $role = $request->request->get('role');
+            $password = $request->request->get('password');
+            $confirm = $request->request->get('confirm');
+
+            if (empty($name)) $errors['full_name'] = "Nom requis";
+            if (empty($email)) $errors['email'] = "Email requis";
+
+            if (!empty($password) && $password !== $confirm) {
+                $errors['confirm'] = "Mot de passe incorrect";
+            }
+
+            if (empty($errors)) {
+                $user->setFullName($name);
+                $user->setEmail($email);
+                $user->setPhone($phone);
+
+                if ($role === 'ADMIN') {
+                    $user->setRole(UserRole::ADMIN);
+                } else {
+                    $user->setRole(UserRole::USER);
+                }
+
+                if (!empty($password)) {
+                    $user->setPasswordHash(password_hash($password, PASSWORD_BCRYPT));
+                }
+
+                $em->flush();
+                return $this->redirectToRoute('admin_dashboard');
+            }
+        }
+
+        return $this->render('Update/updateuser.html.twig', [
+            'user' => $user,
+            'errors' => $errors
+        ]);
     }
 }
