@@ -29,9 +29,9 @@
                     <thead>
                         <tr>
                             <th>Produit</th>
-                            <th>CatÃ©gorie</th>
+                            <th>Catégorie</th>
                             <th>Prix unitaire</th>
-                            <th>QuantitÃ© (kg)</th>
+                            <th>Quantité (kg)</th>
                             <th>Sous-total</th>
                             <th>Action</th>
                         </tr>
@@ -91,8 +91,8 @@
                         <i class="fa-solid fa-trash-can"></i> Vider le panier
                     </button>
                 </form>
-                <a href="{{ path('app_marketplace_invoice_download') }}" class="btn btn-secondary" style="border-color: #3498db; color: #3498db;">
-                    <i class="fa-solid fa-file-pdf"></i> Télécharger la facture
+                <a href="{{ path('app_marketplace_invoice_download') }}" target="_blank" data-turbo="false" class="btn btn-secondary" style="border-color: #3498db; color: #3498db;">
+                    <i class="fa-solid fa-file-pdf"></i> Voir la facture
                 </a>
                 <form method="post" action="{{ path('app_marketplace_cart_checkout') }}">
                     <button class="hero-btn-primary" style="font-size: 1rem; padding: 0.8rem 2rem;">

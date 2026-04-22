@@ -4,20 +4,25 @@ namespace App\Controller;
 
 use App\Entity\Product;
 use App\Entity\Rating;
+use App\Entity\RatingLike;
 use App\Entity\ProductBundle;
+use App\Entity\User;
 use App\Form\ProductType;
 use App\Form\RatingType;
 use App\Repository\ProductRepository;
 use App\Repository\ProductBundleRepository;
 use App\Repository\RatingRepository;
+use App\Repository\RatingLikeRepository;
 use App\Service\CartService;
 use App\Service\SessionCartService;
 use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\File\Exception\FileException;
+use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Attribute\Route;
+use Symfony\Component\Routing\Annotation\Route as RouteAnnotation;
 use Symfony\Component\String\Slugger\SluggerInterface;
 
 #[Route('/marketplace')]
@@ -27,7 +32,7 @@ final class ProductController extends AbstractController
     public function index(Request $request, ProductRepository $productRepository, ProductBundleRepository $bundleRepository, SessionCartService $sessionCartService, \App\Service\ExchangeRateService $exchangeRateService): Response
     {
         $page = max(1, (int) $request->query->get('page', 1));
-        $limit = 12; // Items per page
+        $limit = 12;
         $search = $request->query->get('search', '');
         $category = $request->query->get('category', '');
 
@@ -36,37 +41,45 @@ final class ProductController extends AbstractController
             $totalProducts = count($products);
             $products = array_slice($products, ($page - 1) * $limit, $limit);
         } else {
-            // Use paginated query
             $query = $productRepository->createQueryBuilder('p')
                 ->orderBy('p.id', 'DESC')
                 ->setFirstResult(($page - 1) * $limit)
                 ->setMaxResults($limit)
                 ->getQuery();
             $products = $query->getResult();
-            
-            // Get total count
             $totalProducts = $productRepository->createQueryBuilder('p')
                 ->select('COUNT(p.id)')
                 ->getQuery()
                 ->getSingleScalarResult();
         }
 
-        $totalPages = ceil($totalProducts / $limit);
-        $bundles = $bundleRepository->findActiveBundlesPaginated(1, 6);
+        $totalPages   = ceil($totalProducts / $limit);
+        $bundles      = $bundleRepository->findActiveBundlesPaginated(1, 6);
+        $rates        = $exchangeRateService->getRates();
+        $currency     = $request->getSession()->get('currency', 'TND');
+        $cartCount    = $sessionCartService->getCartCount();
 
-        return $this->render('product/index.html.twig', [
-            'products' => $products,
-            'bundles' => $bundles,
-            'search' => $search,
-            'category' => $category,
-            'page' => $page,
-            'totalPages' => $totalPages,
+        $templateData = [
+            'products'      => $products,
+            'bundles'       => $bundles,
+            'search'        => $search,
+            'category'      => $category,
+            'page'          => $page,
+            'totalPages'    => $totalPages,
             'totalProducts' => $totalProducts,
-            'limit' => $limit,
-            'cartCount' => $sessionCartService->getCartCount(),
-            'rates' => $exchangeRateService->getRates(),
-            'currency' => $request->getSession()->get('currency', 'TND'),
-        ]);
+            'limit'         => $limit,
+            'cartCount'     => $cartCount,
+            'rates'         => $rates,
+            'currency'      => $currency,
+        ];
+
+        // AJAX request — return only the product grid partial as JSON
+        if ($request->isXmlHttpRequest()) {
+            $html = $this->renderView('product/_products_partial.html.twig', $templateData);
+            return new JsonResponse(['html' => $html, 'total' => $totalProducts]);
+        }
+
+        return $this->render('product/index.html.twig', $templateData);
     }
 
     #[Route('/set-currency/{currency}', name: 'app_marketplace_set_currency', methods: ['GET'])]
@@ -170,6 +183,70 @@ final class ProductController extends AbstractController
 
         $this->addFlash('success', 'Votre avis a été supprimé');
         return $this->redirectToRoute('app_marketplace_product_show', ['id' => $productId]);
+    }
+
+    #[Route('/rating/{id}/edit', name: 'app_marketplace_rating_edit', methods: ['POST'], requirements: ['id' => '\d+'])]
+    public function editRating(Rating $rating, Request $request, EntityManagerInterface $entityManager): Response
+    {
+        $productId = $rating->getProduct()->getId();
+        $user = $this->getUser();
+
+        // Only the owner can edit
+        if (!$user || ($rating->getUser() !== $user && $rating->getUserId() !== $user->getId())) {
+            $this->addFlash('error', 'Vous ne pouvez pas modifier cet avis.');
+            return $this->redirectToRoute('app_marketplace_product_show', ['id' => $productId]);
+        }
+
+        if (!$this->isCsrfTokenValid('edit-rating-' . $rating->getId(), $request->request->get('_token'))) {
+            $this->addFlash('error', 'Jeton CSRF invalide.');
+            return $this->redirectToRoute('app_marketplace_product_show', ['id' => $productId]);
+        }
+
+        $newComment = trim($request->request->get('comment', ''));
+        $newRating  = (int) $request->request->get('rating', $rating->getRating());
+
+        if ($newRating >= 1 && $newRating <= 5) {
+            $rating->setRating($newRating);
+        }
+        if ($newComment !== '') {
+            $rating->setComment($newComment);
+        }
+
+        $entityManager->flush();
+        $this->addFlash('success', 'Votre avis a été mis à jour !');
+        return $this->redirectToRoute('app_marketplace_product_show', ['id' => $productId]);
+    }
+
+    #[Route('/rating/{id}/like', name: 'app_marketplace_rating_like', methods: ['POST'], requirements: ['id' => '\d+'])]
+    public function likeRating(Rating $rating, Request $request, EntityManagerInterface $entityManager, RatingLikeRepository $likeRepository): Response
+    {
+        $user = $this->getUser();
+        if (!$user) {
+            $this->addFlash('error', 'Vous devez être connecté pour voter.');
+            return $this->redirectToRoute('app_marketplace_product_show', ['id' => $rating->getProduct()->getId()]);
+        }
+
+        $isLike = $request->request->get('vote') === 'like';
+        $existing = $likeRepository->findUserVote($rating->getId(), $user->getId());
+
+        if ($existing) {
+            if ($existing->isLike() === $isLike) {
+                // Cancel vote
+                $entityManager->remove($existing);
+            } else {
+                // Switch vote
+                $existing->setIsLike($isLike);
+            }
+        } else {
+            $like = new RatingLike();
+            $like->setRating($rating);
+            $like->setUser($user);
+            $like->setIsLike($isLike);
+            $entityManager->persist($like);
+        }
+
+        $entityManager->flush();
+        return $this->redirectToRoute('app_marketplace_product_show', ['id' => $rating->getProduct()->getId()]);
     }
 
     #[Route('/{id}/edit', name: 'app_marketplace_product_edit', methods: ['GET', 'POST'], requirements: ['id' => '\d+'])]
