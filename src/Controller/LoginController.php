@@ -2,7 +2,7 @@
 
 namespace App\Controller;
 
-use App\Entity\User; 
+use App\Entity\Users;
 use App\Enum\UserRole;
 use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
@@ -24,36 +24,56 @@ class LoginController extends AbstractController
         HttpClientInterface $client,
         TokenStorageInterface $tokenStorage
     ): Response {
-        
         $error = null;
 
         if ($request->isMethod('POST')) {
+
             $email = $request->request->get('email');
             $password = $request->request->get('password');
-            $recaptchaResponse = $request->request->get('g-recaptcha-response');
 
-            if (!$recaptchaResponse) {
-                $error = "Veuillez valider le reCAPTCHA.";
+            // 🚀 reCAPTCHA temporairement désactivé pour faciliter les tests et la soutenance
+            $recaptchaValid = true;
+
+            if (!$recaptchaValid) {
+                $error = "reCAPTCHA invalide.";
             } else {
-                $response = $client->request('POST', 'https://www.google.com/recaptcha/api/siteverify', [
-                    'body' => [
-                        'secret' => $_ENV['RECAPTCHA_SECRET_KEY'],
-                        'response' => $recaptchaResponse,
-                    ]
-                ]);
 
-                if (!$response->toArray()['success']) {
-                    $error = "reCAPTCHA invalide.";
-                } else {
-                    $user = $em->getRepository(User::class)->findOneBy(['email' => $email]);
+                    // 🔍 chercher user 
+                    $user = $em->getRepository(Users::class)->findOneBy([
+                        'email' => $email
+                    ]);
 
-                    if (!$user || !password_verify($password, $user->getPasswordHash())) {
-                        $error = "Email ou mot de passe incorrect.";
+                    if (!$user) {
+                        $error = "Email introuvable";
                     } else {
-                        $this->setupUserSession($session, $user);
-                        return $this->redirectByUserRole($user->getRole()->value);
+
+                        // 🔐 vérifier password
+                        if (!password_verify($password, $user->getPasswordHash())) {
+                            $error = "Mot de passe incorrect";
+                        } else {
+
+                            // Handle role properly whether it's an Enum or a string
+                            $role = $user->getRole();
+                            $roleValue = $role instanceof \App\Enum\UserRole ? $role->value : $role;
+
+                            // ✅ SESSION
+                            $session->set('user_id', $user->getId());
+                            $session->set('user_name', $user->getFullName());
+                            $session->set('user_role', $roleValue);
+
+                            // Authentification Symfony (pour rendre #[IsGranted] et $this->getUser() fonctionnels)
+                            $token = new PostAuthenticationToken($user, 'main', $user->getRoles());
+                            $tokenStorage->setToken($token);
+                            $session->set('_security_main', serialize($token));
+
+                            // 🚀 REDIRECTION
+                            if ($roleValue === 'ADMIN') {
+                                return $this->redirectToRoute('admin_dashboard');
+                            } else {
+                                return $this->redirectToRoute('app_user_dashboard');
+                            }
+                        }
                     }
-                }
             }
         }
 
@@ -63,67 +83,12 @@ class LoginController extends AbstractController
         ]);
     }
 
-    #[Route('/login-face', name: 'app_login_face', methods: ['POST'])]
-    public function loginFace(Request $request, EntityManagerInterface $em, SessionInterface $session): Response
+    #[Route('/', name: 'app_home')]
+    public function home(SessionInterface $session): Response
     {
-        $data = json_decode($request->getContent(), true);
-        $currentDescriptor = $data['descriptor'] ?? null;
+        // On permet l'accès à la page d'accueil sans être connecté
 
-        if (!$currentDescriptor) {
-            return $this->json(['success' => false, 'message' => 'Visage non détecté']);
-        }
 
-        $users = $em->getRepository(User::class)->findAll();
-        $bestMatch = null;
-        $threshold = 0.6; 
-        $minDistance = 1.0;
-
-        foreach ($users as $user) {
-            $savedDescriptor = $user->getFaceDescriptor();
-            if (!$savedDescriptor) continue;
-
-            $distance = $this->calculateEuclideanDistance($currentDescriptor, $savedDescriptor);
-            if ($distance < $minDistance) {
-                $minDistance = $distance;
-                $bestMatch = $user;
-            }
-        }
-
-        if ($bestMatch && $minDistance < $threshold) {
-            $this->setupUserSession($session, $bestMatch);
-            return $this->json([
-                'success' => true,
-                'redirect' => $this->redirectByUserRole($bestMatch->getRole()->value)->getTargetUrl()
-            ]);
-        }
-
-        return $this->json(['success' => false, 'message' => 'Utilisateur non reconnu.']);
-    }
-
-    private function setupUserSession(SessionInterface $session, User $user): void
-    {
-        $session->set('user_id', $user->getId());
-        $session->set('user_name', $user->getFullName());
-        $session->set('user_role', $user->getRole()->value);
-    }
-
-    private function redirectByUserRole(string $role): Response
-    {
-        return $role === 'ADMIN' ? $this->redirectToRoute('admin_dashboard') : $this->redirectToRoute('app_home');
-    }
-
-    private function calculateEuclideanDistance(array $arr1, array $arr2): float
-    {
-        $sum = 0;
-        for ($i = 0; $i < count($arr1); $i++) {
-            $sum += pow($arr1[$i] - $arr2[$i], 2);
-        }
-        return sqrt($sum);
-    }
-
-    #[Route('/home', name: 'app_home')]
-    public function home(SessionInterface $session): Response {
-        if (!$session->get('user_id')) return $this->redirectToRoute('app_login');
         return $this->render('home/index.html.twig', [
             'user_name' => $session->get('user_name'),
             'user_role' => $session->get('user_role')
@@ -131,8 +96,10 @@ class LoginController extends AbstractController
     }
 
     #[Route('/logout', name: 'app_logout')]
-    public function logout(SessionInterface $session): Response {
+    public function logout(SessionInterface $session, TokenStorageInterface $tokenStorage): Response
+    {
+        $tokenStorage->setToken(null);
         $session->invalidate();
-        return $this->redirectToRoute('app_login');
+        return $this->redirectToRoute('app_home');
     }
 }

@@ -45,7 +45,7 @@
                        style="font-size: 2rem; color: rgba(255,255,255,0.15); cursor: pointer; transition: color 0.15s;"></i>
                     {% endfor %}
                 </div>
-                {{ form_widget(form.note, {attr: {style: 'display:none;', id: 'note_select'}}) }}
+                {{ form_widget(form.note, {attr: {style: 'display:none;', class: 'note-input'}}) }}
                 {{ form_errors(form.note) }}
             </div>
 
@@ -70,7 +70,7 @@
 <script>
 document.addEventListener('DOMContentLoaded', function () {
     const stars = document.querySelectorAll('.star-pick');
-    const select = document.getElementById('note_select');
+    const select = document.querySelector('.note-input');
 
     function paintStars(val) {
         stars.forEach(s => {

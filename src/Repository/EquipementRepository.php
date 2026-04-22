@@ -62,12 +62,18 @@ class EquipementRepository extends ServiceEntityRepository
     /**
      * Récupère les équipements assignés à un utilisateur spécifique
      */
-    public function findByUser(\App\Entity\Users $user): array
+    public function findByUser(\App\Entity\Users $user, ?string $query = null): array
     {
-        return $this->createQueryBuilder('e')
+        $qb = $this->createQueryBuilder('e')
             ->andWhere('e.user = :user')
-            ->setParameter('user', $user)
-            ->orderBy('e.nom', 'ASC')
+            ->setParameter('user', $user);
+
+        if ($query) {
+            $qb->andWhere('e.nom LIKE :query OR e.type LIKE :query')
+               ->setParameter('query', '%' . $query . '%');
+        }
+
+        return $qb->orderBy('e.nom', 'ASC')
             ->getQuery()
             ->getResult();
     }

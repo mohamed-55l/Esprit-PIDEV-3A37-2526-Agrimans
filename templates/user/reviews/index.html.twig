@@ -3,6 +3,9 @@
 {% block title %}Mes Avis | Agrimans{% endblock %}
 
 {% block body %}
+<!-- Chart.js -->
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+
 <section class="content-section" style="margin-top: 2rem;">
 
     <div style="display: flex; justify-content: space-between; align-items: flex-start; margin-bottom: 2.5rem; flex-wrap: wrap; gap: 1rem;">
@@ -15,6 +18,33 @@
         <a href="{{ path('user_equipement_index') }}" class="hero-btn-primary" style="font-size: 0.9rem;">
             <i class="fa-solid fa-tractor"></i> Mes Équipements
         </a>
+    </div>
+
+    <!-- RECHERCHE ET STATISTIQUES -->
+    <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 2rem; margin-bottom: 2.5rem;">
+        <!-- Barre de recherche -->
+        <div style="background: rgba(255,255,255,0.02); border: 1px solid rgba(255,255,255,0.08); border-radius: 15px; padding: 1.5rem;">
+            <h3 style="margin-bottom: 1rem; font-size: 1.1rem;"><i class="fa-solid fa-search" style="color: #f1c40f;"></i> Rechercher dans mes avis</h3>
+            <form action="{{ path('user_review_index') }}" method="get" style="display: flex; gap: 10px;">
+                <input type="text" name="q" value="{{ currentQuery|default('') }}" placeholder="Mots-clés dans vos avis..." style="flex: 1; padding: 10px 15px; background: rgba(0,0,0,0.2); border: 1px solid rgba(255,255,255,0.1); border-radius: 8px; color: white;">
+                <button type="submit" class="hero-btn-primary" style="padding: 10px 20px;"><i class="fa-solid fa-filter"></i> Filtrer</button>
+                {% if currentQuery is defined and currentQuery is not empty %}
+                    <a href="{{ path('user_review_index') }}" class="hero-btn-secondary" style="padding: 10px 15px; text-decoration: none;"><i class="fa-solid fa-xmark"></i></a>
+                {% endif %}
+            </form>
+        </div>
+
+        <!-- Graphique -->
+        <div style="background: rgba(255,255,255,0.02); border: 1px solid rgba(255,255,255,0.08); border-radius: 15px; padding: 1.5rem;">
+            <h3 style="margin-bottom: 1rem; font-size: 1.1rem;"><i class="fa-solid fa-chart-bar" style="color: #f1c40f;"></i> Répartition de mes notes</h3>
+            <div style="height: 200px; display: flex; justify-content: center;">
+                {% if reviews is not empty %}
+                    <canvas id="userReviewChart"></canvas>
+                {% else %}
+                    <p style="color: rgba(255,255,255,0.5); align-self: center;">Aucune donnée à afficher</p>
+                {% endif %}
+            </div>
+        </div>
     </div>
 
     {% for msg in app.flashes('success') %}
@@ -91,4 +121,20 @@
     {% endif %}
 
 </section>
+
+<script>
+    // Chart.js Init for Reviews
+    {% if reviews is not empty %}
+    document.addEventListener("DOMContentLoaded", function() {
+        const reviewCtx = document.getElementById('userReviewChart');
+        if (reviewCtx) {
+            new Chart(reviewCtx.getContext('2d'), {
+                type: 'bar',
+                data: {{ chartReview.createView().data|json_encode|raw }},
+                options: {{ chartReview.createView().options|json_encode|raw }}
+            });
+        }
+    });
+    {% endif %}
+</script>
 {% endblock %}
