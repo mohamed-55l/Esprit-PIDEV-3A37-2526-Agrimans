@@ -18,9 +18,9 @@ class RatingLike
     #[ORM\JoinColumn(name: 'rating_id', referencedColumnName: 'id', nullable: false, onDelete: 'CASCADE')]
     private ?Rating $rating = null;
 
-    #[ORM\ManyToOne(targetEntity: User::class)]
+    #[ORM\ManyToOne(targetEntity: Users::class)]
     #[ORM\JoinColumn(name: 'user_id', referencedColumnName: 'id', nullable: false, onDelete: 'CASCADE')]
-    private ?User $user = null;
+    private ?Users $user = null;
 
     #[ORM\Column(type: 'boolean')]
     private bool $isLike = true; // true = Like, false = Dislike
@@ -41,12 +41,12 @@ class RatingLike
         return $this;
     }
 
-    public function getUser(): ?User
+    public function getUser(): ?Users
     {
         return $this->user;
     }
 
-    public function setUser(?User $user): self
+    public function setUser(?Users $user): self
     {
         $this->user = $user;
         return $this;

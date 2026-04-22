@@ -18,6 +18,8 @@ use App\Service\StockAlertService;
 use Doctrine\ORM\EntityManagerInterface;
 use App\Repository\CultureRepository;
 use App\Repository\ParcelleRepository;
+use App\Repository\ProductRepository;
+use App\Repository\OrderRepository;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
@@ -39,7 +41,9 @@ class AdminController extends AbstractController
         EquipementRepository $equipementRepository,
         ReviewRepository $reviewRepository,
         UsersRepository $userRepository,
-        ChartBuilderInterface $chartBuilder
+        ChartBuilderInterface $chartBuilder,
+        ProductRepository $productRepository,
+        OrderRepository $orderRepository
     ): Response {
         $users = $userRepository->findAll();
         
@@ -47,6 +51,8 @@ class AdminController extends AbstractController
             'total_equipements' => $equipementRepository->count([]),
             'total_reviews'     => $reviewRepository->count([]),
             'total_users'       => count($users),
+            'total_products'    => $productRepository->count([]),
+            'total_orders'      => $orderRepository->count([]),
         ];
 
         // 📊 Graphique 1 : Répartition des Équipements par Disponibilité
@@ -100,18 +106,47 @@ class AdminController extends AbstractController
             ],
         ]);
         $chartReview->setOptions([
-            'scales' => [
-                'y' => ['beginAtZero' => true, 'ticks' => ['color' => '#fff']],
-                'x' => ['ticks' => ['color' => '#fff']]
-            ],
+            'scales' => ['y' => ['beginAtZero' => true, 'ticks' => ['color' => '#fff']], 'x' => ['ticks' => ['color' => '#fff']]],
             'plugins' => ['legend' => ['display' => false]]
         ]);
+
+        // 📊 Graphique 3 : Commandes Marketplace par Statut
+        $orders = $orderRepository->findAll();
+        $orderStatusCount = [];
+        foreach ($orders as $order) {
+            $status = $order->getStatus() ? ucfirst(strtolower($order->getStatus())) : 'Inconnu';
+            if (!isset($orderStatusCount[$status])) {
+                $orderStatusCount[$status] = 0;
+            }
+            $orderStatusCount[$status]++;
+        }
+
+        $chartMarketplace = $chartBuilder->createChart(Chart::TYPE_DOUGHNUT);
+        $chartMarketplace->setData([
+            'labels' => array_keys($orderStatusCount),
+            'datasets' => [
+                [
+                    'label' => 'Commandes',
+                    'backgroundColor' => ['#9b59b6', '#3498db', '#e67e22', '#2ecc71', '#e74c3c'],
+                    'borderColor' => '#1e2529',
+                    'data' => array_values($orderStatusCount),
+                ],
+            ],
+        ]);
+        $chartMarketplace->setOptions([
+            'plugins' => ['legend' => ['position' => 'bottom', 'labels' => ['color' => '#fff']]]
+        ]);
+
+        // Vérifier les alertes de stock
+        $lowStockEquipements = [];
 
         return $this->render('admin/index.html.twig', [
             'stats' => $stats,
             'users' => $users,
             'chartEquipement' => $chartEquipement,
             'chartReview' => $chartReview,
+            'chartMarketplace' => $chartMarketplace,
+            'lowStockAlerts' => $lowStockEquipements,
         ]);
     }
 
@@ -360,30 +395,49 @@ class AdminController extends AbstractController
     }
 
     #[Route('/view-parcelles-cultures', name: 'app_admin_view_parcelles_cultures')]
-    public function viewParcellesCultures(Request $request, ParcelleRepository $parcelleRepository, CultureRepository $cultureRepository, \Knp\Component\Pager\PaginatorInterface $paginator): Response
-    {
-        $parcellesQuery = $parcelleRepository->findAll();
-        $culturesQuery = $cultureRepository->findAll();
+    public function viewParcellesCultures(
+        Request $request, 
+        ParcelleRepository $parcelleRepository, 
+        CultureRepository $cultureRepository, 
+        \Knp\Component\Pager\PaginatorInterface $paginator,
+        ProductRepository $productRepository,
+        OrderRepository $orderRepository,
+        EquipementRepository $equipementRepository,
+        ReviewRepository $reviewRepository,
+        UsersRepository $userRepository
+    ): Response {
+        $parcellesQuery = $parcelleRepository->createQueryBuilder('p');
+        $culturesQuery = $cultureRepository->createQueryBuilder('c');
 
         $parcelles = $paginator->paginate(
             $parcellesQuery,
             $request->query->getInt('page_p', 1),
-            5,
+            1, // Limit set to 1 to force pagination display
             ['pageParameterName' => 'page_p']
         );
 
         $cultures = $paginator->paginate(
             $culturesQuery,
             $request->query->getInt('page_c', 1),
-            5,
+            1, // Limit set to 1 to force pagination display
             ['pageParameterName' => 'page_c']
         );
+
+        $users = $userRepository->findAll();
+        $stats = [
+            'total_equipements' => $equipementRepository->count([]),
+            'total_reviews'     => $reviewRepository->count([]),
+            'total_users'       => count($users),
+            'total_products'    => $productRepository->count([]),
+            'total_orders'      => $orderRepository->count([]),
+        ];
 
         return $this->render('admin/index.html.twig', [
             'controller_name' => 'AdminController',
             'view_mode' => 'parcelles_cultures',
             'parcelles' => $parcelles,
             'cultures' => $cultures,
+            'stats' => $stats,
         ]);
     }
 }

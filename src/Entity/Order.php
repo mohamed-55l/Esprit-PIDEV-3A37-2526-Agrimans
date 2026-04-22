@@ -9,7 +9,7 @@ use Doctrine\Common\Collections\Collection;
 use App\Repository\OrderRepository;
 
 #[ORM\Entity(repositoryClass: OrderRepository::class)]
-#[ORM\Table(name: 'order')]
+#[ORM\Table(name: '`order`')]
 class Order
 {
     #[ORM\Id]

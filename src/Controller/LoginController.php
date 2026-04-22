@@ -31,8 +31,23 @@ class LoginController extends AbstractController
             $email = $request->request->get('email');
             $password = $request->request->get('password');
 
-            // 🚀 reCAPTCHA temporairement désactivé pour faciliter les tests et la soutenance
-            $recaptchaValid = true;
+            // 🚀 reCAPTCHA activé
+            $recaptchaResponse = $request->request->get('g-recaptcha-response');
+            $recaptchaValid = false;
+
+            if ($recaptchaResponse) {
+                $response = $client->request('POST', 'https://www.google.com/recaptcha/api/siteverify', [
+                    'body' => [
+                        'secret' => $_ENV['RECAPTCHA_SECRET_KEY'],
+                        'response' => $recaptchaResponse,
+                    ]
+                ]);
+
+                $data = $response->toArray(false);
+                if (isset($data['success']) && $data['success'] === true) {
+                    $recaptchaValid = true;
+                }
+            }
 
             if (!$recaptchaValid) {
                 $error = "reCAPTCHA invalide.";
@@ -47,9 +62,37 @@ class LoginController extends AbstractController
                         $error = "Email introuvable";
                     } else {
 
-                        // 🔐 vérifier password
-                        if (!password_verify($password, $user->getPasswordHash())) {
-                            $error = "Mot de passe incorrect";
+                        // 🔐 vérifier password ou face_descriptor
+                        $faceDescriptorRaw = $request->request->get('face_descriptor');
+                        
+                        $isPasswordValid = false;
+                        $isFaceValid = false;
+
+                        if (!empty($password)) {
+                            $isPasswordValid = password_verify($password, $user->getPasswordHash());
+                        }
+
+                        if (!empty($faceDescriptorRaw) && $user->getFaceDescriptor() !== null) {
+                            $clientDescriptor = json_decode($faceDescriptorRaw, true);
+                            $savedDescriptor = $user->getFaceDescriptor();
+
+                            if (is_array($clientDescriptor) && is_array($savedDescriptor) && count($clientDescriptor) === 128 && count($savedDescriptor) === 128) {
+                                // Calculer la distance euclidienne
+                                $distance = 0.0;
+                                for ($i = 0; $i < 128; $i++) {
+                                    $distance += pow($clientDescriptor[$i] - $savedDescriptor[$i], 2);
+                                }
+                                $distance = sqrt($distance);
+
+                                // Seuil de tolérance (ex: 0.5)
+                                if ($distance < 0.5) {
+                                    $isFaceValid = true;
+                                }
+                            }
+                        }
+
+                        if (!$isPasswordValid && (!$isFaceValid || empty($faceDescriptorRaw))) {
+                            $error = "Identifiants (Mot de passe ou Face ID) incorrects";
                         } else {
 
                             // Handle role properly whether it's an Enum or a string

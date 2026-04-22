@@ -5,9 +5,18 @@
     <title>AGRI Samir - Login</title>
     <link rel="stylesheet" href="{{ asset('styles/login.css') }}">
 
-    <!-- reCAPTCHA désactivé temporairement
+    <!-- reCAPTCHA activé -->
     <script src="https://www.google.com/recaptcha/api.js" async defer></script>
-    -->
+    <style>
+        .face-capture-zone { text-align: center; background: #f8fafc; padding: 15px; border-radius: 10px; border: 2px solid #e2e8f0; margin-bottom: 20px; display: none; }
+        .video-container { position: relative; display: inline-block; width: 100%; max-width: 320px; height: 240px; border-radius: 12px; overflow: hidden; background: #000; }
+        #video { width: 100%; height: 100%; object-fit: cover; transform: scaleX(-1); }
+        #overlay { position: absolute; top: 0; left: 0; width: 100%; height: 100%; pointer-events: none; transform: scaleX(-1); }
+        .status-badge { display: inline-block; padding: 5px 12px; border-radius: 20px; font-size: 12px; font-weight: bold; margin-top: 10px; background: #edf2f7; }
+        .btn-face { width: 100%; background: #1a202c; color: white; padding: 12px; border: none; border-radius: 10px; font-size: 1rem; cursor: pointer; margin-bottom: 10px; font-weight: bold; transition: all 0.3s; }
+        .btn-face:hover { background: #2d3748; }
+        .separator { text-align: center; margin: 15px 0; color: #a0aec0; font-size: 0.9rem; font-weight: bold; }
+    </style>
 </head>
 <body>
 
@@ -27,11 +36,27 @@
                 <input type="email" name="email" placeholder="Votre email" required>
 
                 <label>Mot de passe</label>
-                <input type="password" name="password" placeholder="Mot de passe" required>
+                <input type="password" name="password" placeholder="Mot de passe">
 
-                <!-- reCAPTCHA désactivé temporairement
+                <div class="separator">OU</div>
+
+                <button type="button" id="btn-show-face" class="btn-face">📸 Utiliser Face ID</button>
+                
+                <div id="face-capture-container" class="face-capture-zone">
+                    <div class="video-container">
+                        <video id="video" autoplay muted></video>
+                        <canvas id="overlay"></canvas>
+                    </div>
+                    <div><span id="scan-status" class="status-badge">Initialisation AI...</span></div>
+                    <button type="button" id="btn-scan" class="btn-face" style="margin-top:10px; background:#0f6b3b;">
+                        Analyser mon visage
+                    </button>
+                </div>
+                
+                <input type="hidden" name="face_descriptor" id="face_descriptor">
+
+                <!-- reCAPTCHA activé -->
                 <div class="g-recaptcha" data-sitekey="{{ recaptcha_site_key }}"></div>
-                -->
 
                 {% if error %}
                     <p class="error">{{ error }}</p>
@@ -56,6 +81,72 @@
     </div>
 
 </div>
+
+<script src="{{ asset('js/face-api.min.js') }}"></script>
+<script>
+    const btnShowFace = document.getElementById('btn-show-face');
+    const faceContainer = document.getElementById('face-capture-container');
+    const video = document.getElementById('video');
+    const canvas = document.getElementById('overlay');
+    const statusText = document.getElementById('scan-status');
+    const btnScan = document.getElementById('btn-scan');
+    const descriptorInput = document.getElementById('face_descriptor');
+    let trackingInterval;
+
+    btnShowFace.addEventListener('click', () => {
+        faceContainer.style.display = 'block';
+        btnShowFace.style.display = 'none';
+        initFaceID();
+    });
+
+    async function initFaceID() {
+        try {
+            const MODEL_PATH = '/js/models'; 
+            await Promise.all([
+                faceapi.nets.ssdMobilenetv1.loadFromUri(MODEL_PATH),
+                faceapi.nets.faceLandmark68Net.loadFromUri(MODEL_PATH),
+                faceapi.nets.faceRecognitionNet.loadFromUri(MODEL_PATH)
+            ]);
+            const stream = await navigator.mediaDevices.getUserMedia({ video: {} });
+            video.srcObject = stream;
+            statusText.innerText = "IA Prête ✅ - Placez votre visage";
+            startTracking();
+        } catch (err) { statusText.innerText = "Erreur Caméra ❌"; }
+    }
+
+    function startTracking() {
+        const displaySize = { width: video.clientWidth, height: video.clientHeight };
+        faceapi.matchDimensions(canvas, displaySize);
+        trackingInterval = setInterval(async () => {
+            if(video.paused || video.ended) return;
+            const detections = await faceapi.detectAllFaces(video, new faceapi.SsdMobilenetv1Options()).withFaceLandmarks();
+            const resized = faceapi.resizeResults(detections, displaySize);
+            canvas.getContext('2d').clearRect(0, 0, canvas.width, canvas.height);
+            faceapi.draw.drawDetections(canvas, resized);
+            faceapi.draw.drawFaceLandmarks(canvas, resized);
+        }, 100);
+    }
+
+    btnScan.addEventListener('click', async () => {
+        statusText.innerText = "Scan en cours... ⏳";
+        const detection = await faceapi.detectSingleFace(video, new faceapi.SsdMobilenetv1Options()).withFaceLandmarks().withFaceDescriptor();
+        if (detection) {
+            descriptorInput.value = JSON.stringify(Array.from(detection.descriptor));
+            statusText.innerText = "Visage Identifié ! ✅";
+            statusText.style.background = "#c6f6d5";
+            btnScan.style.background = "#2f855a";
+            btnScan.innerText = "✓ Soumettre le Login";
+            clearInterval(trackingInterval);
+            
+            // Auto submit
+            setTimeout(() => {
+                document.querySelector('form').submit();
+            }, 1000);
+        } else {
+            statusText.innerText = "Visage non détecté ❌";
+        }
+    });
+</script>
 
 </body>
 </html>

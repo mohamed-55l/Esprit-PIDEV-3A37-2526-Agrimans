@@ -3,7 +3,7 @@
 -- https://www.phpmyadmin.net/
 --
 -- Hôte : 127.0.0.1
--- Généré le : mer. 15 avr. 2026 à 19:56
+-- Généré le : mer. 22 avr. 2026 à 12:25
 -- Version du serveur : 10.4.32-MariaDB
 -- Version de PHP : 8.1.25
 
@@ -29,11 +29,11 @@ SET time_zone = "+00:00";
 
 CREATE TABLE `animal` (
   `id` int(11) NOT NULL,
-  `nom` varchar(100) NOT NULL,
-  `espece` varchar(100) NOT NULL,
-  `race` varchar(100) DEFAULT NULL,
-  `poids` float DEFAULT NULL,
-  `etatSante` varchar(50) DEFAULT 'Sain',
+  `nom` varchar(255) NOT NULL,
+  `espece` varchar(255) NOT NULL,
+  `race` varchar(255) DEFAULT NULL,
+  `poids` double DEFAULT NULL,
+  `etatSante` varchar(255) DEFAULT NULL,
   `userId` int(11) DEFAULT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 
@@ -53,11 +53,11 @@ INSERT INTO `animal` (`id`, `nom`, `espece`, `race`, `poids`, `etatSante`, `user
 
 CREATE TABLE `animal_nourriture` (
   `id` int(11) NOT NULL,
-  `quantity_fed` decimal(10,2) NOT NULL,
+  `quantity_fed` double NOT NULL,
   `feeding_date` datetime DEFAULT NULL,
-  `notes` varchar(500) DEFAULT NULL,
-  `animal_id` int(11) NOT NULL,
-  `nourriture_id` int(11) NOT NULL
+  `notes` varchar(255) DEFAULT NULL,
+  `animal_id` int(11) DEFAULT NULL,
+  `nourriture_id` int(11) DEFAULT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 
 --
@@ -65,7 +65,18 @@ CREATE TABLE `animal_nourriture` (
 --
 
 INSERT INTO `animal_nourriture` (`id`, `quantity_fed`, `feeding_date`, `notes`, `animal_id`, `nourriture_id`) VALUES
-(1, 2.00, '2026-04-07 15:30:00', 'dqdf', 1, 1);
+(1, 2, '2026-04-07 15:30:00', 'dqdf', 1, 1);
+
+-- --------------------------------------------------------
+
+--
+-- Structure de la table `bundle_products`
+--
+
+CREATE TABLE `bundle_products` (
+  `bundle_id` int(11) NOT NULL,
+  `product_id` int(11) NOT NULL
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
 -- --------------------------------------------------------
 
@@ -119,17 +130,19 @@ CREATE TABLE `culture` (
   `date_plantation` date DEFAULT NULL,
   `date_recolte_prevue` date DEFAULT NULL,
   `etat_culture` varchar(100) DEFAULT NULL,
-  `parcelle_id` int(11) DEFAULT NULL
+  `parcelle_id` int(11) DEFAULT NULL,
+  `info_file_name` varchar(255) DEFAULT NULL,
+  `updated_at` datetime DEFAULT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 
 --
 -- Déchargement des données de la table `culture`
 --
 
-INSERT INTO `culture` (`id_culture`, `nom`, `type_culture`, `date_plantation`, `date_recolte_prevue`, `etat_culture`, `parcelle_id`) VALUES
-(1, 'AZIZ', 'fff', '2026-04-08', '2026-04-10', 'crouii', 6),
-(2, 'Ble', 'cereale', '2026-04-08', '2026-04-10', 'ceeee', NULL),
-(3, 'Neee', 'cereal', '2025-02-07', '2027-05-02', 'croissance', 5);
+INSERT INTO `culture` (`id_culture`, `nom`, `type_culture`, `date_plantation`, `date_recolte_prevue`, `etat_culture`, `parcelle_id`, `info_file_name`, `updated_at`) VALUES
+(1, 'AZIZ', 'fff', '2026-04-08', '2026-04-10', 'crouii', 6, NULL, NULL),
+(2, 'Ble', 'cereale', '2026-04-08', '2026-04-10', 'ceeee', NULL, NULL, NULL),
+(3, 'Neee', 'cereal', '2025-02-07', '2027-05-02', 'croissance', 5, NULL, NULL);
 
 -- --------------------------------------------------------
 
@@ -153,6 +166,27 @@ INSERT INTO `doctrine_migration_versions` (`version`, `executed_at`, `execution_
 -- --------------------------------------------------------
 
 --
+-- Structure de la table `email_otp`
+--
+
+CREATE TABLE `email_otp` (
+  `email` varchar(100) NOT NULL,
+  `code` varchar(10) NOT NULL,
+  `expiry` datetime NOT NULL
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
+
+--
+-- Déchargement des données de la table `email_otp`
+--
+
+INSERT INTO `email_otp` (`email`, `code`, `expiry`) VALUES
+('mohamednassim.karkeni@esprit.tn', '479444', '2026-03-05 02:29:21'),
+('nassimkarkeni00@gmail.com', '947335', '2026-03-05 02:31:51'),
+('zidisamir992@gmail.com', '680369', '2026-03-05 02:32:16');
+
+-- --------------------------------------------------------
+
+--
 -- Structure de la table `equipement`
 --
 
@@ -170,7 +204,7 @@ CREATE TABLE `equipement` (
 --
 
 INSERT INTO `equipement` (`id`, `nom`, `type`, `prix`, `disponibilite`, `user_id`) VALUES
-(17, 'testttcgvh bjn,;', 'tracteur', 10, 'En maintenance', NULL),
+(17, 'testttcgvh bjn,;', 'tracteur', 10, 'En maintenance', 2),
 (18, 'Test Machine', 'Test', 100, 'Indisponible', NULL),
 (19, 'Test Machine', 'Test', 100, 'Disponible', NULL),
 (26, 'Test Machine', 'Test', 100, 'Disponible', 1),
@@ -188,7 +222,7 @@ INSERT INTO `equipement` (`id`, `nom`, `type`, `prix`, `disponibilite`, `user_id
 (41, '888', '888', 10, 'Disponible', NULL),
 (42, 'tracteuuuuuur', 'tracteuuuur', 100000000, 'Indisponible', NULL),
 (44, 'rrrrrrrrrrrrrr', 'rrrrrrrrrrrr', 852, 'En maintenance', NULL),
-(45, '852', '8520', 888, 'Disponible', NULL),
+(45, '852', '8520', 888, 'Disponible', 2),
 (47, 'oppppppppppp', 'pppppo', 77888, 'Disponible', NULL);
 
 -- --------------------------------------------------------
@@ -235,12 +269,31 @@ CREATE TABLE `garage` (
 --
 
 INSERT INTO `garage` (`id`, `nom`, `adresse`, `latitude`, `longitude`, `capacite`, `responsable`, `telephone`, `date_creation`) VALUES
-(1, 'Garage Central', 'Zone Industrielle, Tunis', 36.8065, 10.1815, 20, 'Mohamed Ali', '71 234 567', '2026-03-05 00:04:44'),
-(2, 'Garage Nord', 'Route de Bizerte, Ariana', 36.8665, 10.1655, 15, 'Sami Ben Salah', '72 345 678', '2026-03-05 00:04:44'),
-(3, 'Garage Sud', 'Autoroute A1, Enfidha', 36.3665, 10.3815, 25, 'Karim Jebali', '73 456 789', '2026-03-05 00:04:44'),
-(4, 'Garage Sousse', 'Route Touristique, Sousse', 35.8333, 10.6333, 12, 'Hichem Gharbi', '73 567 890', '2026-03-05 00:04:44'),
-(5, 'Garage Sfax', 'Route Gabès, Sfax', 34.7333, 10.7667, 18, 'Ahmed Karray', '74 678 901', '2026-03-05 00:04:44'),
-(6, 'test', 'el mourouj', 44.6666, 20.6654, 20, 'mohamed', '51037288', '2026-03-05 00:32:19');
+(6, 'test', 'el mourouj', 44.6666, 20.6654, 20, 'mohamed', '51037288', '2026-03-05 00:32:19'),
+(7, 'Garage 1', 'Ariana', 10.22, 20.555, 10, 'mohamed', '51037288', '2026-04-22 06:11:12');
+
+-- --------------------------------------------------------
+
+--
+-- Structure de la table `garage_equipement`
+--
+
+CREATE TABLE `garage_equipement` (
+  `garage_id` int(11) NOT NULL,
+  `equipement_id` int(11) NOT NULL
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+
+--
+-- Déchargement des données de la table `garage_equipement`
+--
+
+INSERT INTO `garage_equipement` (`garage_id`, `equipement_id`) VALUES
+(7, 17),
+(7, 18),
+(7, 19),
+(7, 28),
+(7, 29),
+(7, 31);
 
 -- --------------------------------------------------------
 
@@ -338,8 +391,20 @@ CREATE TABLE `parcelle` (
 
 INSERT INTO `parcelle` (`id_parcelle`, `nom`, `superficie`, `localisation`, `type_sol`, `utilisateur_id`, `latitude`, `longitude`) VALUES
 (5, 'dtfghj', 12.5, 'iergfbhj', 'ehgrvunf,izgbuhzef ', 1, 36.5478, 10.2874),
-(6, 'Aeeeee', 45, 'ffff', 'arft', 2, 30, 10),
+(6, 'Aeeeee', 45, 'tunis', 'sableux', 2, 36.8665, 10.1647),
 (8, 'aa', 55, 'aaaa', 'aaa', 1, 30, 10);
+
+-- --------------------------------------------------------
+
+--
+-- Structure de la table `password_reset`
+--
+
+CREATE TABLE `password_reset` (
+  `email` varchar(255) NOT NULL,
+  `code` varchar(6) NOT NULL,
+  `expiry` timestamp NOT NULL DEFAULT current_timestamp() ON UPDATE current_timestamp()
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 
 -- --------------------------------------------------------
 
@@ -395,6 +460,23 @@ INSERT INTO `products` (`id`, `name`, `description`, `price`, `quantity`, `image
 -- --------------------------------------------------------
 
 --
+-- Structure de la table `product_bundles`
+--
+
+CREATE TABLE `product_bundles` (
+  `id` int(11) NOT NULL,
+  `name` varchar(255) NOT NULL,
+  `description` longtext DEFAULT NULL,
+  `original_price` double NOT NULL,
+  `bundle_price` double NOT NULL,
+  `discount_percentage` double NOT NULL,
+  `is_active` tinyint(1) NOT NULL,
+  `created_at` datetime NOT NULL
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+
+-- --------------------------------------------------------
+
+--
 -- Structure de la table `ratings`
 --
 
@@ -419,6 +501,19 @@ INSERT INTO `ratings` (`id`, `product_id`, `user_id`, `rating`, `comment`, `pric
 -- --------------------------------------------------------
 
 --
+-- Structure de la table `rating_likes`
+--
+
+CREATE TABLE `rating_likes` (
+  `id` int(11) NOT NULL,
+  `is_like` tinyint(1) NOT NULL,
+  `rating_id` int(11) NOT NULL,
+  `user_id` int(11) NOT NULL
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+
+-- --------------------------------------------------------
+
+--
 -- Structure de la table `review`
 --
 
@@ -437,7 +532,14 @@ CREATE TABLE `review` (
 
 INSERT INTO `review` (`id`, `commentaire`, `note`, `date_review`, `equipement_id`, `user_id`) VALUES
 (20, 'iyutyhftgdf', 5, '2026-04-15', 38, 1),
-(21, 'iyutyhftgdf', 5, '2026-04-15', 38, 1);
+(21, 'iyutyhftgdf', 5, '2026-04-15', 38, 1),
+(22, 'mauvais', 1, '2026-04-22', 17, 2),
+(23, 'mauvais', 1, '2026-04-22', 17, 2),
+(24, 'mauvais', 1, '2026-04-22', 17, 2),
+(25, 'mauvais', 1, '2026-04-22', 17, 2),
+(26, 'bon', 5, '2026-04-22', 45, 2),
+(27, 'bon', 5, '2026-04-22', 45, 2),
+(28, 'bon', 5, '2026-04-22', 45, 2);
 
 -- --------------------------------------------------------
 
@@ -486,7 +588,8 @@ CREATE TABLE `users` (
 
 INSERT INTO `users` (`id`, `full_name`, `email`, `phone`, `password_hash`, `role`, `created_at`) VALUES
 (1, 'Admin Agrimans', 'admin@agrimans.com', NULL, '$2y$13$TcozcEQtujZZCt.6V1dbduREHcDrK8Q9ZZfZCQ1j4k0bpzcRrUndK', 'ADMIN', '2026-04-15 17:09:00'),
-(2, 'User Agrimans', 'user@agrimans.com', NULL, '$2y$13$V4EZV031goC8hl/gwpDbQedJcRuPyzZwQzQ5U5fVEW.nujCoFZI8e', 'USER', '2026-04-15 17:09:00');
+(2, 'User Agrimans', 'user@agrimans.com', '51037288', '$2y$13$V4EZV031goC8hl/gwpDbQedJcRuPyzZwQzQ5U5fVEW.nujCoFZI8e', 'USER', '2026-04-15 17:09:00'),
+(9, 'Mohamed Daoudi', 'd.moham2004@gmail.com', '51037288', '$2y$10$X5JOlokk7Yp65ai/KodDEuG9pjNAKP2sfZxV4sT0yAIoIPMJLumie', 'USER', '2026-04-22 03:46:58');
 
 -- --------------------------------------------------------
 
@@ -522,8 +625,7 @@ CREATE TABLE `user_otp` (
 -- Index pour la table `animal`
 --
 ALTER TABLE `animal`
-  ADD PRIMARY KEY (`id`),
-  ADD KEY `fk_animal_user` (`userId`);
+  ADD PRIMARY KEY (`id`);
 
 --
 -- Index pour la table `animal_nourriture`
@@ -532,6 +634,14 @@ ALTER TABLE `animal_nourriture`
   ADD PRIMARY KEY (`id`),
   ADD KEY `IDX_A9B23EF78E962C16` (`animal_id`),
   ADD KEY `IDX_A9B23EF798BD5834` (`nourriture_id`);
+
+--
+-- Index pour la table `bundle_products`
+--
+ALTER TABLE `bundle_products`
+  ADD PRIMARY KEY (`bundle_id`,`product_id`),
+  ADD KEY `IDX_9A956B7BF1FAD9D3` (`bundle_id`),
+  ADD KEY `IDX_9A956B7B4584665A` (`product_id`);
 
 --
 -- Index pour la table `carts`
@@ -582,6 +692,14 @@ ALTER TABLE `garage`
   ADD PRIMARY KEY (`id`);
 
 --
+-- Index pour la table `garage_equipement`
+--
+ALTER TABLE `garage_equipement`
+  ADD PRIMARY KEY (`garage_id`,`equipement_id`),
+  ADD KEY `IDX_C1B083F5C4FFF555` (`garage_id`),
+  ADD KEY `IDX_C1B083F5806F0F5C` (`equipement_id`);
+
+--
 -- Index pour la table `messenger_messages`
 --
 ALTER TABLE `messenger_messages`
@@ -617,13 +735,6 @@ ALTER TABLE `parcelle`
   ADD KEY `fk_parcelle_user` (`utilisateur_id`);
 
 --
--- Index pour la table `product`
---
-ALTER TABLE `product`
-  ADD PRIMARY KEY (`id`),
-  ADD KEY `user_id` (`user_id`);
-
---
 -- Index pour la table `products`
 --
 ALTER TABLE `products`
@@ -631,11 +742,25 @@ ALTER TABLE `products`
   ADD KEY `seller_id` (`seller_id`);
 
 --
+-- Index pour la table `product_bundles`
+--
+ALTER TABLE `product_bundles`
+  ADD PRIMARY KEY (`id`);
+
+--
 -- Index pour la table `ratings`
 --
 ALTER TABLE `ratings`
   ADD PRIMARY KEY (`id`),
   ADD KEY `product_id` (`product_id`);
+
+--
+-- Index pour la table `rating_likes`
+--
+ALTER TABLE `rating_likes`
+  ADD PRIMARY KEY (`id`),
+  ADD KEY `IDX_D4DC4141A32EFC6` (`rating_id`),
+  ADD KEY `IDX_D4DC4141A76ED395` (`user_id`);
 
 --
 -- Index pour la table `review`
@@ -658,13 +783,6 @@ ALTER TABLE `user`
 ALTER TABLE `users`
   ADD PRIMARY KEY (`id`),
   ADD UNIQUE KEY `email` (`email`);
-
---
--- Index pour la table `user_auth`
---
-ALTER TABLE `user_auth`
-  ADD PRIMARY KEY (`id`),
-  ADD UNIQUE KEY `UNIQ_825FFC90E7927C74` (`email`);
 
 --
 -- Index pour la table `user_otp`
@@ -716,7 +834,7 @@ ALTER TABLE `equipement`
 -- AUTO_INCREMENT pour la table `garage`
 --
 ALTER TABLE `garage`
-  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=7;
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=8;
 
 --
 -- AUTO_INCREMENT pour la table `messenger_messages`
@@ -749,16 +867,16 @@ ALTER TABLE `parcelle`
   MODIFY `id_parcelle` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=9;
 
 --
--- AUTO_INCREMENT pour la table `product`
---
-ALTER TABLE `product`
-  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT;
-
---
 -- AUTO_INCREMENT pour la table `products`
 --
 ALTER TABLE `products`
   MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=8;
+
+--
+-- AUTO_INCREMENT pour la table `product_bundles`
+--
+ALTER TABLE `product_bundles`
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT;
 
 --
 -- AUTO_INCREMENT pour la table `ratings`
@@ -767,10 +885,16 @@ ALTER TABLE `ratings`
   MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=4;
 
 --
+-- AUTO_INCREMENT pour la table `rating_likes`
+--
+ALTER TABLE `rating_likes`
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT;
+
+--
 -- AUTO_INCREMENT pour la table `review`
 --
 ALTER TABLE `review`
-  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=22;
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=29;
 
 --
 -- AUTO_INCREMENT pour la table `user`
@@ -782,13 +906,7 @@ ALTER TABLE `user`
 -- AUTO_INCREMENT pour la table `users`
 --
 ALTER TABLE `users`
-  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=8;
-
---
--- AUTO_INCREMENT pour la table `user_auth`
---
-ALTER TABLE `user_auth`
-  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=6;
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=10;
 
 --
 -- Contraintes pour les tables déchargées
@@ -802,10 +920,11 @@ ALTER TABLE `animal_nourriture`
   ADD CONSTRAINT `FK_A9B23EF798BD5834` FOREIGN KEY (`nourriture_id`) REFERENCES `nourriture` (`id`);
 
 --
--- Contraintes pour la table `carts`
+-- Contraintes pour la table `bundle_products`
 --
-ALTER TABLE `carts`
-  ADD CONSTRAINT `fk_carts_buyer_id` FOREIGN KEY (`buyer_id`) REFERENCES `users` (`id`) ON DELETE CASCADE;
+ALTER TABLE `bundle_products`
+  ADD CONSTRAINT `FK_9A956B7B4584665A` FOREIGN KEY (`product_id`) REFERENCES `products` (`id`),
+  ADD CONSTRAINT `FK_9A956B7BF1FAD9D3` FOREIGN KEY (`bundle_id`) REFERENCES `product_bundles` (`id`);
 
 --
 -- Contraintes pour la table `cart_items`
@@ -831,6 +950,13 @@ ALTER TABLE `equipement_geo`
   ADD CONSTRAINT `equipement_geo_ibfk_2` FOREIGN KEY (`garage_id`) REFERENCES `garage` (`id`) ON DELETE SET NULL;
 
 --
+-- Contraintes pour la table `garage_equipement`
+--
+ALTER TABLE `garage_equipement`
+  ADD CONSTRAINT `FK_C1B083F5806F0F5C` FOREIGN KEY (`equipement_id`) REFERENCES `equipement` (`id`),
+  ADD CONSTRAINT `FK_C1B083F5C4FFF555` FOREIGN KEY (`garage_id`) REFERENCES `garage` (`id`);
+
+--
 -- Contraintes pour la table `products`
 --
 ALTER TABLE `products`
@@ -842,6 +968,13 @@ ALTER TABLE `products`
 ALTER TABLE `ratings`
   ADD CONSTRAINT `FK_CEB607C94584665A` FOREIGN KEY (`product_id`) REFERENCES `products` (`id`) ON DELETE CASCADE,
   ADD CONSTRAINT `fk_ratings_product_id` FOREIGN KEY (`product_id`) REFERENCES `products` (`id`) ON DELETE CASCADE;
+
+--
+-- Contraintes pour la table `rating_likes`
+--
+ALTER TABLE `rating_likes`
+  ADD CONSTRAINT `FK_D4DC4141A32EFC6` FOREIGN KEY (`rating_id`) REFERENCES `ratings` (`id`) ON DELETE CASCADE,
+  ADD CONSTRAINT `FK_D4DC4141A76ED395` FOREIGN KEY (`user_id`) REFERENCES `user` (`id`) ON DELETE CASCADE;
 
 --
 -- Contraintes pour la table `review`

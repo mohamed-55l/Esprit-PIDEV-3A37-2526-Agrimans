@@ -3,7 +3,7 @@
 namespace App\Form;
 
 use App\Entity\Parcelle;
-use App\Entity\User;
+use App\Entity\Users;
 use Symfony\Bridge\Doctrine\Form\Type\EntityType;
 use Symfony\Component\Form\AbstractType;
 use Symfony\Component\Form\Extension\Core\Type\NumberType;
@@ -50,8 +50,8 @@ class ParcelleType extends AbstractType
         // Le champ user est affiché UNIQUEMENT pour les admins
         if ($options['show_user_field']) {
             $builder->add('user', EntityType::class, [
-                'class'        => User::class,
-                'choice_label' => function (User $user) {
+                'class'        => Users::class,
+                'choice_label' => function (Users $user) {
                     return $user->getEmail() . ' (' . $user->getFullName() . ')';
                 },
                 'label'       => 'Assigner à l\'utilisateur',

@@ -2,7 +2,7 @@
 
 namespace App\Form;
 
-use App\Entity\User;
+use App\Entity\Users;
 use Symfony\Bridge\Doctrine\Form\Type\EntityType;
 use Symfony\Component\Form\AbstractType;
 use Symfony\Component\Form\FormBuilderInterface;
@@ -14,8 +14,8 @@ class AssignEquipementType extends AbstractType
     {
         $builder
             ->add('user', EntityType::class, [
-                'class' => User::class,
-                'choice_label' => function (User $user) {
+                'class' => Users::class,
+                'choice_label' => function (Users $user) {
                     return $user->getFullName() . ' (' . $user->getEmail() . ')';
                 },
                 'label' => 'Assigner à l\'utilisateur',
