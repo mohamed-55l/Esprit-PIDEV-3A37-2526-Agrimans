@@ -1,0 +1,62 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="UTF-8">
+    <title>Register</title>
+    <link rel="stylesheet" href="{{ asset('styles/register.css') }}">
+</head>
+<body>
+
+<div class="app-container">
+    <div class="main-card">
+
+        <div class="form-box">
+
+            <h1>S'inscrire</h1>
+            <p class="subtitle">Créer votre compte avec OTP</p>
+
+            <form method="post">
+
+                <label>Nom et prénom</label>
+                <input type="text" name="name" value="{{ data.name }}">
+                <span class="error">{{ errors.name ?? '' }}</span>
+
+                <label>Email</label>
+                <input type="email" name="email" value="{{ data.email }}">
+                <span class="error">{{ errors.email ?? '' }}</span>
+
+                <label>Téléphone</label>
+                <input type="text" name="phone" value="{{ data.phone }}">
+                <span class="error">{{ errors.phone ?? '' }}</span>
+
+                <label>Mot de passe</label>
+                <input type="password" name="password">
+
+                <label>Confirmer</label>
+                <input type="password" name="confirm">
+                <span class="error">{{ errors.confirm ?? '' }}</span>
+
+                <!-- OTP -->
+                <label>Code OTP</label>
+                <input type="text" name="otp" placeholder="Entrer le code OTP">
+                <span class="error">{{ errors.otp ?? '' }}</span>
+
+                <!-- BUTTON SEND OTP -->
+                <button type="submit" name="action" value="send_otp" class="btn">
+                    Envoyer code OTP
+                </button>
+
+                <!-- BUTTON REGISTER -->
+                <button type="submit" name="action" value="register" class="btn">
+                    Register
+                </button>
+
+            </form>
+
+        </div>
+
+    </div>
+</div>
+
+</body>
+</html>

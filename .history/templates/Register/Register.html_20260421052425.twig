@@ -1,0 +1,76 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="UTF-8">
+    <title>Register</title>
+    <link rel="stylesheet" href="{{ asset('styles/register.css') }}">
+</head>
+<body>
+
+<div class="app-container">
+    <div class="main-card">
+
+        <div class="form-box">
+
+            <h1>S'inscrire</h1>
+
+            {% if app.flashes %}
+                {% for type, messages in app.flashes %}
+                    <div class="alert alert-{{ type }}">
+                        {% for message in messages %}
+                            <p>{{ message }}</p>
+                        {% endfor %}
+                    </div>
+                {% endfor %}
+            {% endif %}
+
+            <form method="post">
+
+                <label>Nom</label>
+                <input type="text" name="name" value="{{ data.name }}" required>
+                <span class="error">{{ errors.name ?? '' }}</span>
+
+                <label>Email</label>
+                <input type="email" name="email" value="{{ data.email }}" required>
+                <span class="error">{{ errors.email ?? '' }}</span>
+
+                <label>Téléphone</label>
+                <input type="text" name="phone" value="{{ data.phone }}" required>
+                <span class="error">{{ errors.phone ?? '' }}</span>
+
+                <label>Mot de passe</label>
+                <input type="password" name="password" required>
+
+                <label>Confirmer le mot de passe</label>
+                <input type="password" name="confirm" required>
+                <span class="error">{{ errors.confirm ?? '' }}</span>
+
+                <div class="button-group">
+                    <button type="submit" name="action" value="send_otp" class="btn btn-primary">
+                        📧 Envoyer OTP
+                    </button>
+                </div>
+
+                <hr>
+
+                <label>Code OTP</label>
+                <input type="text" name="otp" placeholder="Entrez le code reçu par email" maxlength="6">
+                <span class="error">{{ errors.otp ?? '' }}</span>
+
+                <div class="button-group">
+                    <button type="submit" name="action" value="register" class="btn btn-success">
+                        ✓ S'inscrire
+                    </button>
+                </div>
+
+            </form>
+
+            <p class="login-link">Vous avez déjà un compte? <a href="{{ path('app_login') }}">Connectez-vous</a></p>
+
+        </div>
+
+    </div>
+</div>
+
+</body>
+</html>

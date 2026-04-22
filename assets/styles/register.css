@@ -1,0 +1,201 @@
+/* Reset & Base Settings */
+* {
+    box-sizing: border-box;
+    margin: 0;
+    padding: 0;
+}
+
+body {
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    background-color: #f4f6f8;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    min-height: 100vh;
+}
+
+/* Container & Card Layout */
+.app-container {
+    width: 100%;
+    display: flex;
+    justify-content: center;
+    padding: 20px;
+}
+
+.main-card {
+    display: flex;
+    width: 100%;
+    max-width: 1150px;
+    background: #ffffff;
+    border-radius: 12px;
+    overflow: hidden;
+    box-shadow: 0 4px 20px rgba(0,0,0,0.08);
+}
+
+/* Form Section (Left) */
+.form-box {
+    width: 60%;
+    padding: 60px 50px;
+    display: flex;
+    flex-direction: column;
+}
+
+.title-main {
+    font-size: 36px;
+    font-weight: 800;
+    color: #2d3748;
+    margin-bottom: 5px;
+}
+
+.subtitle {
+    color: #a0aec0;
+    font-size: 15px;
+    margin-bottom: 40px;
+}
+
+/* Grid Layout for Inputs */
+.form-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr; /* 2 equal columns */
+    gap: 20px 30px; 
+    margin-bottom: 40px;
+}
+
+.form-group {
+    display: flex;
+    flex-direction: column;
+}
+
+.form-group label {
+    font-size: 14px;
+    color: #4a5568;
+    margin-bottom: 10px;
+}
+
+.form-group input {
+    width: 100%;
+    height: 48px;
+    padding: 10px 15px;
+    background-color: #f1f5f9;
+    border: 1px solid transparent;
+    border-radius: 8px;
+    font-size: 15px;
+    outline: none;
+    transition: all 0.3s ease;
+}
+
+.form-group input:focus {
+    border: 1px solid #16774c;
+    background-color: #ffffff;
+}
+
+/* Buttons */
+.flex-bottom {
+    justify-content: flex-end;
+}
+
+.btn {
+    height: 48px;
+    border-radius: 8px;
+    font-weight: 600;
+    cursor: pointer;
+    border: none;
+    font-size: 15px;
+    transition: background 0.3s ease;
+}
+
+.btn-secondary {
+    background-color: #1a6f44;
+    color: white;
+    width: 100%;
+    margin-top: 29px; /* Align with input field perfectly */
+}
+
+.btn-secondary:hover {
+    background-color: #125432;
+}
+
+.form-footer {
+    display: flex;
+    flex-direction: column;
+    gap: 15px;
+}
+
+.btn-primary {
+    background-color: #1a6f44;
+    color: white;
+    width: 100%;
+}
+
+.btn-primary:hover {
+    background-color: #125432;
+}
+
+/* Login Link */
+.login-link {
+    font-size: 14px;
+    color: #718096;
+    margin-top: 10px;
+}
+
+.login-link a {
+    color: #1a6f44;
+    text-decoration: none;
+}
+
+.login-link a:hover {
+    text-decoration: underline;
+}
+
+/* Alerts */
+.alert {
+    padding: 15px;
+    border-radius: 8px;
+    margin-bottom: 25px;
+    font-size: 14px;
+}
+.alert-success {
+    background-color: #c6f6d5;
+    color: #22543d;
+}
+.alert-danger {
+    background-color: #fed7d7;
+    color: #822727;
+}
+
+/* Image Section (Right) */
+.image-box {
+    width: 40%;
+    background-color: #1a6f44; /* Match image's green background */
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    position: relative;
+    padding: 40px;
+}
+
+.image-box img {
+    width: 100%;
+    max-width: 400px;
+    height: auto;
+    object-fit: contain;
+}
+
+/* Responsive Design for Mobile */
+@media (max-width: 850px) {
+    .main-card {
+        flex-direction: column;
+    }
+    .form-box, .image-box {
+        width: 100%;
+    }
+    .form-grid {
+        grid-template-columns: 1fr; /* 1 column on small screens */
+    }
+    .hidden-mobile {
+        display: none;
+    }
+    .btn-secondary {
+        margin-top: 0;
+    }
+}
