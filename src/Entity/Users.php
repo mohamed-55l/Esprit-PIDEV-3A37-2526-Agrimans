@@ -135,7 +135,8 @@ class Users implements UserInterface, PasswordAuthenticatedUserInterface
 
     public function getRoles(): array
     {
-        return ['ROLE_' . $this->role->value];
+        $roleValue = $this->role instanceof UserRole ? $this->role->value : $this->role;
+        return ['ROLE_' . $roleValue];
     }
 
     public function eraseCredentials(): void {}
