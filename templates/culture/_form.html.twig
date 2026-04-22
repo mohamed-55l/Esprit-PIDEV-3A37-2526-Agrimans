@@ -37,5 +37,13 @@
         <div style="color: #e74c3c; font-size: 0.85rem; margin-top: 0.3rem;">{{ form_errors(form.parcelle) }}</div>
     </div>
 
+    <div class="form-group" style="background: rgba(52, 152, 219, 0.05); padding: 1.5rem; border-radius: 8px; border: 1px dashed rgba(52, 152, 219, 0.3);">
+        <h4 style="color: #3498db; margin-top: 0; margin-bottom: 1rem;"><i class="fa-solid fa-file-pdf"></i> Document de Formation</h4>
+        {{ form_label(form.infoFile) }}
+        {{ form_widget(form.infoFile) }}
+        <p style="color: rgba(255,255,255,0.5); font-size: 0.85rem; margin-top: 0.5rem; margin-bottom: 0;"><i class="fa-solid fa-circle-info"></i> Formats acceptés : .pdf</p>
+        <div style="color: #e74c3c; font-size: 0.85rem; margin-top: 0.3rem;">{{ form_errors(form.infoFile) }}</div>
+    </div>
+
     <button class="btn btn-primary">{{ button_label|default('Save') }}</button>
 {{ form_end(form) }}

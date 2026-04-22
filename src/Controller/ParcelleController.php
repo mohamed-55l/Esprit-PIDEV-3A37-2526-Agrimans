@@ -15,27 +15,52 @@ use Symfony\Component\Routing\Attribute\Route;
 final class ParcelleController extends AbstractController
 {
     #[Route(name: 'app_parcelle_index', methods: ['GET'])]
-    public function index(Request $request, ParcelleRepository $parcelleRepository): Response
+    public function index(Request $request, ParcelleRepository $parcelleRepository, \Knp\Component\Pager\PaginatorInterface $paginator): Response
     {
         $search = trim((string) $request->query->get('search', ''));
-        $parcelles = $search !== ''
-            ? $parcelleRepository->findBySearchTerm($search)
-            : $parcelleRepository->findAllOrderBySuperficieDesc();
+
+        // Admin voit toutes les parcelles, user voit uniquement les siennes
+        if ($this->isGranted('ROLE_ADMIN')) {
+            $query = $search !== ''
+                ? $parcelleRepository->findBySearchTerm($search)
+                : $parcelleRepository->findAllOrderBySuperficieDesc();
+        } else {
+            $currentUser = $this->getUser();
+            $query = $search !== ''
+                ? $parcelleRepository->findBySearchTermAndUser($search, $currentUser)
+                : $parcelleRepository->findByUser($currentUser);
+        }
+
+        $parcelles = $paginator->paginate(
+            $query, /* query NOT result */
+            $request->query->getInt('page', 1), /*page number*/
+            5 /*limit per page*/
+        );
 
         return $this->render('parcelle/index.html.twig', [
             'parcelles' => $parcelles,
-            'search' => $search,
+            'search'    => $search,
         ]);
     }
 
     #[Route('/new', name: 'app_parcelle_new', methods: ['GET', 'POST'])]
     public function new(Request $request, EntityManagerInterface $entityManager): Response
     {
-        $parcelle = new Parcelle();
-        $form = $this->createForm(ParcelleType::class, $parcelle);
+        $parcelle    = new Parcelle();
+        $isAdmin     = $this->isGranted('ROLE_ADMIN');
+
+        // Admin peut choisir l'utilisateur, user connecté est auto-assigné
+        $form = $this->createForm(ParcelleType::class, $parcelle, [
+            'show_user_field' => $isAdmin,
+        ]);
         $form->handleRequest($request);
 
         if ($form->isSubmitted() && $form->isValid()) {
+            // Si c'est un user connecté (non-admin), on assigne automatiquement
+            if (!$isAdmin) {
+                $parcelle->setUser($this->getUser());
+            }
+
             $entityManager->persist($parcelle);
             $entityManager->flush();
 
@@ -44,7 +69,8 @@ final class ParcelleController extends AbstractController
 
         return $this->render('parcelle/new.html.twig', [
             'parcelle' => $parcelle,
-            'form' => $form->createView(),
+            'form'     => $form->createView(),
+            'is_admin' => $isAdmin,
         ]);
     }
 
@@ -59,10 +85,19 @@ final class ParcelleController extends AbstractController
     #[Route('/{id}/edit', name: 'app_parcelle_edit', methods: ['GET', 'POST'])]
     public function edit(Request $request, Parcelle $parcelle, EntityManagerInterface $entityManager): Response
     {
-        $form = $this->createForm(ParcelleType::class, $parcelle);
+        $isAdmin = $this->isGranted('ROLE_ADMIN');
+
+        $form = $this->createForm(ParcelleType::class, $parcelle, [
+            'show_user_field' => $isAdmin,
+        ]);
         $form->handleRequest($request);
 
         if ($form->isSubmitted() && $form->isValid()) {
+            // Si user non-admin, on ne change pas l'owner
+            if (!$isAdmin && $parcelle->getUser() === null) {
+                $parcelle->setUser($this->getUser());
+            }
+
             $entityManager->flush();
 
             return $this->redirectToRoute('app_parcelle_index', [], Response::HTTP_SEE_OTHER);
@@ -70,7 +105,8 @@ final class ParcelleController extends AbstractController
 
         return $this->render('parcelle/edit.html.twig', [
             'parcelle' => $parcelle,
-            'form' => $form->createView(),
+            'form'     => $form->createView(),
+            'is_admin' => $isAdmin,
         ]);
     }
 
@@ -84,4 +120,44 @@ final class ParcelleController extends AbstractController
 
         return $this->redirectToRoute('app_parcelle_index', [], Response::HTTP_SEE_OTHER);
     }
+
+    #[Route('/{id}/ai-recommendation', name: 'app_parcelle_ai_recommendation', methods: ['GET'])]
+    public function aiRecommendation(Parcelle $parcelle, \App\Service\CropRecommendationService $aiService): Response
+    {
+        $recommendation = $aiService->getRecommendation($parcelle);
+
+        return $this->render('parcelle/ai_recommendation.html.twig', [
+            'parcelle' => $parcelle,
+            'recommendation' => $recommendation,
+        ]);
+    }
+
+    #[Route('/{id}/apply-ai', name: 'app_parcelle_apply_ai', methods: ['POST'])]
+    public function applyAiRecommendation(Request $request, Parcelle $parcelle, EntityManagerInterface $entityManager): Response
+    {
+        $cropName = $request->request->get('crop_name');
+
+        if ($cropName) {
+            $culture = new \App\Entity\Culture();
+            $culture->setNom($cropName);
+            $culture->setTypeCulture('Généré par IA');
+            $culture->setEtatCulture('En planification');
+            $culture->setParcelle($parcelle);
+            // Default expected harvest date: 6 months from now
+            $culture->setDatePlantation(new \DateTime());
+            $culture->setDateRecoltePrevue((new \DateTime())->modify('+6 months'));
+
+            $entityManager->persist($culture);
+            $entityManager->flush();
+
+            // Store a flash message or handle it in template
+            $this->addFlash('success', 'La culture recommandée a été créée avec succès !');
+
+            // Redirect to edit culture so user can add the AI PDF if they want or modify details
+            return $this->redirectToRoute('app_culture_edit', ['id' => $culture->getId()]);
+        }
+
+        return $this->redirectToRoute('app_parcelle_show', ['id' => $parcelle->getId()]);
+    }
 }
+

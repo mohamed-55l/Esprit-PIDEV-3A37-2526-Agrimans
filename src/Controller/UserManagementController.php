@@ -29,16 +29,14 @@ class UserManagementController extends AbstractController
         $roles = $user->getRoles();
 
         if (in_array('ROLE_ADMIN', $roles)) {
-            // Remove admin role
-            $user->setRoles(['ROLE_USER']);
+            $user->setRole('USER');
         } else {
-            // Add admin role
-            $user->setRoles(['ROLE_ADMIN']);
+            $user->setRole('ADMIN');
         }
 
         $entityManager->flush();
 
-        $this->addFlash('success', 'RÃ´le de l\'utilisateur mis Ã  jour.');
+        $this->addFlash('success', 'Rôle de l\'utilisateur mis à jour.');
 
         return $this->redirectToRoute('app_user_management');
     }
@@ -47,26 +45,28 @@ class UserManagementController extends AbstractController
     public function createAdmin(Request $request, UserPasswordHasherInterface $passwordHasher, EntityManagerInterface $entityManager, UserRepository $userRepository): Response
     {
         if ($request->isMethod('POST')) {
-            $email = $request->request->get('email');
+            $email    = $request->request->get('email');
             $password = $request->request->get('password');
+            $fullName = $request->request->get('full_name', 'Admin');
 
             if ($email && $password) {
-                // Check if user already exists
                 $existingUser = $userRepository->findOneBy(['email' => $email]);
                 if ($existingUser) {
-                    $this->addFlash('error', 'Un utilisateur avec cet email existe dÃ©jÃ .');
+                    $this->addFlash('error', 'Un utilisateur avec cet email existe déjà.');
                     return $this->redirectToRoute('app_create_admin');
                 }
 
                 $user = new User();
                 $user->setEmail($email);
-                $user->setRoles(['ROLE_ADMIN']);
-                $user->setPassword($passwordHasher->hashPassword($user, $password));
+                $user->setFullName($fullName);
+                $user->setRole('ADMIN');
+                $user->setCreatedAt(new \DateTime());
+                $user->setPasswordHash($passwordHasher->hashPassword($user, $password));
 
                 $entityManager->persist($user);
                 $entityManager->flush();
 
-                $this->addFlash('success', 'Administrateur crÃ©Ã© avec succÃ¨s.');
+                $this->addFlash('success', 'Administrateur créé avec succès.');
                 return $this->redirectToRoute('app_user_management');
             }
         }
@@ -78,26 +78,32 @@ class UserManagementController extends AbstractController
     public function createUser(Request $request, UserPasswordHasherInterface $passwordHasher, EntityManagerInterface $entityManager, UserRepository $userRepository): Response
     {
         if ($request->isMethod('POST')) {
-            $email = $request->request->get('email');
+            $email    = $request->request->get('email');
             $password = $request->request->get('password');
+            $fullName = $request->request->get('full_name', 'Utilisateur');
+            $phone    = $request->request->get('phone', '');
 
             if ($email && $password) {
-                // Check if user already exists
                 $existingUser = $userRepository->findOneBy(['email' => $email]);
                 if ($existingUser) {
-                    $this->addFlash('error', 'Un utilisateur avec cet email existe dÃ©jÃ .');
+                    $this->addFlash('error', 'Un utilisateur avec cet email existe déjà.');
                     return $this->redirectToRoute('app_create_user');
                 }
 
                 $user = new User();
                 $user->setEmail($email);
-                $user->setRoles(['ROLE_USER']);
-                $user->setPassword($passwordHasher->hashPassword($user, $password));
+                $user->setFullName($fullName);
+                $user->setRole('USER');
+                $user->setCreatedAt(new \DateTime());
+                if ($phone) {
+                    $user->setPhone($phone);
+                }
+                $user->setPasswordHash($passwordHasher->hashPassword($user, $password));
 
                 $entityManager->persist($user);
                 $entityManager->flush();
 
-                $this->addFlash('success', 'Utilisateur crÃ©Ã© avec succÃ¨s.');
+                $this->addFlash('success', 'Utilisateur créé avec succès.');
                 return $this->redirectToRoute('app_user_management');
             }
         }

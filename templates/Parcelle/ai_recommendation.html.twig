@@ -1,0 +1,75 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}Recommandation IA | Agrimans{% endblock %}
+
+{% block body %}
+<div class="content-section" style="max-width: 800px; margin: 2rem auto;">
+    <div class="page-header" style="margin-bottom: 2rem; text-align: center;">
+        <a href="{{ path('app_parcelle_show', {'id': parcelle.id}) }}" style="color: rgba(255,255,255,0.5); text-decoration: none; font-size: 0.9rem; margin-bottom: 20px; display: inline-block;">
+            <i class="fa-solid fa-arrow-left"></i> Retour à la parcelle
+        </a>
+        <div style="font-size: 3rem; margin-bottom: 1rem;">✨</div>
+        <h1 style="font-size: 2.2rem; font-weight: 700; color: #fff; margin-bottom: 0.5rem;">
+            Analyse et Recommandation IA
+        </h1>
+        <p style="color: rgba(255,255,255,0.6);">Propulsé par OpenAI</p>
+    </div>
+
+    <div style="background: rgba(255,255,255,0.03); border: 1px solid rgba(155, 89, 182, 0.3); border-radius: 16px; padding: 2.5rem; margin-bottom: 2rem; box-shadow: 0 10px 30px rgba(0,0,0,0.2);">
+        
+        <div style="display: flex; justify-content: space-between; align-items: flex-start; margin-bottom: 2rem; border-bottom: 1px solid rgba(255,255,255,0.1); padding-bottom: 1.5rem;">
+            <div>
+                <p style="color: rgba(255,255,255,0.5); font-size: 0.85rem; text-transform: uppercase; margin-bottom: 0.2rem;">Parcelle Analysée</p>
+                <h3 style="color: #fff; margin: 0; font-size: 1.5rem;">{{ parcelle.nom }}</h3>
+            </div>
+            <div style="text-align: right;">
+                <p style="color: rgba(255,255,255,0.5); font-size: 0.85rem; text-transform: uppercase; margin-bottom: 0.2rem;">Données d'entrée</p>
+                <span style="background: rgba(255,255,255,0.1); padding: 4px 10px; border-radius: 20px; font-size: 0.85rem; margin-right: 5px;">Sol: {{ parcelle.type_sol|default('Non défini') }}</span>
+                <span style="background: rgba(255,255,255,0.1); padding: 4px 10px; border-radius: 20px; font-size: 0.85rem;">{{ parcelle.superficie }} ha</span>
+            </div>
+        </div>
+
+        <div style="margin-bottom: 2rem;">
+            <p style="color: #9b59b6; font-size: 0.85rem; text-transform: uppercase; font-weight: 700; letter-spacing: 1px; margin-bottom: 0.5rem;"><i class="fa-solid fa-seedling"></i> Culture Recommandée</p>
+            <div style="font-size: 2.5rem; font-weight: 800; color: #fff; margin-bottom: 1rem; background: -webkit-linear-gradient(45deg, #9b59b6, #3498db); -webkit-background-clip: text; -webkit-text-fill-color: transparent;">
+                {{ recommendation.recommended_crop }}
+            </div>
+            <p style="color: rgba(255,255,255,0.8); font-size: 1.1rem; line-height: 1.6; background: rgba(0,0,0,0.2); padding: 1.5rem; border-radius: 8px; border-left: 4px solid #9b59b6;">
+                {{ recommendation.reasoning }}
+            </p>
+        </div>
+
+        <div style="background: rgba(46, 204, 113, 0.05); border: 1px dashed rgba(46, 204, 113, 0.3); border-radius: 12px; padding: 1.5rem; display: flex; align-items: center; justify-content: space-between;">
+            <div>
+                <h4 style="color: #2ecc71; margin-top: 0; margin-bottom: 0.5rem;"><i class="fa-solid fa-calculator"></i> Vérification & Calcul de Rendement</h4>
+                <p style="color: rgba(255,255,255,0.6); margin: 0; font-size: 0.9rem;">Estimation basée sur {{ recommendation.estimated_yield_per_ha }} t/ha pour {{ parcelle.superficie }} hectares.</p>
+            </div>
+            <div style="text-align: right;">
+                <div style="font-size: 2rem; font-weight: 700; color: #2ecc71;">{{ recommendation.total_estimated_yield }} t</div>
+                <div style="color: rgba(255,255,255,0.5); font-size: 0.8rem; text-transform: uppercase;">Rendement Total Estimé</div>
+            </div>
+        </div>
+
+    </div>
+
+    <div style="text-align: center; display: flex; gap: 1rem; justify-content: center;">
+        <a href="{{ path('app_parcelle_show', {'id': parcelle.id}) }}" class="btn" style="background: rgba(255,255,255,0.1); color: #fff; padding: 1rem 2rem; border-radius: 8px; text-decoration: none; font-weight: 600;">
+            Annuler
+        </a>
+        
+        <form method="post" action="{{ path('app_parcelle_apply_ai', {'id': parcelle.id}) }}" style="margin: 0;">
+            <input type="hidden" name="crop_name" value="{{ recommendation.recommended_crop }}">
+            <button type="submit" class="btn" style="background: linear-gradient(45deg, #9b59b6, #3498db); color: #fff; border: none; padding: 1rem 2rem; border-radius: 8px; cursor: pointer; font-weight: 600; font-size: 1rem; box-shadow: 0 4px 15px rgba(155, 89, 182, 0.3); transition: transform 0.3s;">
+                <i class="fa-solid fa-wand-magic-sparkles"></i> Appliquer à la Parcelle (Bouton Magique)
+            </button>
+        </form>
+    </div>
+</div>
+
+<style>
+    button[type="submit"]:hover {
+        transform: translateY(-2px);
+        box-shadow: 0 6px 20px rgba(155, 89, 182, 0.5) !important;
+    }
+</style>
+{% endblock %}

@@ -1,0 +1,259 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}Calcul de Rendement | Agrimans{% endblock %}
+
+{% block stylesheets %}
+<style>
+    .agri-hero {
+        background: linear-gradient(135deg, rgba(25,139,97,0.15) 0%, rgba(39,174,96,0.08) 100%);
+        border: 1px solid rgba(25,139,97,0.25);
+        border-radius: 20px;
+        padding: 2.5rem;
+        margin-bottom: 2rem;
+    }
+    .agri-form-card {
+        background: rgba(255,255,255,0.04);
+        border: 1px solid rgba(255,255,255,0.08);
+        border-radius: 16px;
+        padding: 2rem;
+    }
+    .form-group { margin-bottom: 1.5rem; }
+    .form-label {
+        display: block; margin-bottom: 0.5rem;
+        color: rgba(255,255,255,0.8); font-weight: 500; font-size: 0.9rem;
+    }
+    .form-control {
+        width: 100%; padding: 0.75rem 1rem;
+        background: rgba(255,255,255,0.06); border: 1px solid rgba(255,255,255,0.12);
+        border-radius: 10px; color: #fff; font-size: 0.95rem;
+        transition: border-color 0.2s, box-shadow 0.2s;
+    }
+    .form-control:focus {
+        outline: none; border-color: #198B61;
+        box-shadow: 0 0 0 3px rgba(25,139,97,0.2);
+    }
+    .form-control option { background: #1a2532; color: #fff; }
+    .btn-calc {
+        width: 100%; padding: 0.9rem;
+        background: linear-gradient(135deg, #198B61, #27ae60);
+        border: none; border-radius: 12px; color: #fff;
+        font-size: 1rem; font-weight: 700; cursor: pointer;
+        transition: all 0.3s; letter-spacing: 0.5px;
+    }
+    .btn-calc:hover { transform: translateY(-2px); box-shadow: 0 8px 20px rgba(25,139,97,0.4); }
+
+    /* Résultat */
+    .resultat-card {
+        background: linear-gradient(135deg, rgba(25,139,97,0.2), rgba(39,174,96,0.1));
+        border: 1px solid rgba(25,139,97,0.4);
+        border-radius: 20px; padding: 2rem; animation: fadeInUp 0.5s ease;
+    }
+    @keyframes fadeInUp {
+        from { opacity:0; transform:translateY(20px); }
+        to   { opacity:1; transform:translateY(0); }
+    }
+    .rendement-number {
+        font-size: 3.5rem; font-weight: 800; color: #27ae60;
+        line-height: 1; text-shadow: 0 0 30px rgba(39,174,96,0.4);
+    }
+    .rendement-unit { font-size: 1.1rem; color: rgba(255,255,255,0.6); }
+    .stars { color: #f39c12; font-size: 1.3rem; }
+    .detail-row {
+        display: flex; justify-content: space-between; align-items: center;
+        padding: 0.7rem 0; border-bottom: 1px solid rgba(255,255,255,0.06);
+    }
+    .detail-label { color: rgba(255,255,255,0.55); font-size: 0.9rem; }
+    .detail-value { color: #fff; font-weight: 600; }
+    .conseil-box {
+        background: rgba(255,255,255,0.05); border-radius: 12px;
+        padding: 1rem 1.2rem; margin-top: 1.2rem;
+        border-left: 3px solid #27ae60; color: rgba(255,255,255,0.8);
+        font-size: 0.9rem; line-height: 1.6;
+    }
+    .divider {
+        text-align: center; color: rgba(255,255,255,0.3);
+        font-size: 0.8rem; margin: 1.2rem 0;
+        display: flex; align-items: center; gap: 0.8rem;
+    }
+    .divider::before, .divider::after {
+        content: ''; flex: 1; height: 1px; background: rgba(255,255,255,0.1);
+    }
+    .alert-error {
+        background: rgba(231,76,60,0.15); border: 1px solid rgba(231,76,60,0.3);
+        border-radius: 10px; padding: 1rem; color: #e74c3c; margin-bottom: 1.5rem;
+    }
+</style>
+{% endblock %}
+
+{% block body %}
+<div style="max-width: 1000px; margin: 2rem auto; padding: 0 1rem;">
+
+    {# Hero #}
+    <div class="agri-hero">
+        <div style="display:flex; align-items:center; gap:1.2rem;">
+            <div style="width:60px;height:60px;border-radius:16px;background:rgba(25,139,97,0.3);display:flex;align-items:center;justify-content:center;font-size:1.8rem;">
+                🌾
+            </div>
+            <div>
+                <h1 style="font-size:1.9rem;font-weight:800;color:#fff;margin:0;">Calcul de Rendement Agricole</h1>
+                <p style="color:rgba(255,255,255,0.55);margin:0.3rem 0 0;">Estimez votre production selon la superficie, le type de sol et la culture</p>
+            </div>
+        </div>
+    </div>
+
+    <div style="display:grid; grid-template-columns: 1fr 1fr; gap:2rem; align-items:start;">
+
+        {# Formulaire #}
+        <div class="agri-form-card">
+            <h2 style="font-size:1.2rem;font-weight:700;color:#fff;margin-bottom:1.5rem;">
+                <i class="fa-solid fa-sliders" style="color:var(--primary);margin-right:8px;"></i> Paramètres
+            </h2>
+
+            {% if erreur %}
+                <div class="alert-error"><i class="fa-solid fa-triangle-exclamation"></i> {{ erreur }}</div>
+            {% endif %}
+
+            <form method="post" action="{{ path('app_agriculture_rendement') }}">
+
+                {# Sélection parcelle existante #}
+                {% if parcelles|length > 0 %}
+                <div class="form-group">
+                    <label class="form-label">
+                        <i class="fa-solid fa-map" style="color:var(--primary);"></i>
+                        Choisir une parcelle existante <span style="color:rgba(255,255,255,0.4);">(optionnel)</span>
+                    </label>
+                    <select name="parcelle_id" class="form-control" id="sel-parcelle" onchange="remplirParcelle(this)">
+                        <option value="">— Saisie manuelle —</option>
+                        {% for p in parcelles %}
+                            <option value="{{ p.id }}" data-superficie="{{ p.superficie }}" data-sol="{{ p.type_sol }}">
+                                {{ p.nom }} ({{ p.superficie }} ha — {{ p.type_sol }})
+                            </option>
+                        {% endfor %}
+                    </select>
+                </div>
+                <div class="divider">ou saisir manuellement</div>
+                {% endif %}
+
+                <div class="form-group">
+                    <label class="form-label" for="superficie">
+                        <i class="fa-solid fa-ruler-combined" style="color:var(--primary);"></i> Superficie (ha)
+                    </label>
+                    <input type="number" step="0.01" min="0.01" name="superficie" id="superficie"
+                           class="form-control" placeholder="Ex : 5.5" value="{{ resultat.superficie ?? '' }}" required>
+                </div>
+
+                <div class="form-group">
+                    <label class="form-label" for="type_sol">
+                        <i class="fa-solid fa-layer-group" style="color:var(--primary);"></i> Type de sol
+                    </label>
+                    <select name="type_sol" id="type_sol" class="form-control" required>
+                        <option value="">— Choisir —</option>
+                        {% for sol in types_sol %}
+                            <option value="{{ sol }}" {% if resultat is not null and resultat.type_sol == sol %}selected{% endif %}>{{ sol }}</option>
+                        {% endfor %}
+                    </select>
+                </div>
+
+                <div class="form-group">
+                    <label class="form-label" for="type_culture">
+                        <i class="fa-solid fa-seedling" style="color:var(--primary);"></i> Type de culture
+                    </label>
+                    <select name="type_culture" id="type_culture" class="form-control" required>
+                        <option value="">— Choisir —</option>
+                        {% for culture in types_culture %}
+                            <option value="{{ culture }}" {% if resultat is not null and resultat.type_culture == culture %}selected{% endif %}>{{ culture }}</option>
+                        {% endfor %}
+                    </select>
+                </div>
+
+                <button type="submit" class="btn-calc">
+                    <i class="fa-solid fa-calculator"></i> Calculer le Rendement
+                </button>
+            </form>
+        </div>
+
+        {# Résultat #}
+        <div>
+            {% if resultat %}
+            <div class="resultat-card">
+                <div style="text-align:center; margin-bottom:1.5rem;">
+                    <div style="color:rgba(255,255,255,0.6); font-size:0.9rem; margin-bottom:0.5rem;">RENDEMENT TOTAL ESTIMÉ</div>
+                    <div class="rendement-number">{{ resultat.rendement_total }}</div>
+                    <div class="rendement-unit">tonnes</div>
+                    <div style="margin-top:0.8rem; color:rgba(255,255,255,0.5); font-size:0.85rem;">
+                        soit <strong style="color:#27ae60;">{{ resultat.rendement_ha }} t/ha</strong>
+                    </div>
+                    <div class="stars" style="margin-top:0.7rem;">
+                        {% for i in 1..5 %}
+                            {% if i <= resultat.qualite %}<i class="fa-solid fa-star"></i>{% else %}<i class="fa-regular fa-star"></i>{% endif %}
+                        {% endfor %}
+                    </div>
+                </div>
+
+                <div>
+                    <div class="detail-row">
+                        <span class="detail-label">Superficie</span>
+                        <span class="detail-value">{{ resultat.superficie }} ha</span>
+                    </div>
+                    <div class="detail-row">
+                        <span class="detail-label">Type de sol</span>
+                        <span class="detail-value">{{ resultat.type_sol }}</span>
+                    </div>
+                    <div class="detail-row">
+                        <span class="detail-label">Type de culture</span>
+                        <span class="detail-value">{{ resultat.type_culture }}</span>
+                    </div>
+                    <div class="detail-row">
+                        <span class="detail-label">Rendement de base</span>
+                        <span class="detail-value">{{ resultat.rendement_base }} t/ha</span>
+                    </div>
+                    <div class="detail-row">
+                        <span class="detail-label">Coefficient sol</span>
+                        <span class="detail-value">× {{ resultat.coeff_sol }}</span>
+                    </div>
+                </div>
+
+                <div class="conseil-box">
+                    <i class="fa-solid fa-lightbulb" style="color:#f39c12;margin-right:6px;"></i>
+                    {{ resultat.conseil }}
+                </div>
+            </div>
+            {% else %}
+            <div style="background:rgba(255,255,255,0.03);border:1px dashed rgba(255,255,255,0.1);border-radius:20px;padding:3rem;text-align:center;color:rgba(255,255,255,0.3);">
+                <div style="font-size:4rem;margin-bottom:1rem;">🌾</div>
+                <p style="font-size:1rem;">Remplissez le formulaire pour voir<br>votre estimation de rendement</p>
+            </div>
+            {% endif %}
+
+            {# Liens rapides #}
+            <div style="margin-top:1.5rem; display:flex; gap:1rem; flex-wrap:wrap;">
+                <a href="{{ path('app_agriculture_compatibilite') }}" style="flex:1;text-align:center;background:rgba(255,255,255,0.05);border:1px solid rgba(255,255,255,0.1);border-radius:12px;padding:1rem;text-decoration:none;color:#fff;transition:all 0.2s;" onmouseover="this.style.background='rgba(255,255,255,0.1)'" onmouseout="this.style.background='rgba(255,255,255,0.05)'">
+                    🧪 Compatibilité Sol
+                </a>
+                <a href="{{ path('app_agriculture_statistiques') }}" style="flex:1;text-align:center;background:rgba(255,255,255,0.05);border:1px solid rgba(255,255,255,0.1);border-radius:12px;padding:1rem;text-decoration:none;color:#fff;transition:all 0.2s;" onmouseover="this.style.background='rgba(255,255,255,0.1)'" onmouseout="this.style.background='rgba(255,255,255,0.05)'">
+                    📊 Statistiques
+                </a>
+            </div>
+        </div>
+
+    </div>
+</div>
+
+<script>
+function remplirParcelle(sel) {
+    const opt = sel.options[sel.selectedIndex];
+    if (!opt.value) return;
+    const sup = opt.dataset.superficie;
+    const sol = opt.dataset.sol;
+    if (sup) document.getElementById('superficie').value = sup;
+    if (sol) {
+        const selSol = document.getElementById('type_sol');
+        for (let i = 0; i < selSol.options.length; i++) {
+            if (selSol.options[i].value.toLowerCase() === sol.toLowerCase()) {
+                selSol.selectedIndex = i; break;
+            }
+        }
+    }
+}
+</script>
+{% endblock %}
