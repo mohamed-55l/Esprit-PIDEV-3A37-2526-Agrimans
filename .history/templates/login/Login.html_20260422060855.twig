@@ -1,0 +1,148 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <title>Agrimans - Login Pro AI</title>
+    <script src="https://www.google.com/recaptcha/api.js" async defer></script>
+    <style>
+        /* CSS Integration */
+        @import url('https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;600&display=swap');
+        
+        * { box-sizing: border-box; margin: 0; padding: 0; }
+        body {
+            background-color: #0f6b3b; display: flex; justify-content: center;
+            align-items: center; min-height: 100vh; font-family: 'Poppins', sans-serif; padding: 20px;
+        }
+        .main-card {
+            width: 100%; max-width: 1050px; min-height: 700px;
+            background: white; border-radius: 30px; display: flex;
+            box-shadow: 0 25px 60px rgba(0,0,0,0.4); overflow: hidden;
+        }
+        .login-box {
+            flex: 1.2; padding: 40px 50px; display: flex; flex-direction: column; justify-content: center;
+        }
+        .face-login-card {
+            background: #f8fafc; border-radius: 20px; padding: 15px;
+            text-align: center; border: 1.5px solid #e2e8f0; margin: 15px 0;
+        }
+        .video-container {
+            position: relative; display: inline-block; width: 280px; height: 210px;
+            border-radius: 15px; overflow: hidden; background: #000;
+        }
+        #video { width: 100%; height: 100%; object-fit: cover; transform: scaleX(-1); }
+        #overlay { position: absolute; top: 0; left: 0; width: 100%; height: 100%; pointer-events: none; transform: scaleX(-1); }
+        
+        .form-input {
+            width: 100%; padding: 12px; border-radius: 10px; border: 1px solid #ddd;
+            margin-bottom: 10px; background: #f1f5f9;
+        }
+        .btn-action {
+            width: 100%; padding: 14px; border-radius: 12px; border: none;
+            font-weight: bold; cursor: pointer; transition: 0.3s;
+        }
+        .btn-classic { background: #0f6b3b; color: white; }
+        .btn-face { background: #1a1a1a; color: white; margin-top: 10px; }
+        
+        .image-box { flex: 0.8; background: #0f6b3b; display: flex; overflow: hidden; }
+        .image-box img { width: 100%; height: 100%; object-fit: cover; }
+        
+        .g-recaptcha { margin-bottom: 10px; transform: scale(0.85); transform-origin: center; }
+    </style>
+</head>
+<body>
+
+<div class="main-card">
+    <div class="login-box">
+        <p style="font-size: 11px; color: #718096; letter-spacing: 2px; font-weight: 600;">PLATEFORME AGRIMANS</p>
+        <h1 style="margin-bottom: 10px;">Connexion</h1>
+
+        <div class="face-login-card">
+            <div class="video-container">
+                <video id="video" autoplay muted></video>
+                <canvas id="overlay"></canvas>
+            </div>
+            <p id="face-status" style="font-size: 12px; margin-top: 8px; color: #0f6b3b; font-weight: 600;">Initialisation AI... ⏳</p>
+            <button type="button" id="btn-face-login" class="btn-action btn-face" style="display: none;">
+                🚀 Scanner et Entrer
+            </button>
+        </div>
+
+        <div style="text-align: center; color: #cbd5e0; margin: 5px 0;">— OU —</div>
+
+        <form method="post">
+            <input type="email" name="email" class="form-input" placeholder="Email" required>
+            <input type="password" name="password" class="form-input" placeholder="Mot de passe" required>
+            
+            <div class="g-recaptcha" data-sitekey="{{ recaptcha_site_key }}"></div>
+            
+            {% if error %}<p style="color:red; font-size:12px; text-align:center;">{{ error }}</p>{% endif %}
+            
+            <button type="submit" class="btn-action btn-classic">Connexion Classique</button>
+        </form>
+
+        <p style="text-align: center; margin-top: 15px; font-size: 13px;">
+            Nouveau ? <a href="{{ path('app_register') }}" style="color: #0f6b3b; font-weight: bold; text-decoration: none;">S'inscrire</a>
+        </p>
+    </div>
+
+    <div class="image-box">
+        <img src="{{ asset('images/login.png') }}" alt="Farmers">
+    </div>
+</div>
+
+<script src="{{ asset('js/face-api.min.js') }}"></script>
+<script>
+    const video = document.getElementById('video');
+    const canvas = document.getElementById('overlay');
+    const status = document.getElementById('face-status');
+    const btnFace = document.getElementById('btn-face-login');
+
+    async function init() {
+        try {
+            await Promise.all([
+                faceapi.nets.ssdMobilenetv1.loadFromUri('/js/models'),
+                faceapi.nets.faceLandmark68Net.loadFromUri('/js/models'),
+                faceapi.nets.faceRecognitionNet.loadFromUri('/js/models')
+            ]);
+            const stream = await navigator.mediaDevices.getUserMedia({ video: {} });
+            video.srcObject = stream;
+            
+            status.innerText = "Reconnaissance active ✅";
+            btnFace.style.display = "block";
+            
+            // Start real-time tracking for landmarks
+            startTracking();
+        } catch (e) { status.innerText = "Erreur AI ❌"; }
+    }
+
+    function startTracking() {
+        const size = { width: video.clientWidth, height: video.clientHeight };
+        faceapi.matchDimensions(canvas, size);
+        setInterval(async () => {
+            const detections = await faceapi.detectAllFaces(video, new faceapi.SsdMobilenetv1Options()).withFaceLandmarks();
+            const resized = faceapi.resizeResults(detections, size);
+            canvas.getContext('2d').clearRect(0, 0, canvas.width, canvas.height);
+            faceapi.draw.drawDetections(canvas, resized);
+            faceapi.draw.drawFaceLandmarks(canvas, resized);
+        }, 100);
+    }
+
+    btnFace.addEventListener('click', async () => {
+        status.innerText = "Identification... ⏳";
+        const det = await faceapi.detectSingleFace(video, new faceapi.SsdMobilenetv1Options()).withFaceLandmarks().withFaceDescriptor();
+        if (det) {
+            const res = await fetch('{{ path('app_login_face') }}', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ descriptor: Array.from(det.descriptor) })
+            });
+            const data = await res.json();
+            if (data.success) window.location.href = data.redirect;
+            else status.innerText = data.message + " ❌";
+        } else status.innerText = "Visage non détecté ❌";
+    });
+
+    window.addEventListener('DOMContentLoaded', init);
+</script>
+</body>
+</html>

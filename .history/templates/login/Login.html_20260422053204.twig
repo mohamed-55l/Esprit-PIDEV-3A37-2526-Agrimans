@@ -1,0 +1,156 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <title>Agrimans - Login Biométrique</title>
+    <link rel="stylesheet" href="{{ asset('styles/login.css') }}">
+    <script src="https://www.google.com/recaptcha/api.js" async defer></script>
+    <style>
+        .face-login-container {
+            background: #f8fafc;
+            border-radius: 20px;
+            padding: 20px;
+            text-align: center;
+            margin-bottom: 20px;
+            border: 1px solid #e2e8f0;
+        }
+        .video-box {
+            position: relative;
+            display: inline-block;
+            width: 260px;
+            height: 195px;
+            border-radius: 12px;
+            overflow: hidden;
+            background: #000;
+            border: 3px solid #0f6b3b;
+        }
+        #video { width: 100%; height: 100%; object-fit: cover; transform: scaleX(-1); }
+        #overlay { position: absolute; top: 0; left: 0; width: 100%; height: 100%; pointer-events: none; transform: scaleX(-1); }
+        
+        .status-badge {
+            display: inline-block;
+            margin-top: 10px;
+            font-size: 12px;
+            font-weight: bold;
+            color: #4a5568;
+        }
+    </style>
+</head>
+<body>
+
+<div class="app-container">
+    <div class="main-card">
+        <div class="login-box">
+            <p style="font-size: 11px; color: #718096; letter-spacing: 1px;">PLATEFORME AGRIMANS</p>
+            <h1>Se connecter</h1>
+
+            <div class="face-login-container">
+                <div class="video-box">
+                    <video id="video" autoplay muted></video>
+                    <canvas id="overlay"></canvas>
+                </div>
+                <div>
+                    <span id="face-status" class="status-badge">Initialisation IA... ⏳</span>
+                </div>
+                <button type="button" id="btn-face-login" class="btn-login" style="background: #1a1a1a; display: none; margin-top: 10px;">
+                    🚀 Se connecter par Visage
+                </button>
+            </div>
+
+            <div style="text-align: center; color: #cbd5e0; margin: 10px 0; font-size: 12px;">— OU —</div>
+
+            <form method="post">
+                <label>Adresse email</label>
+                <input type="email" name="email" placeholder="votre@email.com" required>
+
+                <label>Mot de passe</label>
+                <input type="password" name="password" placeholder="••••••••" required>
+
+                <div class="g-recaptcha" data-sitekey="{{ recaptcha_site_key }}"></div>
+
+                {% if error %}<p class="error">{{ error }}</p>{% endif %}
+
+                <button type="submit" class="btn-login">Connexion Email</button>
+            </form>
+
+            <p class="register" style="text-align: center; margin-top: 15px;">
+                Pas de compte ? <a href="{{ path('app_register') }}">S'inscrire</a>
+            </p>
+        </div>
+
+        <div class="image-box">
+            <img src="{{ asset('images/login.png') }}" alt="Agrimans">
+        </div>
+    </div>
+</div>
+
+<script src="{{ asset('js/face-api.min.js') }}"></script>
+<script>
+    const video = document.getElementById('video');
+    const canvas = document.getElementById('overlay');
+    const status = document.getElementById('face-status');
+    const btnFace = document.getElementById('btn-face-login');
+
+    async function initModernLogin() {
+        try {
+            const MODEL_PATH = '/js/models';
+            await Promise.all([
+                faceapi.nets.ssdMobilenetv1.loadFromUri(MODEL_PATH),
+                faceapi.nets.faceLandmark68Net.loadFromUri(MODEL_PATH),
+                faceapi.nets.faceRecognitionNet.loadFromUri(MODEL_PATH)
+            ]);
+
+            const stream = await navigator.mediaDevices.getUserMedia({ video: {} });
+            video.srcObject = stream;
+            
+            status.innerText = "Reconnaissance active ✅";
+            btnFace.style.display = "block";
+
+            // Start Real-time Tracking (Mesh/Box)
+            startFaceTracking();
+        } catch (e) {
+            status.innerText = "Erreur Caméra ❌";
+        }
+    }
+
+    function startFaceTracking() {
+        const displaySize = { width: video.clientWidth, height: video.clientHeight };
+        faceapi.matchDimensions(canvas, displaySize);
+
+        setInterval(async () => {
+            const detections = await faceapi.detectAllFaces(video, new faceapi.SsdMobilenetv1Options())
+                .withFaceLandmarks();
+            
+            const resized = faceapi.resizeResults(detections, displaySize);
+            canvas.getContext('2d').clearRect(0, 0, canvas.width, canvas.height);
+            
+            // Draw Mesh & Box
+            faceapi.draw.drawDetections(canvas, resized);
+            faceapi.draw.drawFaceLandmarks(canvas, resized);
+        }, 100);
+    }
+
+    btnFace.addEventListener('click', async () => {
+        status.innerText = "Identification... ⏳";
+        const detection = await faceapi.detectSingleFace(video, new faceapi.SsdMobilenetv1Options())
+            .withFaceLandmarks()
+            .withFaceDescriptor();
+
+        if (detection) {
+            const response = await fetch('{{ path('app_login_face') }}', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ descriptor: Array.from(detection.descriptor) })
+            });
+            const result = await response.json();
+            if (result.success) window.location.href = result.redirect;
+            else status.innerText = result.message + " ❌";
+        } else {
+            status.innerText = "Visage non détecté ❌";
+        }
+    });
+
+    window.addEventListener('DOMContentLoaded', initModernLogin);
+</script>
+</body>
+</html>

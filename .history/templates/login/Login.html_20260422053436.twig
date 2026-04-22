@@ -1,0 +1,132 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <title>Agrimans - Login Pro</title>
+    <script src="https://www.google.com/recaptcha/api.js" async defer></script>
+    <style>
+        :root { --primary: #0f6b3b; --bg: #0f6b3b; }
+        * { box-sizing: border-box; margin: 0; padding: 0; }
+        body { background: var(--bg); display: flex; justify-content: center; align-items: center; min-height: 100vh; font-family: sans-serif; }
+        
+        .main-card {
+            width: 1000px; height: 680px; background: white; border-radius: 30px;
+            display: flex; overflow: hidden; box-shadow: 0 20px 50px rgba(0,0,0,0.3);
+        }
+
+        /* الجهة اليسرى: الفورم */
+        .login-box {
+            flex: 1.1; padding: 40px 60px; display: flex; flex-direction: column; justify-content: center;
+        }
+
+        /* 📸 Face ID Container */
+        .face-auth-card {
+            background: #f8fafc; border: 1px solid #e2e8f0; border-radius: 20px;
+            padding: 20px; text-align: center; margin-bottom: 20px;
+        }
+        .video-wrapper {
+            position: relative; width: 240px; height: 180px; margin: 0 auto;
+            border-radius: 12px; overflow: hidden; background: #000; border: 3px solid var(--primary);
+        }
+        #video { width: 100%; height: 100%; object-fit: cover; transform: scaleX(-1); }
+        #overlay { position: absolute; top: 0; left: 0; width: 100%; height: 100%; pointer-events: none; transform: scaleX(-1); }
+
+        /* الجهة اليمنى: التصويرة (إصلاح التداخل) */
+        .image-box { flex: 0.9; background: var(--primary); display: flex; overflow: hidden; }
+        .image-box img { width: 100%; height: 100%; object-fit: cover; }
+
+        input { width: 100%; padding: 12px; margin-bottom: 10px; border-radius: 10px; border: 1px solid #ddd; background: #f1f5f9; }
+        .btn-login { width: 100%; padding: 14px; border-radius: 12px; border: none; font-weight: bold; cursor: pointer; transition: 0.3s; }
+        .btn-primary { background: var(--primary); color: white; }
+        .btn-face { background: #1a1a1a; color: white; margin-top: 10px; }
+        .error-msg { color: #c53030; background: #fff5f5; padding: 10px; border-radius: 8px; font-size: 13px; margin-bottom: 10px; text-align: center; }
+    </style>
+</head>
+<body>
+
+<div class="main-card">
+    <div class="login-box">
+        <p style="color: #718096; font-size: 12px; letter-spacing: 1px;">PLATEFORME AGRIMANS</p>
+        <h1 style="margin-bottom: 20px;">Se connecter</h1>
+
+        {% if error %}<div class="error-msg">{{ error }}</div>{% endif %}
+
+        <div class="face-auth-card">
+            <div class="video-wrapper">
+                <video id="video" autoplay muted></video>
+                <canvas id="overlay"></canvas>
+            </div>
+            <p id="face-status" style="font-size: 12px; margin-top: 10px; font-weight: 600;">Initialisation AI... ⏳</p>
+            <button type="button" id="btn-face-login" class="btn-login btn-face" style="display: none;">
+                🚀 Se connecter par Visage
+            </button>
+        </div>
+
+        <div style="text-align: center; color: #cbd5e0; margin: 10px 0;">— OU —</div>
+
+        <form method="post">
+            <input type="email" name="email" placeholder="votre@email.com" required>
+            <input type="password" name="password" placeholder="Mot de passe" required>
+            <div class="g-recaptcha" data-sitekey="{{ recaptcha_site_key }}" style="transform:scale(0.85); transform-origin:center; margin-bottom:10px;"></div>
+            <button type="submit" class="btn-login btn-primary">Connexion Classique</button>
+        </form>
+    </div>
+
+    <div class="image-box">
+        <img src="{{ asset('images/login.png') }}" alt="Agri Farmers">
+    </div>
+</div>
+
+<script src="{{ asset('js/face-api.min.js') }}"></script>
+<script>
+    const video = document.getElementById('video');
+    const canvas = document.getElementById('overlay');
+    const status = document.getElementById('face-status');
+    const btnFace = document.getElementById('btn-face-login');
+
+    async function init() {
+        try {
+            await Promise.all([
+                faceapi.nets.ssdMobilenetv1.loadFromUri('/js/models'),
+                faceapi.nets.faceLandmark68Net.loadFromUri('/js/models'),
+                faceapi.nets.faceRecognitionNet.loadFromUri('/js/models')
+            ]);
+            const stream = await navigator.mediaDevices.getUserMedia({ video: {} });
+            video.srcObject = stream;
+            status.innerText = "Reconnaissance active ✅";
+            btnFace.style.display = "block";
+            track();
+        } catch (e) { status.innerText = "Erreur Caméra ❌"; }
+    }
+
+    function track() {
+        const size = { width: video.clientWidth, height: video.clientHeight };
+        faceapi.matchDimensions(canvas, size);
+        setInterval(async () => {
+            const detections = await faceapi.detectAllFaces(video, new faceapi.SsdMobilenetv1Options()).withFaceLandmarks();
+            const resized = faceapi.resizeResults(detections, size);
+            canvas.getContext('2d').clearRect(0, 0, canvas.width, canvas.height);
+            faceapi.draw.drawDetections(canvas, resized);
+            faceapi.draw.drawFaceLandmarks(canvas, resized);
+        }, 100);
+    }
+
+    btnFace.addEventListener('click', async () => {
+        status.innerText = "Vérification... ⏳";
+        const det = await faceapi.detectSingleFace(video, new faceapi.SsdMobilenetv1Options()).withFaceLandmarks().withFaceDescriptor();
+        if (det) {
+            const res = await fetch('{{ path('app_login_face') }}', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ descriptor: Array.from(det.descriptor) })
+            });
+            const data = await res.json();
+            if (data.success) window.location.href = data.redirect;
+            else status.innerText = data.message + " ❌";
+        } else status.innerText = "Visage non détecté ❌";
+    });
+
+    window.addEventListener('DOMContentLoaded', init);
+</script>
+</body>
+</html>

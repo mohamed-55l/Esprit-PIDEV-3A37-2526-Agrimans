@@ -1,0 +1,105 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="UTF-8">
+    <title>AGRI Samir - Login</title>
+    <link rel="stylesheet" href="{{ asset('styles/login.css') }}">
+    <script src="https://www.google.com/recaptcha/api.js" async defer></script>
+    {# المكتبة متاع التعرف على الوجوه #}
+    <script src="{{ asset('js/face-api.min.js') }}"></script>
+</head>
+<body>
+
+<div class="app-container">
+    <div class="main-card">
+        <div class="login-box">
+            <p class="welcome">Bienvenue</p>
+            <h1>Se connecter</h1>
+
+            <div class="face-auth-container" style="text-align: center; margin-bottom: 20px; background: #f8fafc; padding: 15px; border-radius: 12px; border: 1px solid #e2e8f0;">
+                <label style="font-weight: 600; display: block; margin-bottom: 10px; color: #2d3748;">Connexion par Face ID</label>
+                <div style="position: relative; display: inline-block; width: 220px; height: 165px; background: #000; border-radius: 8px; overflow: hidden;">
+                    <video id="video" width="220" height="165" autoplay muted style="transform: scaleX(-1);"></video>
+                </div>
+                <button type="button" id="btn-face-login" class="btn-login" style="background: #1a6f44; margin-top: 10px; display: none;">
+                    🚀 Scanner et entrer
+                </button>
+                <p id="face-status" style="font-size: 12px; color: #718096; margin-top: 5px;">Chargement de l'IA...</p>
+            </div>
+
+            <div style="text-align: center; color: #cbd5e0; margin-bottom: 15px;">— OU —</div>
+
+            <form method="post">
+                <label>Adresse email</label>
+                <input type="email" name="email" placeholder="Votre email" required>
+
+                <label>Mot de passe</label>
+                <input type="password" name="password" placeholder="Mot de passe" required>
+
+                <div class="g-recaptcha" data-sitekey="{{ recaptcha_site_key }}"></div>
+
+                {% if error %}<p class="error">{{ error }}</p>{% endif %}
+
+                <button type="submit" class="btn-login" style="background: #4a5568;">Connexion classique</button>
+            </form>
+
+            <p class="register">
+                Vous n'avez pas de compte ? <a href="{{ path('app_register') }}">S'inscrire</a>
+            </p>
+        </div>
+
+        <div class="image-box">
+            <img src="{{ asset('images/login.png') }}" alt="login image">
+        </div>
+    </div>
+</div>
+
+<script>
+    const video = document.getElementById('video');
+    const status = document.getElementById('face-status');
+    const btnFace = document.getElementById('btn-face-login');
+
+    async function initFace() {
+        try {
+            const MODEL_PATH = '/js/models';
+            await Promise.all([
+                faceapi.nets.ssdMobilenetv1.loadFromUri(MODEL_PATH),
+                faceapi.nets.faceLandmark68Net.loadFromUri(MODEL_PATH),
+                faceapi.nets.faceRecognitionNet.loadFromUri(MODEL_PATH)
+            ]);
+            const stream = await navigator.mediaDevices.getUserMedia({ video: {} });
+            video.srcObject = stream;
+            status.innerText = "IA prête ✅";
+            btnFace.style.display = "block";
+        } catch (e) {
+            status.innerText = "Caméra non détectée ❌";
+        }
+    }
+
+    btnFace.addEventListener('click', async () => {
+        status.innerText = "Analyse en cours... ⏳";
+        const detection = await faceapi.detectSingleFace(video).withFaceLandmarks().withFaceDescriptor();
+        
+        if (detection) {
+            const response = await fetch('{{ path('app_login_face') }}', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ descriptor: Array.from(detection.descriptor) })
+            });
+            const result = await response.json();
+            if (result.success) {
+                status.innerText = "Reconnu ! Redirection... 🎉";
+                window.location.href = result.redirect;
+            } else {
+                status.innerText = result.message + " ❌";
+                status.style.color = "red";
+            }
+        } else {
+            status.innerText = "Visage non détecté ❌";
+        }
+    });
+
+    window.addEventListener('DOMContentLoaded', initFace);
+</script>
+</body>
+</html>

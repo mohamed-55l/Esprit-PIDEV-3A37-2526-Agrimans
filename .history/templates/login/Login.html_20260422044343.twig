@@ -1,0 +1,134 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="UTF-8">
+    <title>AGRI Samir - Login Face ID</title>
+    <link rel="stylesheet" href="{{ asset('styles/login.css') }}">
+    <script src="https://www.google.com/recaptcha/api.js" async defer></script>
+    <style>
+        .face-login-box {
+            text-align: center;
+            margin-bottom: 25px;
+            padding: 15px;
+            background: #f1f5f9;
+            border-radius: 12px;
+        }
+        #video {
+            border-radius: 10px;
+            background: #000;
+            transform: scaleX(-1); /* Mirror effect */
+            width: 100%;
+            max-width: 280px;
+        }
+        .status-badge {
+            display: inline-block;
+            margin-top: 10px;
+            font-size: 13px;
+            font-weight: 600;
+            color: #4a5568;
+        }
+    </style>
+</head>
+<body>
+
+<div class="app-container">
+    <div class="main-card">
+        <div class="login-box">
+            <p class="welcome">Bienvenue sur Agrimans</p>
+            <h1>Connexion</h1>
+
+            <div class="face-login-box">
+                <video id="video" autoplay muted></video>
+                <div id="login-status" class="status-badge">Initialisation de la caméra...</div>
+                <button type="button" id="btn-face-login" class="btn-login" style="margin-top:15px; background: #1a6f44; display: none;">
+                    🚀 Se connecter par Face ID
+                </button>
+            </div>
+
+            <div style="text-align:center; margin-bottom: 20px; color: #a0aec0;">— OU —</div>
+
+            <form method="post">
+                <label>Adresse email</label>
+                <input type="email" name="email" placeholder="Votre email" required>
+
+                <label>Mot de passe</label>
+                <input type="password" name="password" placeholder="Mot de passe" required>
+
+                <div class="g-recaptcha" data-sitekey="{{ recaptcha_site_key }}"></div>
+
+                {% if error %}<p class="error">{{ error }}</p>{% endif %}
+
+                <button type="submit" class="btn-login" style="background: #4a5568;">Connexion classique</button>
+            </form>
+
+            <p class="register">Pas de compte ? <a href="{{ path('app_register') }}">S'inscrire</a></p>
+        </div>
+
+        <div class="image-box">
+            <img src="{{ asset('images/login.png') }}" alt="login image">
+        </div>
+    </div>
+</div>
+
+{# SCRIPTS #}
+<script src="{{ asset('js/face-api.min.js') }}"></script>
+<script>
+    const video = document.getElementById('video');
+    const btnFace = document.getElementById('btn-face-login');
+    const status = document.getElementById('login-status');
+
+    async function initFaceLogin() {
+        try {
+            const MODEL_PATH = '/js/models';
+            await Promise.all([
+                faceapi.nets.ssdMobilenetv1.loadFromUri(MODEL_PATH),
+                faceapi.nets.faceLandmark68Net.loadFromUri(MODEL_PATH),
+                faceapi.nets.faceRecognitionNet.loadFromUri(MODEL_PATH)
+            ]);
+
+            const stream = await navigator.mediaDevices.getUserMedia({ video: {} });
+            video.srcObject = stream;
+            
+            status.innerText = "Reconnaissance prête ✅";
+            btnFace.style.display = "block";
+        } catch (err) {
+            status.innerText = "Caméra non disponible ❌";
+            console.error(err);
+        }
+    }
+
+    btnFace.addEventListener('click', async () => {
+        status.innerText = "Identification en cours... ⏳";
+        
+        const detection = await faceapi.detectSingleFace(video)
+            .withFaceLandmarks()
+            .withFaceDescriptor();
+
+        if (detection) {
+            const descriptor = Array.from(detection.descriptor);
+
+            // AJAX call to Symfony
+            const response = await fetch('{{ path('app_login_face') }}', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ descriptor: descriptor })
+            });
+
+            const result = await response.json();
+
+            if (result.success) {
+                status.innerText = "Authentifié ! Redirection... 🎉";
+                window.location.href = result.redirect;
+            } else {
+                status.innerText = result.message + " ❌";
+                status.style.color = "red";
+            }
+        } else {
+            status.innerText = "Visage non détecté ❌";
+        }
+    });
+
+    window.addEventListener('DOMContentLoaded', initFaceLogin);
+</script>
+</body>
+</html>

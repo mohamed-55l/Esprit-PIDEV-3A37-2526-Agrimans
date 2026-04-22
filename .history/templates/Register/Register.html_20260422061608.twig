@@ -1,0 +1,166 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <title>S'inscrire - Agrimans Pro</title>
+    <link rel="stylesheet" href="{{ asset('styles/register.css') }}">
+    <style>
+        .face-capture-zone { grid-column: span 2; text-align: center; background: #f8fafc; padding: 20px; border-radius: 15px; border: 2px solid #e2e8f0; margin-bottom: 20px; }
+        .video-container { position: relative; display: inline-block; width: 320px; height: 240px; border-radius: 12px; overflow: hidden; background: #000; }
+        #video { width: 100%; height: 100%; object-fit: cover; transform: scaleX(-1); }
+        #overlay { position: absolute; top: 0; left: 0; width: 100%; height: 100%; pointer-events: none; transform: scaleX(-1); }
+        .status-badge { display: inline-block; padding: 5px 12px; border-radius: 20px; font-size: 12px; font-weight: bold; margin-top: 10px; background: #edf2f7; }
+        .is-invalid { border-color: #e53e3e !important; background-color: #fff5f5 !important; }
+        .validation-hint { font-size: 11px; color: #718096; margin-top: -8px; margin-bottom: 10px; }
+    </style>
+</head>
+<body>
+
+<div class="app-container">
+    <div class="main-card">
+        <div class="form-box" style="padding: 40px;">
+            <h1 class="title-main">Créer un compte</h1>
+            <p class="subtitle">Sécurité Biométrique Intégrée</p>
+
+            {% if errors is not empty %}
+                <div class="alert alert-danger" style="background: #fff5f5; color: #c53030; padding: 15px; border-radius: 10px; margin-bottom: 20px;">
+                    <ul style="margin: 0; padding-left: 20px;">
+                        {% for error in errors %}<li>{{ error }}</li>{% endfor %}
+                    </ul>
+                </div>
+            {% endif %}
+
+            <form method="post" id="registerForm">
+                <div class="form-grid">
+                    {% set is_pending = app.session.get('pending_user') %}
+
+                    <div class="form-group">
+                        <label>Nom et prénom</label>
+                        <input type="text" name="name" value="{{ data.name }}" {{ is_pending ? 'readonly' : '' }} required>
+                    </div>
+
+                    <div class="form-group">
+                        <label>Mot de passe</label>
+                        <input type="password" id="password" name="password" required placeholder="Min 8 chars, 1 Maj, 1 Chiffre">
+                        <p class="validation-hint">Majuscule + Chiffre obligatoire</p>
+                    </div>
+
+                    <div class="form-group">
+                        <label>Adresse email</label>
+                        <input type="email" name="email" value="{{ data.email }}" {{ is_pending ? 'readonly' : '' }} required>
+                    </div>
+
+                    <div class="form-group">
+                        <label>Confirmer mot de passe</label>
+                        <input type="password" id="confirm" name="confirm" required>
+                    </div>
+
+                    <div class="face-capture-zone">
+                        <div class="video-container">
+                            <video id="video" autoplay muted></video>
+                            <canvas id="overlay"></canvas>
+                        </div>
+                        <div><span id="scan-status" class="status-badge">Initialisation AI...</span></div>
+                        <button type="button" id="btn-scan" class="btn-scan" style="margin-top:10px; background:#1a202c; color:white; border:none; padding:10px 20px; border-radius:8px; cursor:pointer;">
+                            📸 Scanner mon visage
+                        </button>
+                        <input type="hidden" name="face_descriptor" id="face_descriptor">
+                    </div>
+
+                    <div class="form-group">
+                        <label>Téléphone (Tunisie)</label>
+                        <input type="text" name="phone" value="{{ data.phone }}" maxlength="8" {{ is_pending ? 'readonly' : '' }} required>
+                    </div>
+
+                    <div class="form-group">
+                        <label>Code OTP</label>
+                        <input type="text" name="otp" maxlength="6" placeholder="Reçu par email" {{ not is_pending ? 'disabled' : '' }}>
+                    </div>
+                </div>
+
+                <div class="form-footer" style="display: flex; gap: 10px; margin-top: 20px;">
+                    <button type="submit" name="action" value="send_otp" class="btn btn-secondary" style="flex: 1; background: #0f6b3b; color: white; padding: 12px; border-radius: 10px; border: none; cursor: pointer;" {{ is_pending ? 'disabled' : '' }}>
+                        {{ is_pending ? '✓ Code envoyé' : '1. Envoyer Code OTP' }}
+                    </button>
+                    
+                    <button type="submit" name="action" value="register" id="final-submit" class="btn btn-primary" style="flex: 1; background: #2b6cb0; color: white; padding: 12px; border-radius: 10px; border: none; cursor: pointer;" {{ not is_pending ? 'disabled' : '' }}>
+                        2. Valider l'Inscription
+                    </button>
+                </div>
+            </form>
+        </div>
+
+        <div class="image-box" style="flex: 1; background: #0f6b3b; display: flex; align-items: center; justify-content: center;">
+            <img src="{{ asset('images/login.png') }}" alt="Agrimans" style="max-width: 80%;">
+        </div>
+    </div>
+</div>
+
+<script src="{{ asset('js/face-api.min.js') }}"></script>
+<script>
+    const video = document.getElementById('video');
+    const canvas = document.getElementById('overlay');
+    const statusText = document.getElementById('scan-status');
+    const btnScan = document.getElementById('btn-scan');
+    const descriptorInput = document.getElementById('face_descriptor');
+
+    // 🔒 التحقق قبل الإرسال (Client-side)
+    document.getElementById('registerForm').onsubmit = function(e) {
+        const action = e.submitter.value;
+        if (action === 'send_otp') {
+            const pass = document.getElementById('password').value;
+            const conf = document.getElementById('confirm').value;
+            if (pass !== conf) {
+                alert("Les mots de passe ne correspondent pas !");
+                return false;
+            }
+        }
+        return true;
+    };
+
+    // 📸 Face API Logic (SSD Mobilenet)
+    async function initFaceID() {
+        try {
+            const MODEL_PATH = '/js/models'; 
+            await Promise.all([
+                faceapi.nets.ssdMobilenetv1.loadFromUri(MODEL_PATH),
+                faceapi.nets.faceLandmark68Net.loadFromUri(MODEL_PATH),
+                faceapi.nets.faceRecognitionNet.loadFromUri(MODEL_PATH)
+            ]);
+            const stream = await navigator.mediaDevices.getUserMedia({ video: {} });
+            video.srcObject = stream;
+            statusText.innerText = "IA Prête ✅";
+            startTracking();
+        } catch (err) { statusText.innerText = "Erreur Caméra ❌"; }
+    }
+
+    function startTracking() {
+        const displaySize = { width: video.clientWidth, height: video.clientHeight };
+        faceapi.matchDimensions(canvas, displaySize);
+        setInterval(async () => {
+            const detections = await faceapi.detectAllFaces(video, new faceapi.SsdMobilenetv1Options()).withFaceLandmarks();
+            const resized = faceapi.resizeResults(detections, displaySize);
+            canvas.getContext('2d').clearRect(0, 0, canvas.width, canvas.height);
+            faceapi.draw.drawDetections(canvas, resized);
+            faceapi.draw.drawFaceLandmarks(canvas, resized);
+        }, 100);
+    }
+
+    btnScan.addEventListener('click', async () => {
+        statusText.innerText = "Scan en cours... ⏳";
+        const detection = await faceapi.detectSingleFace(video, new faceapi.SsdMobilenetv1Options()).withFaceLandmarks().withFaceDescriptor();
+        if (detection) {
+            descriptorInput.value = JSON.stringify(Array.from(detection.descriptor));
+            statusText.innerText = "Visage Identifié ! ✅";
+            statusText.style.background = "#c6f6d5";
+            btnScan.style.background = "#2f855a";
+            btnScan.innerText = "✓ Scan Réussi";
+        } else {
+            statusText.innerText = "Visage non détecté ❌";
+        }
+    });
+
+    window.addEventListener('DOMContentLoaded', initFaceID);
+</script>
+</body>
+</html>

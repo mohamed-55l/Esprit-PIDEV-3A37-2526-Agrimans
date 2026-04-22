@@ -1,0 +1,142 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <title>S'inscrire - Face ID</title>
+    <link rel="stylesheet" href="{{ asset('styles/register.css') }}">
+    <script defer src="{{ asset('js/face-api.min.js') }}"></script>
+</head>
+<body>
+
+<div class="app-container">
+    <div class="main-card">
+        <div class="form-box">
+            <h1 class="title-main">S'inscrire</h1>
+            <p class="subtitle">Créez votre compte avec Face ID</p>
+
+            {% for type, messages in app.flashes %}
+                {% for message in messages %}
+                    <div class="alert alert-{{ type }}">{{ message }}</div>
+                {% endfor %}
+            {% endfor %}
+
+            {% if errors %}
+                <div class="alert alert-danger">
+                    {% for error in errors %}<p>{{ error }}</p>{% endfor %}
+                </div>
+            {% endif %}
+
+            <form method="post" id="registerForm">
+                <div class="form-grid">
+                    {% set is_pending = app.session.get('pending_user') %}
+
+                    <div class="form-group">
+                        <label>Nom et prénom</label>
+                        <input type="text" name="name" value="{{ is_pending ? is_pending.name : (data.name ?? '') }}" {% if is_pending %}readonly{% endif %} required>
+                    </div>
+
+                    <div class="form-group">
+                        <label>Mot de passe</label>
+                        <input type="password" name="password" value="{{ is_pending ? is_pending.password : '' }}" required>
+                    </div>
+
+                    <div class="form-group">
+                        <label>Adresse email</label>
+                        <input type="email" name="email" value="{{ is_pending ? is_pending.email : (data.email ?? '') }}" {% if is_pending %}readonly{% endif %} required>
+                    </div>
+
+                    <div class="form-group">
+                        <label>Confirmer mot de passe</label>
+                        <input type="password" name="confirm" value="{{ is_pending ? is_pending.password : '' }}" required>
+                    </div>
+
+                    <div class="face-scan-container" style="grid-column: span 2; text-align: center; background: #f8fafc; padding: 15px; border-radius: 12px; margin: 10px 0;">
+                        <label style="font-weight: bold; display: block; margin-bottom: 10px;">Reconnaissance Faciale</label>
+                        <div style="position: relative; display: inline-block; width: 200px; height: 150px; background: #000; border-radius: 8px; overflow: hidden;">
+                            <video id="video" width="200" height="150" autoplay muted style="transform: scaleX(-1);"></video>
+                        </div>
+                        <div style="margin-top: 10px;">
+                            <button type="button" id="btn-scan" class="btn btn-secondary" style="width: auto; padding: 0 15px; height: 35px; margin-top:0;">
+                                📸 Scanner mon visage
+                            </button>
+                        </div>
+                        <p id="scan-status" style="font-size: 12px; color: #666; margin-top: 5px;">Veuillez scanner votre visage</p>
+                        <input type="hidden" name="face_descriptor" id="face_descriptor">
+                    </div>
+
+                    <div class="form-group">
+                        <label>Téléphone</label>
+                        <input type="text" name="phone" value="{{ is_pending ? is_pending.phone : (data.phone ?? '') }}" {% if is_pending %}readonly{% endif %} required>
+                    </div>
+
+                    <div class="form-group">
+                        <label>Code OTP</label>
+                        <input type="text" name="otp" maxlength="6" placeholder="Code reçu" {% if not is_pending %}disabled{% endif %}>
+                    </div>
+                    
+                    <div class="form-group flex-bottom">
+                        <button type="submit" name="action" value="send_otp" class="btn btn-secondary" formnovalidate {% if is_pending %}disabled style="opacity: 0.5;"{% endif %}>
+                            {{ is_pending ? '✓ Code envoyé' : 'Envoyer code' }}
+                        </button>
+                    </div>
+                </div>
+
+                <div class="form-footer">
+                    <button type="submit" name="action" value="register" id="finalRegisterBtn" class="btn btn-primary" {% if not is_pending %}disabled style="opacity: 0.5;"{% endif %}>
+                        S'inscrire
+                    </button>
+                </div>
+            </form>
+        </div>
+
+        <div class="image-box">
+            <img src="{{ asset('images/login.png') }}" alt="Agrimans">
+        </div>
+    </div>
+</div>
+
+<script>
+    const video = document.getElementById('video');
+    const btnScan = document.getElementById('btn-scan');
+    const statusText = document.getElementById('scan-status');
+    const descriptorInput = document.getElementById('face_descriptor');
+
+    // 1. Load models
+    async function loadModels() {
+        const MODEL_URL = '/js/models'; // Path where your models are
+        await faceapi.nets.tinyFaceDetector.loadFromUri(MODEL_URL);
+        await faceapi.nets.faceLandmark68Net.loadFromUri(MODEL_URL);
+        await faceapi.nets.faceRecognitionNet.loadFromUri(MODEL_URL);
+        startVideo();
+    }
+
+    function startVideo() {
+        navigator.mediaDevices.getUserMedia({ video: {} })
+            .then(stream => video.srcObject = stream)
+            .catch(err => statusText.innerText = "Erreur caméra ❌");
+    }
+
+    btnScan.addEventListener('click', async () => {
+        statusText.innerText = "Analyse en cours... ⏳";
+        
+        const detections = await faceapi.detectSingleFace(video, new faceapi.TinyFaceDetectorOptions())
+            .withFaceLandmarks()
+            .withFaceDescriptor();
+
+        if (detections) {
+            const descriptor = Array.from(detections.descriptor);
+            descriptorInput.value = JSON.stringify(descriptor);
+            statusText.innerText = "Visage scanné avec succès ! ✅";
+            statusText.style.color = "#16774c";
+            btnScan.style.background = "#16774c";
+        } else {
+            statusText.innerText = "Visage non détecté. Réessayez. ❌";
+            statusText.style.color = "#822727";
+        }
+    });
+
+    loadModels();
+</script>
+
+</body>
+</html>
