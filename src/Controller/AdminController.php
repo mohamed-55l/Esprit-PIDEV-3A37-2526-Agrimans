@@ -5,6 +5,7 @@ namespace App\Controller;
 use App\Repository\CultureRepository;
 use App\Repository\ParcelleRepository;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
+use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Attribute\Route;
 use Symfony\Component\Security\Http\Attribute\IsGranted;
@@ -22,10 +23,24 @@ class AdminController extends AbstractController
     }
 
     #[Route('/view-parcelles-cultures', name: 'app_admin_view_parcelles_cultures')]
-    public function viewParcellesCultures(ParcelleRepository $parcelleRepository, CultureRepository $cultureRepository): Response
+    public function viewParcellesCultures(Request $request, ParcelleRepository $parcelleRepository, CultureRepository $cultureRepository, \Knp\Component\Pager\PaginatorInterface $paginator): Response
     {
-        $parcelles = $parcelleRepository->findAll();
-        $cultures = $cultureRepository->findAll();
+        $parcellesQuery = $parcelleRepository->findAll();
+        $culturesQuery = $cultureRepository->findAll();
+
+        $parcelles = $paginator->paginate(
+            $parcellesQuery,
+            $request->query->getInt('page_p', 1),
+            5,
+            ['pageParameterName' => 'page_p']
+        );
+
+        $cultures = $paginator->paginate(
+            $culturesQuery,
+            $request->query->getInt('page_c', 1),
+            5,
+            ['pageParameterName' => 'page_c']
+        );
 
         return $this->render('admin/index.html.twig', [
             'controller_name' => 'AdminController',

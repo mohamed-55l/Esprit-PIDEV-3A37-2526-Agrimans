@@ -15,21 +15,27 @@ use Symfony\Component\Routing\Attribute\Route;
 final class ParcelleController extends AbstractController
 {
     #[Route(name: 'app_parcelle_index', methods: ['GET'])]
-    public function index(Request $request, ParcelleRepository $parcelleRepository): Response
+    public function index(Request $request, ParcelleRepository $parcelleRepository, \Knp\Component\Pager\PaginatorInterface $paginator): Response
     {
         $search = trim((string) $request->query->get('search', ''));
 
         // Admin voit toutes les parcelles, user voit uniquement les siennes
         if ($this->isGranted('ROLE_ADMIN')) {
-            $parcelles = $search !== ''
+            $query = $search !== ''
                 ? $parcelleRepository->findBySearchTerm($search)
                 : $parcelleRepository->findAllOrderBySuperficieDesc();
         } else {
             $currentUser = $this->getUser();
-            $parcelles = $search !== ''
+            $query = $search !== ''
                 ? $parcelleRepository->findBySearchTermAndUser($search, $currentUser)
                 : $parcelleRepository->findByUser($currentUser);
         }
+
+        $parcelles = $paginator->paginate(
+            $query, /* query NOT result */
+            $request->query->getInt('page', 1), /*page number*/
+            5 /*limit per page*/
+        );
 
         return $this->render('parcelle/index.html.twig', [
             'parcelles' => $parcelles,

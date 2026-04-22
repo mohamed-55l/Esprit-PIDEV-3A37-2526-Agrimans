@@ -448,7 +448,7 @@
                     <div class="col-md-6">
                         <div class="chart-card">
                             <div class="card-header">
-                                <h3 class="card-title">Parcelles ({{ parcelles|length }})</h3>
+                                <h3 class="card-title">Parcelles ({{ parcelles.getTotalItemCount }})</h3>
                             </div>
                             <div class="table-responsive">
                                 <table class="table table-striped" style="color: var(--text-main);">
@@ -476,12 +476,17 @@
                                     </tbody>
                                 </table>
                             </div>
+                            {% if parcelles.getTotalItemCount > 0 %}
+                            <div style="padding: 1rem; border-top: 1px solid rgba(255,255,255,0.08); display: flex; justify-content: center;">
+                                {{ knp_pagination_render(parcelles) }}
+                            </div>
+                            {% endif %}
                         </div>
                     </div>
                     <div class="col-md-6">
                         <div class="chart-card">
                             <div class="card-header">
-                                <h3 class="card-title">Cultures ({{ cultures|length }})</h3>
+                                <h3 class="card-title">Cultures ({{ cultures.getTotalItemCount }})</h3>
                             </div>
                             <div class="table-responsive">
                                 <table class="table table-striped" style="color: var(--text-main);">
@@ -509,6 +514,11 @@
                                     </tbody>
                                 </table>
                             </div>
+                            {% if cultures.getTotalItemCount > 0 %}
+                            <div style="padding: 1rem; border-top: 1px solid rgba(255,255,255,0.08); display: flex; justify-content: center;">
+                                {{ knp_pagination_render(cultures) }}
+                            </div>
+                            {% endif %}
                         </div>
                     </div>
                 </div>
