@@ -120,5 +120,44 @@ final class ParcelleController extends AbstractController
 
         return $this->redirectToRoute('app_parcelle_index', [], Response::HTTP_SEE_OTHER);
     }
+
+    #[Route('/{id}/ai-recommendation', name: 'app_parcelle_ai_recommendation', methods: ['GET'])]
+    public function aiRecommendation(Parcelle $parcelle, \App\Service\CropRecommendationService $aiService): Response
+    {
+        $recommendation = $aiService->getRecommendation($parcelle);
+
+        return $this->render('parcelle/ai_recommendation.html.twig', [
+            'parcelle' => $parcelle,
+            'recommendation' => $recommendation,
+        ]);
+    }
+
+    #[Route('/{id}/apply-ai', name: 'app_parcelle_apply_ai', methods: ['POST'])]
+    public function applyAiRecommendation(Request $request, Parcelle $parcelle, EntityManagerInterface $entityManager): Response
+    {
+        $cropName = $request->request->get('crop_name');
+
+        if ($cropName) {
+            $culture = new \App\Entity\Culture();
+            $culture->setNom($cropName);
+            $culture->setTypeCulture('Généré par IA');
+            $culture->setEtatCulture('En planification');
+            $culture->setParcelle($parcelle);
+            // Default expected harvest date: 6 months from now
+            $culture->setDatePlantation(new \DateTime());
+            $culture->setDateRecoltePrevue((new \DateTime())->modify('+6 months'));
+
+            $entityManager->persist($culture);
+            $entityManager->flush();
+
+            // Store a flash message or handle it in template
+            $this->addFlash('success', 'La culture recommandée a été créée avec succès !');
+
+            // Redirect to edit culture so user can add the AI PDF if they want or modify details
+            return $this->redirectToRoute('app_culture_edit', ['id' => $culture->getId()]);
+        }
+
+        return $this->redirectToRoute('app_parcelle_show', ['id' => $parcelle->getId()]);
+    }
 }
 
