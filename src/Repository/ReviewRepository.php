@@ -70,7 +70,7 @@ class ReviewRepository extends ServiceEntityRepository
     /**
      * Récupère les reviews rédigées par un utilisateur spécifique
      */
-    public function findByUser(\App\Entity\User $user): array
+    public function findByUser(\App\Entity\Users $user): array
     {
         return $this->createQueryBuilder('r')
             ->andWhere('r.user = :user')

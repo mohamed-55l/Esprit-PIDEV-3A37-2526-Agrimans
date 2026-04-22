@@ -1,0 +1,21 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}Modifier Pack{% endblock %}
+
+{% block body %}
+    <section class="content-section" style="margin-top: 2rem;">
+        <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 2rem;">
+            <h2><i class="fa-solid fa-pen"></i> Modifier Pack: {{ product_bundle.name }}</h2>
+            <div>
+                <a href="{{ path('app_admin_bundle_index') }}" class="btn btn-secondary" style="margin-right: 0.5rem;">
+                    <i class="fa-solid fa-arrow-left"></i> Retour
+                </a>
+                {{ include('admin_bundle/_delete_form.html.twig') }}
+            </div>
+        </div>
+
+        <div class="glass-card" style="padding: 2rem; max-width: 800px; margin: 0 auto;">
+            {{ include('admin_bundle/_form.html.twig', {'button_label': 'Mettre à jour'}) }}
+        </div>
+    </section>
+{% endblock %}

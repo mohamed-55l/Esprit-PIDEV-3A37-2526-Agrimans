@@ -1,0 +1,86 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="UTF-8">
+    <title>Modifier utilisateur</title>
+
+    <link rel="stylesheet" href="{{ asset('styles/update.css') }}">
+
+
+
+</head>
+<body>
+
+<div class="container">
+
+    <div class="card">
+
+        <!-- LEFT FORM -->
+        <div class="form-box">
+
+            <h1>Modifier utilisateur</h1>
+            <p class="subtitle">Mettre à jour les informations</p>
+
+            <form method="post">
+
+                <!-- CSRF -->
+                <input type="hidden" name="_token" value="{{ csrf_token('update_user') }}">
+
+                <!-- Nom -->
+                <label>Nom et prénom</label>
+                <input type="text" name="full_name" value="{{ user.fullName }}">
+                <span class="error">{{ errors.full_name ?? '' }}</span>
+
+                <!-- Email -->
+                <label>Email</label>
+                <input type="email" name="email" value="{{ user.email }}">
+                <span class="error">{{ errors.email ?? '' }}</span>
+
+                <!-- Phone -->
+                <label>Téléphone</label>
+                <input type="text" name="phone" value="{{ user.phone }}">
+                <span class="error">{{ errors.phone ?? '' }}</span>
+
+                <!-- Role -->
+                <label>Rôle</label>
+                <select name="role">
+                    <option value="USER" {{ user.role.value == 'USER' ? 'selected' : '' }}>USER</option>
+                    <option value="ADMIN" {{ user.role.value == 'ADMIN' ? 'selected' : '' }}>ADMIN</option>
+                </select>
+
+                <!-- Password -->
+                <label>Nouveau mot de passe</label>
+                <input type="password" name="password">
+
+                <label>Confirmer</label>
+                <input type="password" name="confirm">
+                <span class="error">{{ errors.confirm ?? '' }}</span>
+
+                <!-- Buttons -->
+                <div class="buttons">
+
+                    <button type="submit" class="btn btn-primary">
+                        Mettre à jour
+                    </button>
+
+                    <a href="{{ path('admin_dashboard') }}" class="btn btn-secondary">
+                        Retour
+                    </a>
+
+                </div>
+
+            </form>
+
+        </div>
+
+        <!-- RIGHT IMAGE -->
+        <div class="image-box">
+            <img src="{{ asset('images/Samir/login.png') }}" alt="image">
+        </div>
+
+    </div>
+
+</div>
+
+</body>
+</html>

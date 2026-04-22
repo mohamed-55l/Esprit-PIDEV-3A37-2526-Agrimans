@@ -18,7 +18,7 @@
             --danger: #e74c3c;
             --success: #2ecc71;
             --warning: #f1c40f;
-            --sidebar-width: 280px;
+            --sidebar-width: 260px;
         }
         * { margin:0; padding:0; box-sizing:border-box; font-family:'Inter',sans-serif; }
         body { background:var(--dark); color:var(--text-main); display:flex; min-height:100vh; }
@@ -96,37 +96,8 @@
 </head>
 <body>
 
-<!-- SIDEBAR -->
-<aside class="sidebar">
-    <div class="sidebar-header">
-        <i class="fa-solid fa-shield-halved" style="color:var(--danger);font-size:1.4rem;"></i>
-        <span style="font-size:1.1rem;font-weight:700;color:white;">AGRIMANS <span style="color:var(--danger);font-size:0.7rem;vertical-align:top;">ADMIN</span></span>
-    </div>
-    <div class="sidebar-nav">
-        <a href="{{ path('app_admin') }}" class="nav-item">
-            <i class="fa-solid fa-gauge-high"></i> Tableau de Bord
-        </a>
-        <div class="nav-section">Gestion</div>
-        <a href="{{ path('app_user_management') }}" class="nav-item">
-            <i class="fa-solid fa-users"></i> Utilisateurs
-        </a>
-        <a href="{{ path('admin_equipement_index') }}" class="nav-item active">
-            <i class="fa-solid fa-tractor"></i> Équipements
-        </a>
-        <a href="{{ path('admin_review_index') }}" class="nav-item">
-            <i class="fa-solid fa-star"></i> Avis & Reviews
-        </a>
-        <div class="nav-section">Boutique</div>
-        <a href="{{ path('app_marketplace_index') }}" class="nav-item">
-            <i class="fa-solid fa-store"></i> Marketplace
-        </a>
-    </div>
-    <div class="sidebar-footer">
-        <a href="{{ path('app_home') }}" class="nav-item">
-            <i class="fa-solid fa-arrow-left"></i> Retour au site
-        </a>
-    </div>
-</aside>
+{% include 'admin/_sidebar.html.twig' with {active: 'equipements'} %}
+
 
 <!-- MAIN -->
 <main class="main">

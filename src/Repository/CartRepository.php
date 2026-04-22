@@ -20,7 +20,7 @@ class CartRepository extends ServiceEntityRepository
         if (!$cart) {
             $cart = new Cart();
             // Assign a user reference without requiring a full fetch
-            $userReference = $this->getEntityManager()->getReference(\App\Entity\User::class, $buyerId);
+            $userReference = $this->getEntityManager()->getReference(\App\Entity\Users::class, $buyerId);
             $cart->setUser($userReference);
             $this->getEntityManager()->persist($cart);
             $this->getEntityManager()->flush();

@@ -1,0 +1,96 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="UTF-8">
+    <title>AGRI Samir - Register</title>
+    <link rel="stylesheet" href="{{ asset('styles/register.css') }}">
+</head>
+<body>
+
+<div class="app-container">
+
+    <div class="main-card">
+
+        <div class="form-box">
+
+            <h1>S'inscrire</h1>
+            <p class="subtitle">Créez votre compte</p>
+
+           
+
+            {# CSRF ERROR #}
+            {% if errors.csrf is defined %}
+                <div class="error">{{ errors.csrf }}</div>
+            {% endif %}
+
+            <form method="post">
+
+                <input type="hidden" name="_token" value="{{ csrf_token('register') }}">
+
+                <div class="row">
+
+                    <div class="col">
+
+                        <label>Nom et prénom</label>
+                        <input type="text" name="name" value="{{ data.name }}">
+                        <span class="error">{{ errors.name ?? '' }}</span>
+                        <br>
+                        <label>Email</label>
+                        <input type="email" name="email" value="{{ data.email }}">
+                        <span class="error">{{ errors.email ?? '' }}</span>
+                        <br>
+                        <label>Téléphone</label>
+                        <input type="text" name="phone" value="{{ data.phone }}">
+                        
+                        <span class="error">{{ errors.phone ?? '' }}</span>
+
+                    </div>
+
+                    <div class="col">
+
+                        <label>Mot de passe</label>
+                        <input type="password" name="password">
+
+                        {# 🔥 erreurs multiples password #}
+                        {% if errors.password is defined %}
+                            <ul class="error">
+                                {% for err in errors.password %}
+                                    <li>{{ err }}</li>
+                                {% endfor %}
+                            </ul>
+                        {% endif %}
+                        <br>
+                        <label>Confirmer</label>
+                        <input type="password" name="confirm">
+                        <span class="error">{{ errors.confirm ?? '' }}</span>
+
+                    </div>
+
+                </div>
+
+                <button class="btn">Register</button>
+                 {# SUCCESS #}
+            {% for message in app.flashes('success') %}
+                <div class="success">{{ message }}</div>
+            {% endfor %}
+            <br>
+
+            </form>
+
+            <p class="login-link">
+                Déjà un compte ?
+                <a href="{{ path('app_login') }}">Se connecter</a>
+            </p>
+
+        </div>
+
+        <div class="image-box">
+            <img src="{{ asset('images/Samir/login.png') }}">
+        </div>
+
+    </div>
+
+</div>
+
+</body>
+</html>

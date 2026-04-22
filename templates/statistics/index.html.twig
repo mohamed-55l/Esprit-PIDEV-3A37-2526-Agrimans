@@ -1,0 +1,321 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}Statistiques des Produits - Agrimans{% endblock %}
+
+{% block body %}
+    <section class="content-section" style="margin-top: 2rem;">
+        {# Header #}
+        <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 2rem;">
+            <div>
+                <h1 style="font-size: 2.5rem; margin-bottom: 0.5rem;">
+                    <i class="fa-solid fa-chart-bar"></i> Statistiques des Produits
+                </h1>
+                <p style="color: rgba(255,255,255,0.7);">Analyse complète de votre catalogue</p>
+            </div>
+            <a href="{{ path('app_home') }}" class="btn btn-secondary">
+                <i class="fa-solid fa-arrow-left"></i> Retour au tableau de bord
+            </a>
+        </div>
+
+        {# KPI Cards #}
+        <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(250px, 1fr)); gap: 1.5rem; margin-bottom: 2rem;">
+            {# Total Products #}
+            <div class="glass-card" style="padding: 1.5rem; border-left: 4px solid #198B61;">
+                <div style="display: flex; justify-content: space-between; align-items: start;">
+                    <div>
+                        <p style="color: rgba(255,255,255,0.6); margin: 0 0 0.5rem 0;">Total de produits</p>
+                        <h2 style="font-size: 2.5rem; margin: 0; color: #7DBF6C;">{{ totalProducts }}</h2>
+                    </div>
+                    <div style="font-size: 2.5rem; opacity: 0.3;">
+                        <i class="fa-solid fa-box"></i>
+                    </div>
+                </div>
+            </div>
+
+            {# Total Stock Value #}
+            <div class="glass-card" style="padding: 1.5rem; border-left: 4px solid #f39c12;">
+                <div style="display: flex; justify-content: space-between; align-items: start;">
+                    <div>
+                        <p style="color: rgba(255,255,255,0.6); margin: 0 0 0.5rem 0;">Valeur totale en stock</p>
+                        <h2 style="font-size: 2.5rem; margin: 0; color: #f39c12;">{{ totalStockValue|number_format(2, ',', '.') }} TND</h2>
+                    </div>
+                    <div style="font-size: 2.5rem; opacity: 0.3;">
+                        <i class="fa-solid fa-coins"></i>
+                    </div>
+                </div>
+            </div>
+
+            {# Top Category #}
+            <div class="glass-card" style="padding: 1.5rem; border-left: 4px solid #e74c3c;">
+                <div style="display: flex; justify-content: space-between; align-items: start;">
+                    <div>
+                        <p style="color: rgba(255,255,255,0.6); margin: 0 0 0.5rem 0;">Catégorie principale</p>
+                        <h2 style="font-size: 1.5rem; margin: 0; color: #e74c3c;">
+                            {{ productsByCategory|keys|first|default('N/A') }}
+                        </h2>
+                        <p style="color: rgba(255,255,255,0.5); font-size: 0.9rem; margin: 0.5rem 0 0 0;">
+                            {{ productsByCategory|values|first|default(0) }} produit(s)
+                        </p>
+                    </div>
+                    <div style="font-size: 2.5rem; opacity: 0.3;">
+                        <i class="fa-solid fa-leaf"></i>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        {# Charts Section #}
+        <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 2rem; margin-bottom: 2rem;">
+            {# Products by Category #}
+            <div class="glass-card" style="padding: 1.5rem;">
+                <h3 style="margin-top: 0; margin-bottom: 1rem;">
+                    <i class="fa-solid fa-pie-chart"></i> Produits par Catégorie
+                </h3>
+                <div style="width: 100%; max-width: 300px; margin: 0 auto 2rem;">
+                    <canvas id="categoryPieChart"></canvas>
+                </div>
+                <div style="overflow-x: auto;">
+                    <table class="styled-table" style="margin: 0;">
+                        <thead>
+                            <tr>
+                                <th>Catégorie</th>
+                                <th style="text-align: right;">Nombre</th>
+                                <th style="text-align: right;">%</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {% set totalCat = productsByCategory|length > 0 ? productsByCategory|values|sum : 1 %}
+                            {% for category, count in productsByCategory %}
+                                <tr>
+                                    <td>
+                                        <i class="fa-solid fa-circle" style="color: {{ loop.index % 2 == 0 ? '#7DBF6C' : '#198B61' }}; margin-right: 0.5rem;"></i>
+                                        {{ category }}
+                                    </td>
+                                    <td style="text-align: right; font-weight: bold;">{{ count }}</td>
+                                    <td style="text-align: right;">{{ ((count / totalCat) * 100)|round(1) }}%</td>
+                                </tr>
+                            {% endfor %}
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+
+            {# Average Price by Category #}
+            <div class="glass-card" style="padding: 1.5rem;">
+                <h3 style="margin-top: 0; margin-bottom: 1rem;">
+                    <i class="fa-solid fa-chart-line"></i> Prix Moyen par Catégorie
+                </h3>
+                <div style="width: 100%; margin-bottom: 2rem;">
+                    <canvas id="priceBarChart"></canvas>
+                </div>
+                <div style="overflow-x: auto;">
+                    <table class="styled-table" style="margin: 0;">
+                        <thead>
+                            <tr>
+                                <th>Catégorie</th>
+                                <th style="text-align: right;">Prix Moyen</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {% for category, price in avgPriceByCategory %}
+                                <tr>
+                                    <td>{{ category }}</td>
+                                    <td style="text-align: right; font-weight: bold; color: #7DBF6C;">
+                                        {{ price|number_format(2, ',', '.') }} TND
+                                    </td>
+                                </tr>
+                            {% endfor %}
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+
+        {# Top Rated Products #}
+        {% if topRatedProducts|length > 0 %}
+            <div class="glass-card" style="padding: 1.5rem; margin-bottom: 2rem;">
+                <h3 style="margin-top: 0; margin-bottom: 1rem;">
+                    <i class="fa-solid fa-star"></i> Produits les Mieux Notés
+                </h3>
+                <div style="overflow-x: auto;">
+                    <table class="styled-table" style="margin: 0;">
+                        <thead>
+                            <tr>
+                                <th>Produit</th>
+                                <th style="text-align: center;">Note</th>
+                                <th style="text-align: center;">Avis</th>
+                                <th style="text-align: center;">Catégorie</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {% for item in topRatedProducts %}
+                                <tr>
+                                    <td>
+                                        <a href="{{ path('app_marketplace_product_show', {'id': item.product.id}) }}" style="color: #7DBF6C; text-decoration: none;">
+                                            {{ item.product.name }}
+                                        </a>
+                                    </td>
+                                    <td style="text-align: center;">
+                                        {% for i in 1..5 %}
+                                            <i class="fa-{{ i <= item.rating ? 'solid' : 'regular' }} fa-star" style="color: #f1c40f;"></i>
+                                        {% endfor %}
+                                        <span style="margin-left: 0.5rem;">{{ item.rating }}/5</span>
+                                    </td>
+                                    <td style="text-align: center;">{{ item.ratingCount }}</td>
+                                    <td style="text-align: center;">{{ item.product.category }}</td>
+                                </tr>
+                            {% endfor %}
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        {% endif %}
+
+        {# Low Stock Products #}
+        {% if lowStockProducts|length > 0 %}
+            <div class="glass-card" style="padding: 1.5rem; margin-bottom: 2rem; border-left: 4px solid #e74c3c;">
+                <h3 style="margin-top: 0; margin-bottom: 1rem;">
+                    <i class="fa-solid fa-exclamation-triangle"></i> Produits à Faible Stock
+                </h3>
+                <div style="overflow-x: auto;">
+                    <table class="styled-table" style="margin: 0;">
+                        <thead>
+                            <tr>
+                                <th>Produit</th>
+                                <th style="text-align: right;">Stock (kg)</th>
+                                <th style="text-align: center;">Statut</th>
+                                <th style="text-align: right;">Prix Unitaire</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {% for item in lowStockProducts %}
+                                <tr style="opacity: {{ item.status == 'critical' ? '0.8' : '1' }}; {% if item.status == 'critical' %}background: rgba(231, 76, 60, 0.1);{% endif %}">
+                                    <td>{{ item.product.name }}</td>
+                                    <td style="text-align: right; font-weight: bold;">{{ item.quantity }}</td>
+                                    <td style="text-align: center;">
+                                        <span class="badge {{ item.status == 'critical' ? 'badge-danger' : 'badge-warning' }}">
+                                            {{ item.status == 'critical' ? '🔴 Critique' : '🟡 Bas' }}
+                                        </span>
+                                    </td>
+                                    <td style="text-align: right; color: #7DBF6C;">
+                                        {{ item.product.price|number_format(2, ',', '.') }} TND
+                                    </td>
+                                </tr>
+                            {% endfor %}
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        {% endif %}
+
+        {# Category Statistics #}
+        {% if categoryStats|length > 0 %}
+            <div class="glass-card" style="padding: 1.5rem;">
+                <h3 style="margin-top: 0; margin-bottom: 1rem;">
+                    <i class="fa-solid fa-table"></i> Statistiques par Catégorie
+                </h3>
+                <div style="overflow-x: auto;">
+                    <table class="styled-table" style="margin: 0; font-size: 0.9rem;">
+                        <thead>
+                            <tr>
+                                <th>Catégorie</th>
+                                <th style="text-align: center;">Produits</th>
+                                <th style="text-align: right;">Stock Total (kg)</th>
+                                <th style="text-align: right;">Valeur (TND)</th>
+                                <th style="text-align: right;">Prix Moyen</th>
+                                <th style="text-align: center;">Note Moy.</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {% for category, stats in categoryStats %}
+                                <tr>
+                                    <td style="font-weight: 600;">{{ category }}</td>
+                                    <td style="text-align: center;">{{ stats.count }}</td>
+                                    <td style="text-align: right;">{{ stats.totalStock }}</td>
+                                    <td style="text-align: right; color: #f39c12; font-weight: bold;">
+                                        {{ stats.totalValue|number_format(2, ',', '.') }}
+                                    </td>
+                                    <td style="text-align: right; color: #7DBF6C;">
+                                        {{ stats.avgPrice|number_format(2, ',', '.') }} TND
+                                    </td>
+                                    <td style="text-align: center;">
+                                        {% if stats.avgRating > 0 %}
+                                            <span style="color: #f1c40f;">
+                                                {{ stats.avgRating }} <i class="fa-solid fa-star"></i>
+                                            </span>
+                                        {% else %}
+                                            <span style="color: rgba(255,255,255,0.4);">N/A</span>
+                                        {% endif %}
+                                    </td>
+                                </tr>
+                            {% endfor %}
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        {% endif %}
+    </section>
+
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            // Data for Category Pie Chart
+            const catLabels = {{ productsByCategory|keys|json_encode|raw }};
+            const catData = {{ productsByCategory|values|json_encode|raw }};
+            
+            const pieCtx = document.getElementById('categoryPieChart').getContext('2d');
+            new Chart(pieCtx, {
+                type: 'doughnut',
+                data: {
+                    labels: catLabels,
+                    datasets: [{
+                        data: catData,
+                        backgroundColor: ['#198B61', '#7DBF6C', '#f39c12', '#e74c3c', '#3498db'],
+                        borderWidth: 0
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    plugins: {
+                        legend: { position: 'bottom', labels: { color: 'rgba(255,255,255,0.7)' } }
+                    }
+                }
+            });
+
+            // Data for Price Bar Chart
+            const priceLabels = {{ avgPriceByCategory|keys|json_encode|raw }};
+            const priceData = {{ avgPriceByCategory|values|json_encode|raw }};
+            
+            const barCtx = document.getElementById('priceBarChart').getContext('2d');
+            new Chart(barCtx, {
+                type: 'bar',
+                data: {
+                    labels: priceLabels,
+                    datasets: [{
+                        label: 'Prix moyen (TND)',
+                        data: priceData,
+                        backgroundColor: '#7DBF6C',
+                        borderRadius: 5
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    scales: {
+                        y: { 
+                            beginAtZero: true, 
+                            ticks: { color: 'rgba(255,255,255,0.7)' },
+                            grid: { color: 'rgba(255,255,255,0.1)' }
+                        },
+                        x: { 
+                            ticks: { color: 'rgba(255,255,255,0.7)' },
+                            grid: { display: false }
+                        }
+                    },
+                    plugins: {
+                        legend: { display: false }
+                    }
+                }
+            });
+        });
+    </script>
+{% endblock %}

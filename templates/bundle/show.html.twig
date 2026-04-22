@@ -1,0 +1,252 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}{{ bundle.name }} - Agrimans{% endblock %}
+
+{% block body %}
+    <section class="content-section" style="margin-top: 2rem;">
+        {# Header #}
+        <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 2rem;">
+            <a href="{{ path('app_marketplace_bundles') }}" class="btn btn-outline">
+                <i class="fa-solid fa-arrow-left"></i> Retour aux packs
+            </a>
+        </div>
+
+        {# Main Content #}
+        <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 2rem; margin-bottom: 3rem;">
+            {# Left: Bundle Info #}
+            <div>
+                <div style="
+                    background: linear-gradient(135deg, rgba(25, 139, 97, 0.2) 0%, rgba(125, 191, 108, 0.1) 100%);
+                    border: 1px solid rgba(125, 191, 108, 0.3);
+                    border-radius: 12px;
+                    padding: 2rem;
+                    text-align: center;
+                    position: relative;
+                    margin-bottom: 2rem;
+                ">
+                    {# Discount Badge #}
+                    <div style="
+                        position: absolute;
+                        top: 15px;
+                        right: 15px;
+                        background: #e74c3c;
+                        color: white;
+                        padding: 0.75rem 1.5rem;
+                        border-radius: 20px;
+                        font-weight: bold;
+                        font-size: 1.1rem;
+                    ">
+                        -{{ bundle.discountPercentage|round(0) }}%
+                    </div>
+
+                    {# Bundle Icon #}
+                    <div style="font-size: 4rem; margin-bottom: 1rem;">
+                        <i class="fa-solid fa-box-open"></i>
+                    </div>
+
+                    <h1 style="font-size: 2rem; margin-bottom: 1rem;">
+                        {{ bundle.name }}
+                    </h1>
+
+                    {% if bundle.description %}
+                        <p style="color: rgba(255,255,255,0.7); font-size: 1.05rem; margin-bottom: 1.5rem;">
+                            {{ bundle.description }}
+                        </p>
+                    {% endif %}
+                </div>
+
+                {# Products Included #}
+                <div style="
+                    background: rgba(255, 255, 255, 0.05);
+                    border: 1px solid rgba(255, 255, 255, 0.1);
+                    border-radius: 12px;
+                    padding: 1.5rem;
+                    margin-bottom: 2rem;
+                ">
+                    <h3 style="font-size: 1.3rem; margin-bottom: 1rem;">
+                        <i class="fa-solid fa-list-check"></i> Produits inclus
+                    </h3>
+
+                    <div style="display: grid; grid-template-columns: 1fr; gap: 1rem;">
+                        {% for product in bundle.products %}
+                            <div style="
+                                background: rgba(255, 255, 255, 0.05);
+                                border-left: 3px solid #198B61;
+                                padding: 1rem;
+                                border-radius: 6px;
+                            ">
+                                <div style="display: flex; justify-content: space-between; align-items: center;">
+                                    <div>
+                                        <h4 style="font-size: 1.05rem; margin-bottom: 0.25rem;">
+                                            {{ product.name }}
+                                        </h4>
+                                        <p style="color: rgba(255,255,255,0.5); font-size: 0.9rem;">
+                                            <i class="fa-solid {{ product.categoryIcon }}"></i>
+                                            {{ product.category }}
+                                        </p>
+                                    </div>
+                                    <div style="text-align: right;">
+                                        <div style="font-size: 1.1rem; font-weight: bold;">
+                                            {{ product.price|number_format(2, ',', '.') }} TND
+                                        </div>
+                                        <div style="color: rgba(255,255,255,0.5); font-size: 0.9rem;">
+                                            Stock: {{ product.quantity }} kg
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        {% endfor %}
+                    </div>
+
+                    <div style="
+                        margin-top: 1rem;
+                        padding-top: 1rem;
+                        border-top: 1px solid rgba(255,255,255,0.1);
+                        text-align: right;
+                    ">
+                        <div style="color: rgba(255,255,255,0.6); margin-bottom: 0.5rem;">
+                            Valeur totale du pack
+                        </div>
+                        <div style="font-size: 1.3rem; font-weight: bold;">
+                            {{ bundle.originalPrice|number_format(2, ',', '.') }} TND
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            {# Right: Purchase Section #}
+            <div>
+                <div style="
+                    background: linear-gradient(135deg, rgba(25, 139, 97, 0.15) 0%, rgba(125, 191, 108, 0.05) 100%);
+                    border: 2px solid rgba(125, 191, 108, 0.4);
+                    border-radius: 12px;
+                    padding: 2rem;
+                    position: sticky;
+                    top: 100px;
+                ">
+                    <h2 style="font-size: 1.5rem; margin-bottom: 1.5rem;">
+                        <i class="fa-solid fa-star"></i> Offre spéciale
+                    </h2>
+
+                    {# Original vs Bundle Price #}
+                    <div style="margin-bottom: 2rem;">
+                        <div style="display: flex; justify-content: space-between; margin-bottom: 1rem;">
+                            <span style="color: rgba(255,255,255,0.7);">Prix original</span>
+                            <span style="text-decoration: line-through; color: rgba(255,255,255,0.5);">
+                                {{ bundle.originalPrice|number_format(2, ',', '.') }} TND
+                            </span>
+                        </div>
+                        <div style="display: flex; justify-content: space-between; align-items: center; padding: 1rem; background: rgba(125, 191, 108, 0.1); border-radius: 8px;">
+                            <span style="font-weight: 600;">Prix du pack</span>
+                            <span style="font-size: 1.5rem; font-weight: bold; color: #7DBF6C;">
+                                {{ bundle.bundlePrice|number_format(2, ',', '.') }} TND
+                            </span>
+                        </div>
+                    </div>
+
+                    {# Savings #}
+                    <div style="
+                        background: rgba(125, 191, 108, 0.15);
+                        border: 1px solid rgba(125, 191, 108, 0.3);
+                        padding: 1rem;
+                        border-radius: 8px;
+                        text-align: center;
+                        margin-bottom: 2rem;
+                    ">
+                        <div style="color: rgba(255,255,255,0.7); font-size: 0.95rem; margin-bottom: 0.5rem;">
+                            Vous économisez
+                        </div>
+                        <div style="font-size: 1.8rem; font-weight: bold; color: #7DBF6C;">
+                            {{ bundle.savings|number_format(2, ',', '.') }} TND
+                        </div>
+                        <div style="color: rgba(255,255,255,0.6); font-size: 0.85rem; margin-top: 0.5rem;">
+                            ({{ bundle.discountPercentage|round(0) }}% de réduction)
+                        </div>
+                    </div>
+
+                    {# Add to Cart Form #}
+                    <form action="{{ path('app_marketplace_bundle_add', {'id': bundle.id}) }}" method="POST" style="margin-bottom: 2rem;">
+                        <div style="margin-bottom: 1.5rem;">
+                            <label for="quantity" style="display: block; margin-bottom: 0.5rem; font-weight: 600;">
+                                Quantité de packs
+                            </label>
+                            <div style="display: flex; gap: 0.5rem;">
+                                <button type="button" class="qty-btn" onclick="decreaseQty()" style="
+                                    background: rgba(255,255,255,0.1);
+                                    border: 1px solid rgba(255,255,255,0.2);
+                                    padding: 0.75rem 1rem;
+                                    border-radius: 6px;
+                                    color: #fff;
+                                    cursor: pointer;
+                                ">-</button>
+                                <input 
+                                    type="number" 
+                                    id="quantity" 
+                                    name="quantity" 
+                                    value="1" 
+                                    min="1" 
+                                    max="99"
+                                    style="
+                                        flex: 1;
+                                        padding: 0.75rem;
+                                        border: 1px solid rgba(255,255,255,0.2);
+                                        background: rgba(255,255,255,0.05);
+                                        color: #fff;
+                                        border-radius: 6px;
+                                        text-align: center;
+                                    "
+                                >
+                                <button type="button" class="qty-btn" onclick="increaseQty()" style="
+                                    background: rgba(255,255,255,0.1);
+                                    border: 1px solid rgba(255,255,255,0.2);
+                                    padding: 0.75rem 1rem;
+                                    border-radius: 6px;
+                                    color: #fff;
+                                    cursor: pointer;
+                                ">+</button>
+                            </div>
+                        </div>
+
+                        <button 
+                            type="submit" 
+                            class="btn btn-primary" 
+                            style="width: 100%; padding: 1rem; font-size: 1.1rem; font-weight: 600;"
+                        >
+                            <i class="fa-solid fa-cart-plus"></i> Ajouter au panier
+                        </button>
+                    </form>
+
+                    {# Return to Marketplace #}
+                    <a href="{{ path('app_marketplace_index') }}" class="btn btn-outline" style="width: 100%; display: block; text-align: center;">
+                        <i class="fa-solid fa-store"></i> Continuer les achats
+                    </a>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <script>
+        function increaseQty() {
+            const input = document.getElementById('quantity');
+            const current = parseInt(input.value) || 1;
+            if (current < 99) {
+                input.value = current + 1;
+            }
+        }
+
+        function decreaseQty() {
+            const input = document.getElementById('quantity');
+            const current = parseInt(input.value) || 1;
+            if (current > 1) {
+                input.value = current - 1;
+            }
+        }
+
+        // Update total on quantity change
+        document.getElementById('quantity').addEventListener('change', function() {
+            let value = parseInt(this.value) || 1;
+            if (value < 1) this.value = 1;
+            if (value > 99) this.value = 99;
+        });
+    </script>
+{% endblock %}

@@ -1,0 +1,95 @@
+body {
+    margin: 0;
+    font-family: Arial;
+    background-color: #0f6b3b;
+}
+
+.app-container {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    height: 100vh;
+}
+
+/* CARD */
+.main-card {
+    display: flex;
+    width: 1000px;
+    background: white;
+    border-radius: 25px;
+    overflow: hidden;
+    box-shadow: 0px 5px 15px rgba(0,0,0,0.2);
+}
+
+/* LEFT */
+.form-box {
+    width: 70%;
+    padding: 40px;
+}
+
+.subtitle {
+    color: gray;
+}
+
+/* GRID */
+.row {
+    display: flex;
+    gap: 30px;
+}
+
+.col {
+    flex: 1;
+}
+
+/* INPUT */
+input {
+    width: 100%;
+    height: 35px;
+    margin-bottom: 10px;
+}
+
+/* CODE */
+.code-box {
+    display: flex;
+    gap: 10px;
+}
+
+.code-box button {
+    background: #2196F3;
+    color: white;
+    border: none;
+    padding: 10px;
+}
+
+/* BUTTON */
+.btn {
+    width: 100%;
+    padding: 12px;
+    background: #0f6b3b;
+    color: white;
+    border: none;
+    margin-top: 10px;
+}
+
+/* RIGHT */
+.image-box {
+    width: 45%;
+    background: #0f6b3b;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+
+.image-box img {
+    width: 400px;
+}
+
+/* ERROR */
+.error {
+    color: red;
+    font-size: 12px;
+}
+
+.login-link {
+    margin-top: 10px;
+}

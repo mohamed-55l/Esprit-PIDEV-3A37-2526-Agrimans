@@ -1,0 +1,59 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="UTF-8">
+    <title>AGRI Samir - Login</title>
+    <link rel="stylesheet" href="{{ asset('styles/login.css') }}">
+
+    <!-- ✅ reCAPTCHA script -->
+    <script src="https://www.google.com/recaptcha/api.js" async defer></script>
+</head>
+<body>
+
+<div class="app-container">
+
+    <div class="main-card">
+
+        <!-- LEFT LOGIN -->
+        <div class="login-box">
+
+            <p class="welcome">Bienvenue</p>
+            <h1>Se connecter</h1>
+
+            <form method="post">
+
+                <label>Adresse email</label>
+                <input type="email" name="email" placeholder="Votre email" required>
+
+                <label>Mot de passe</label>
+                <input type="password" name="password" placeholder="Mot de passe" required>
+
+                <!-- ✅ reCAPTCHA -->
+                <div class="g-recaptcha" data-sitekey="{{ recaptcha_site_key }}"></div>
+
+                {% if error %}
+                    <p class="error">{{ error }}</p>
+                {% endif %}
+
+                <button type="submit" class="btn-login">Se connecter</button>
+
+            </form>
+
+            <p class="register">
+                Vous n'avez pas de compte ?
+                <a href="{{ path('app_register') }}">S'inscrire</a>
+            </p>
+
+        </div>
+
+        <!-- RIGHT IMAGE -->
+        <div class="image-box">
+            <img src="{{ asset('images/Samir/login.png') }}" alt="login image">
+        </div>
+
+    </div>
+
+</div>
+
+</body>
+</html>

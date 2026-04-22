@@ -11,7 +11,7 @@ use Symfony\Component\Security\Core\User\UserInterface;
 use Symfony\Component\Security\Core\User\PasswordAuthenticatedUserInterface;
 
 #[ORM\Entity(repositoryClass: UserRepository::class)]
-#[ORM\Table(name: 'users')]
+#[ORM\Table(name: 'user')]
 class User implements UserInterface, PasswordAuthenticatedUserInterface
 {
     #[ORM\Id]
@@ -30,21 +30,35 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
         return $this;
     }
 
-    #[ORM\Column(type: 'string', nullable: false)]
-    private ?string $full_name = null;
+    #[ORM\Column(name: 'nom', type: 'string', nullable: true)]
+    private ?string $nom = null;
 
-    public function getFull_name(): ?string
+    public function getNom(): ?string
     {
-        return $this->full_name;
+        return $this->nom;
     }
 
-    public function setFull_name(string $full_name): self
+    public function setNom(?string $nom): self
     {
-        $this->full_name = $full_name;
+        $this->nom = $nom;
         return $this;
     }
 
-    #[ORM\Column(type: 'string', nullable: false)]
+    #[ORM\Column(name: 'prenom', type: 'string', nullable: true)]
+    private ?string $prenom = null;
+
+    public function getPrenom(): ?string
+    {
+        return $this->prenom;
+    }
+
+    public function setPrenom(?string $prenom): self
+    {
+        $this->prenom = $prenom;
+        return $this;
+    }
+
+    #[ORM\Column(name: 'email', type: 'string', nullable: true)]
     private ?string $email = null;
 
     public function getEmail(): ?string
@@ -52,41 +66,27 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
         return $this->email;
     }
 
-    public function setEmail(string $email): self
+    public function setEmail(?string $email): self
     {
         $this->email = $email;
         return $this;
     }
 
-    #[ORM\Column(type: 'string', nullable: true)]
-    private ?string $phone = null;
+    #[ORM\Column(name: 'password', type: 'string', nullable: true)]
+    private ?string $password = null;
 
-    public function getPhone(): ?string
+    public function getPassword(): ?string
     {
-        return $this->phone;
+        return $this->password;
     }
 
-    public function setPhone(?string $phone): self
+    public function setPassword(?string $password): self
     {
-        $this->phone = $phone;
+        $this->password = $password;
         return $this;
     }
 
-    #[ORM\Column(type: 'string', nullable: false)]
-    private ?string $password_hash = null;
-
-    public function getPassword_hash(): ?string
-    {
-        return $this->password_hash;
-    }
-
-    public function setPassword_hash(string $password_hash): self
-    {
-        $this->password_hash = $password_hash;
-        return $this;
-    }
-
-    #[ORM\Column(type: 'string', nullable: false)]
+    #[ORM\Column(name: 'role', type: 'string', nullable: true)]
     private ?string $role = null;
 
     public function getRole(): ?string
@@ -94,23 +94,23 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
         return $this->role;
     }
 
-    public function setRole(string $role): self
+    public function setRole(?string $role): self
     {
         $this->role = $role;
         return $this;
     }
 
-    #[ORM\Column(type: 'datetime', nullable: false)]
-    private ?\DateTimeInterface $created_at = null;
+    #[ORM\Column(name: 'ferme_id', type: 'integer', nullable: true)]
+    private ?int $ferme_id = null;
 
-    public function getCreated_at(): ?\DateTimeInterface
+    public function getFermeId(): ?int
     {
-        return $this->created_at;
+        return $this->ferme_id;
     }
 
-    public function setCreated_at(\DateTimeInterface $created_at): self
+    public function setFermeId(?int $ferme_id): self
     {
-        $this->created_at = $created_at;
+        $this->ferme_id = $ferme_id;
         return $this;
     }
 
@@ -207,37 +207,43 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
 
     public function getFullName(): ?string
     {
-        return $this->full_name;
+        if ($this->prenom && $this->nom) {
+            return $this->prenom . ' ' . $this->nom;
+        }
+        return $this->prenom ?? $this->nom;
     }
 
     public function setFullName(string $full_name): static
     {
-        $this->full_name = $full_name;
+        // Split full name into first and last name
+        $parts = explode(' ', $full_name, 2);
+        $this->prenom = $parts[0] ?? null;
+        $this->nom = $parts[1] ?? null;
 
         return $this;
     }
 
     public function getPasswordHash(): ?string
     {
-        return $this->password_hash;
+        return $this->password;
     }
 
     public function setPasswordHash(string $password_hash): static
     {
-        $this->password_hash = $password_hash;
+        $this->password = $password_hash;
 
         return $this;
     }
 
     public function getCreatedAt(): ?\DateTime
     {
-        return $this->created_at;
+        // No created_at in the user table, return null
+        return null;
     }
 
     public function setCreatedAt(\DateTime $created_at): static
     {
-        $this->created_at = $created_at;
-
+        // No created_at in the user table, do nothing
         return $this;
     }
 
@@ -260,11 +266,6 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
             $currentRole = 'ROLE_' . $currentRole;
         }
         return [$currentRole];
-    }
-
-    public function getPassword(): ?string
-    {
-        return $this->password_hash;
     }
 
     public function getSalt(): ?string

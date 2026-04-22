@@ -3,7 +3,7 @@
 namespace App\Form;
 
 use App\Entity\Parcelle;
-use App\Entity\User;
+use App\Entity\Users;
 use Symfony\Bridge\Doctrine\Form\Type\EntityType;
 use Symfony\Component\Form\AbstractType;
 use Symfony\Component\Form\Extension\Core\Type\NumberType;
@@ -47,7 +47,7 @@ class ParcelleType extends AbstractType
                 'attr' => ['placeholder' => 'Ex: 10.1815', 'class' => 'form-control'],
             ])
             ->add('user', EntityType::class, [
-                'class' => User::class,
+                'class' => Users::class,
                 'choice_label' => 'email',
                 'label' => 'Utilisateur',
                 'required' => true,

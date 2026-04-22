@@ -1,0 +1,114 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <title>S'inscrire</title>
+    <link rel="stylesheet" href="{{ asset('styles/register.css') }}">
+</head>
+<body>
+
+<div class="app-container">
+    <div class="main-card">
+        
+        <div class="form-box">
+            
+            <h1 class="title-main">S'inscrire</h1>
+            <p class="subtitle">Créez votre compte</p>
+
+            {% if app.flashes %}
+                <div class="flash-messages">
+                    {% for type, messages in app.flashes %}
+                        <div class="alert alert-{{ type }}">
+                            {% for message in messages %}
+                                <p>{{ message }}</p>
+                            {% endfor %}
+                        </div>
+                    {% endfor %}
+                </div>
+            {% endif %}
+
+            {% if errors %}
+                <div class="alert alert-danger">
+                    {% for key, error in errors %}
+                        <p>{{ error }}</p>
+                    {% endfor %}
+                </div>
+            {% endif %}
+
+            <form method="post" action="{{ path('app_register') }}">
+                
+                <div class="form-grid">
+                    
+                    {% set is_pending = app.session.get('pending_user') %}
+
+                    <div class="form-group">
+                        <label>Nom et prénom</label>
+                        <input type="text" name="name" value="{{ is_pending ? is_pending.name : (data.name ?? '') }}" {% if is_pending %}readonly{% endif %} required>
+                    </div>
+
+                    <div class="form-group">
+                        <label>Mot de passe</label>
+                        {% if not is_pending %}
+                            <input type="password" name="password" required>
+                        {% else %}
+                            <div class="alert-success" style="margin-top: 0; padding: 12px; font-size: 14px; background-color: #f0fdf4; border: 1px solid #bbf7d0; color: #166534; border-radius: 8px;">
+                                ✓ Enregistré temporairement.
+                            </div>
+                        {% endif %}
+                    </div>
+
+                    <div class="form-group">
+                        <label>Adresse email</label>
+                        <input type="email" name="email" value="{{ is_pending ? is_pending.email : (data.email ?? '') }}" {% if is_pending %}readonly{% endif %} required>
+                    </div>
+
+                    <div class="form-group">
+                        <label>Confirmer mot de passe</label>
+                        {% if not is_pending %}
+                            <input type="password" name="confirm" required>
+                        {% else %}
+                            <div class="alert-success" style="margin-top: 0; padding: 12px; font-size: 14px; background-color: #f0fdf4; border: 1px solid #bbf7d0; color: #166534; border-radius: 8px;">
+                                ✓ Correspondance vérifiée.
+                            </div>
+                        {% endif %}
+                    </div>
+
+                    <div class="form-group">
+                        <label>Téléphone</label>
+                        <input type="text" name="phone" value="{{ is_pending ? is_pending.phone : (data.phone ?? '') }}" {% if is_pending %}readonly{% endif %} required>
+                    </div>
+                    
+                    <div class="form-group hidden-mobile"></div>
+
+                    <div class="form-group">
+                        <label>Code de vérification</label>
+                        <input type="text" name="otp" maxlength="6" placeholder="Entrez le code reçu" {% if not is_pending %}disabled{% endif %}>
+                    </div>
+                    
+                    <div class="form-group flex-bottom">
+                        <button type="submit" name="action" value="send_otp" class="btn btn-secondary" formnovalidate {% if is_pending %}disabled style="opacity: 0.5; cursor: not-allowed;"{% endif %}>
+                            {% if is_pending %}✓ Code envoyé{% else %}Envoyer code{% endif %}
+                        </button>
+                    </div>
+
+                </div>
+
+                <div class="form-footer">
+                    <button type="submit" name="action" value="register" class="btn btn-primary" {% if not is_pending %}disabled style="opacity: 0.5; cursor: not-allowed;"{% endif %}>
+                        Register
+                    </button>
+                    <p class="login-link">Vous avez déjà un compte ? <a href="{{ path('app_login') }}">Se connecter</a></p>
+                </div>
+                
+            </form>
+        </div>
+
+        <div class="image-box">
+            <img src="{{ asset('images/agrimans_bg.png') }}" alt="Agrimans Background">
+        </div>
+
+    </div>
+</div>
+
+</body>
+</html>

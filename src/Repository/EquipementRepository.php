@@ -19,7 +19,7 @@ class EquipementRepository extends ServiceEntityRepository
 
         if ($query) {
             $qb->andWhere('e.nom LIKE :query OR e.type LIKE :query')
-               ->setParameter('query', '%' . $query . '%');
+                ->setParameter('query', '%' . $query . '%');
         }
 
         $allowedSorts = ['nom', 'prix', 'type', 'disponibilite'];
@@ -38,15 +38,15 @@ class EquipementRepository extends ServiceEntityRepository
     public function getStatistics(): array
     {
         $qb = $this->createQueryBuilder('e');
-        
+
         $total = $qb->select('COUNT(e.id) as total')->getQuery()->getSingleScalarResult();
-        
+
         $dispos = $this->createQueryBuilder('e')
             ->select('e.disponibilite, COUNT(e.id) as count')
             ->groupBy('e.disponibilite')
             ->getQuery()
             ->getResult();
-            
+
         $repartition = [];
         foreach ($dispos as $d) {
             $key = $d['disponibilite'] ?: 'Non défini';
