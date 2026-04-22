@@ -1,0 +1,102 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="UTF-8">
+    <title>Connexion Biométrique - Agrimans</title>
+    <link rel="stylesheet" href="{{ asset('styles/login.css') }}">
+    <script src="https://www.google.com/recaptcha/api.js" async defer></script>
+</head>
+<body>
+
+<div class="app-container">
+    <div class="main-card">
+        <div class="login-box">
+            <p class="welcome">Content de vous revoir</p>
+            <h1>Se connecter</h1>
+
+            <div class="face-login-card" style="background: #f1f5f9; padding: 15px; border-radius: 12px; text-align: center; margin-bottom: 20px;">
+                <video id="video" width="280" height="210" autoplay muted style="border-radius: 8px; background: #000; transform: scaleX(-1);"></video>
+                <p id="face-status" style="font-size: 13px; margin-top: 8px; color: #4a5568;">Initialisation de l'IA...</p>
+                <button type="button" id="btn-face-login" class="btn-login" style="background: #1a6f44; display: none; margin-top: 10px;">
+                    🚀 Connexion par Face ID
+                </button>
+            </div>
+
+            <div style="text-align: center; margin-bottom: 15px; color: #cbd5e0;">— OU —</div>
+
+            <form method="post">
+                <label>Email</label>
+                <input type="email" name="email" placeholder="votre@email.com" required>
+
+                <label>Mot de passe</label>
+                <input type="password" name="password" placeholder="••••••••" required>
+
+                <div class="g-recaptcha" data-sitekey="{{ recaptcha_site_key }}" style="margin-bottom: 15px;"></div>
+
+                {% if error %}<p class="error" style="color: #e53e3e; font-size: 14px;">{{ error }}</p>{% endif %}
+
+                <button type="submit" class="btn-login">Se connecter</button>
+            </form>
+
+            <p class="register">Nouveau ici ? <a href="{{ path('app_register') }}">Créer un compte</a></p>
+        </div>
+
+        <div class="image-box">
+            <img src="{{ asset('images/login.png') }}" alt="Agrimans Login">
+        </div>
+    </div>
+</div>
+
+{# 🛠️ Face-API.js Scripts #}
+<script src="{{ asset('js/face-api.min.js') }}"></script>
+<script>
+    const video = document.getElementById('video');
+    const status = document.getElementById('face-status');
+    const btnFace = document.getElementById('btn-face-login');
+
+    async function loadFaceAuth() {
+        try {
+            const MODEL_URL = '/js/models';
+            await Promise.all([
+                faceapi.nets.ssdMobilenetv1.loadFromUri(MODEL_URL),
+                faceapi.nets.faceLandmark68Net.loadFromUri(MODEL_URL),
+                faceapi.nets.faceRecognitionNet.loadFromUri(MODEL_URL)
+            ]);
+            
+            const stream = await navigator.mediaDevices.getUserMedia({ video: {} });
+            video.srcObject = stream;
+            status.innerText = "Reconnaissance active ✅";
+            btnFace.style.display = "block";
+        } catch (e) {
+            status.innerText = "Caméra ou modèles introuvables ❌";
+        }
+    }
+
+    btnFace.addEventListener('click', async () => {
+        status.innerText = "Analyse en cours... ⏳";
+        const detection = await faceapi.detectSingleFace(video).withFaceLandmarks().withFaceDescriptor();
+        
+        if (detection) {
+            const response = await fetch('{{ path('app_login_face') }}', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ descriptor: Array.from(detection.descriptor) })
+            });
+            const result = await response.json();
+            if (result.success) {
+                status.innerText = "Accès autorisé ! 🎉";
+                window.location.href = result.redirect;
+            } else {
+                status.innerText = result.message + " ❌";
+                status.style.color = "red";
+            }
+        } else {
+            status.innerText = "Visage non détecté ❌";
+        }
+    });
+
+    window.addEventListener('DOMContentLoaded', loadFaceAuth);
+</script>
+
+</body>
+</html>

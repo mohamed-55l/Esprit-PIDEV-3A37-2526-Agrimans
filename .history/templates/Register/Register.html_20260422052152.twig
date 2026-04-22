@@ -1,0 +1,245 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <title>S'inscrire - Agrimans AI</title>
+    <link rel="stylesheet" href="{{ asset('styles/register.css') }}">
+    <style>
+        .face-capture-zone {
+            grid-column: span 2;
+            text-align: center;
+            background: #f1f5f9;
+            padding: 25px;
+            border-radius: 20px;
+            border: 2px solid #e2e8f0;
+            margin: 20px 0;
+            position: relative;
+        }
+        
+        /* Container الكاميرا باش تجي منظمة */
+        .video-container {
+            position: relative;
+            display: inline-block;
+            width: 320px;
+            height: 240px;
+            border-radius: 15px;
+            overflow: hidden;
+            background: #000;
+            box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1);
+        }
+
+        #video {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+            transform: scaleX(-1);
+        }
+
+        /* الـ Canvas اللي باش نرسمو فوقو الـ Mesh */
+        #overlay {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            pointer-events: none;
+            transform: scaleX(-1);
+        }
+
+        .status-badge {
+            display: inline-block;
+            padding: 5px 15px;
+            border-radius: 20px;
+            font-size: 13px;
+            font-weight: 600;
+            margin-top: 10px;
+            background: #cbd5e0;
+            color: #4a5568;
+        }
+
+        .btn-scan {
+            background: #1a202c;
+            color: white;
+            border: none;
+            padding: 12px 30px;
+            border-radius: 10px;
+            font-weight: bold;
+            cursor: pointer;
+            transition: all 0.3s;
+        }
+
+        .btn-scan:hover { background: #2d3748; transform: scale(1.05); }
+        
+        .error-msg { color: #e53e3e; font-size: 14px; margin-top: 10px; font-weight: bold; }
+    </style>
+</head>
+<body>
+
+<div class="app-container">
+    <div class="main-card">
+        <div class="form-box">
+            <h1 class="title-main">S'inscrire</h1>
+            <p class="subtitle">Expérience Biométrique Agrimans</p>
+
+            {% for type, messages in app.flashes %}
+                {% for message in messages %}
+                    <div class="alert alert-{{ type }}">{{ message }}</div>
+                {% endfor %}
+            {% endfor %}
+
+            {% if errors %}
+                <div class="alert alert-danger">
+                    {% for error in errors %}<p>{{ error }}</p>{% endfor %}
+                </div>
+            {% endif %}
+
+            <form method="post" id="registerForm">
+                <div class="form-grid">
+                    {% set is_pending = app.session.get('pending_user') %}
+
+                    <div class="form-group">
+                        <label>Nom et prénom</label>
+                        <input type="text" name="name" value="{{ is_pending ? is_pending.name : (data.name ?? '') }}" {% if is_pending %}readonly{% endif %} required>
+                    </div>
+
+                    <div class="form-group">
+                        <label>Mot de passe</label>
+                        <input type="password" name="password" required>
+                    </div>
+
+                    <div class="form-group">
+                        <label>Adresse email</label>
+                        <input type="email" name="email" value="{{ is_pending ? is_pending.email : (data.email ?? '') }}" {% if is_pending %}readonly{% endif %} required>
+                    </div>
+
+                    <div class="form-group">
+                        <label>Confirmer mot de passe</label>
+                        <input type="password" name="confirm" required>
+                    </div>
+
+                    {# --- MODERN FACE ID SECTION --- #}
+                    <div class="face-capture-zone">
+                        <div class="video-container">
+                            <video id="video" autoplay muted></video>
+                            <canvas id="overlay"></canvas>
+                        </div>
+                        
+                        <div>
+                            <span id="scan-status" class="status-badge">Initialisation... ⏳</span>
+                        </div>
+                        
+                        <div style="margin-top: 15px;">
+                            <button type="button" id="btn-scan" class="btn-scan">
+                                📸 Scanner mon visage
+                            </button>
+                        </div>
+                        
+                        <input type="hidden" name="face_descriptor" id="face_descriptor">
+                    </div>
+
+                    <div class="form-group">
+                        <label>Téléphone</label>
+                        <input type="text" name="phone" value="{{ is_pending ? is_pending.phone : (data.phone ?? '') }}" {% if is_pending %}readonly{% endif %} required>
+                    </div>
+
+                    <div class="form-group">
+                        <label>Code OTP</label>
+                        <input type="text" name="otp" maxlength="6" placeholder="Code reçu" {% if not is_pending %}disabled{% endif %}>
+                    </div>
+                    
+                    <div class="form-group">
+                        <button type="submit" name="action" value="send_otp" class="btn-scan" style="width:100%; background:#0f6b3b;" {% if is_pending %}disabled{% endif %}>
+                            {{ is_pending ? '✓ Code envoyé' : 'Envoyer code' }}
+                        </button>
+                    </div>
+                </div>
+
+                <div class="form-footer" style="margin-top:20px;">
+                    <button type="submit" name="action" value="register" class="btn-scan" style="width:100%; background:#2b6cb0;" {% if not is_pending %}disabled{% endif %}>
+                        Valider l'Inscription
+                    </button>
+                </div>
+            </form>
+        </div>
+
+        <div class="image-box">
+            <img src="{{ asset('images/login.png') }}" alt="Agrimans">
+        </div>
+    </div>
+</div>
+
+<script src="{{ asset('js/face-api.min.js') }}"></script>
+<script>
+    const video = document.getElementById('video');
+    const canvas = document.getElementById('overlay');
+    const statusText = document.getElementById('scan-status');
+    const btnScan = document.getElementById('btn-scan');
+    const descriptorInput = document.getElementById('face_descriptor');
+
+    async function initFaceID() {
+        try {
+            const MODEL_PATH = '/js/models'; 
+            
+            // تحميل الموديلات
+            await Promise.all([
+                faceapi.nets.ssdMobilenetv1.loadFromUri(MODEL_PATH),
+                faceapi.nets.faceLandmark68Net.loadFromUri(MODEL_PATH),
+                faceapi.nets.faceRecognitionNet.loadFromUri(MODEL_PATH)
+            ]);
+
+            const stream = await navigator.mediaDevices.getUserMedia({ video: {} });
+            video.srcObject = stream;
+            
+            statusText.innerText = "IA Prête ✅";
+            statusText.style.background = "#c6f6d5";
+            statusText.style.color = "#22543d";
+
+            // إطلاق الـ Tracking التلقائي
+            startTracking();
+        } catch (err) {
+            statusText.innerText = "Erreur de chargement ❌";
+            statusText.style.background = "#fed7d7";
+        }
+    }
+
+    // وظيفة لرسم الـ Mesh والـ Box في الوقت الحقيقي
+    function startTracking() {
+        const displaySize = { width: video.clientWidth, height: video.clientHeight };
+        faceapi.matchDimensions(canvas, displaySize);
+
+        setInterval(async () => {
+            const detections = await faceapi.detectAllFaces(video, new faceapi.SsdMobilenetv1Options())
+                .withFaceLandmarks();
+            
+            const resizedDetections = faceapi.resizeResults(detections, displaySize);
+            canvas.getContext('2d').clearRect(0, 0, canvas.width, canvas.height);
+            
+            // رسم الـ Box والـ Landmarks (Mesh)
+            faceapi.draw.drawDetections(canvas, resizedDetections);
+            faceapi.draw.drawFaceLandmarks(canvas, resizedDetections);
+        }, 100);
+    }
+
+    btnScan.addEventListener('click', async () => {
+        statusText.innerText = "Analyse en cours... ⏳";
+        
+        const detection = await faceapi.detectSingleFace(video, new faceapi.SsdMobilenetv1Options())
+            .withFaceLandmarks()
+            .withFaceDescriptor();
+
+        if (detection) {
+            descriptorInput.value = JSON.stringify(Array.from(detection.descriptor));
+            statusText.innerText = "Visage Identifié ! ✅";
+            statusText.style.background = "#2f855a";
+            statusText.style.color = "white";
+            btnScan.style.background = "#2f855a";
+            btnScan.innerText = "Scan Réussi ✓";
+        } else {
+            statusText.innerText = "Visage non détecté ❌";
+        }
+    });
+
+    window.addEventListener('DOMContentLoaded', initFaceID);
+</script>
+</body>
+</html>

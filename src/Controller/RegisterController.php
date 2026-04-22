@@ -2,7 +2,7 @@
 
 namespace App\Controller;
 
-use App\Entity\Users; 
+use App\Entity\User; 
 use App\Entity\EmailOtp;
 use App\Enum\UserRole;
 use App\Service\EmailService;
@@ -26,106 +26,88 @@ class RegisterController extends AbstractController
     ): Response {
 
         $errors = [];
+        // نبعثو الـ data ديما باش الـ Inputs ما يفرغوش
         $data = [
-            'name' => '',
-            'email' => '',
-            'phone' => ''
+            'name' => $request->request->get('name', ''),
+            'email' => $request->request->get('email', ''),
+            'phone' => $request->request->get('phone', ''),
         ];
 
-        // Vider la session si l'utilisateur rafraîchit la page (GET)
         if ($request->isMethod('GET')) {
             $session->remove('pending_user');
         }
 
         if ($request->isMethod('POST')) {
-
             $action = $request->request->get('action');
-
-            // Récupérer les données
-            $data['name'] = trim($request->request->get('name'));
-            $data['email'] = trim($request->request->get('email'));
-            $data['phone'] = trim($request->request->get('phone'));
-            
             $password = $request->request->get('password');
             $confirm = $request->request->get('confirm');
             $otpCode = $request->request->get('otp');
+            $faceDescriptorRaw = $request->request->get('face_descriptor');
 
-            // ================= SEND OTP =================
+            // 1️⃣ مرحلة إرسال الـ OTP
             if ($action === 'send_otp') {
-
-                if (empty($data['email'])) {
-                    $errors['email'] = "L'email est requis.";
-                } else {
-                    // 🔴 VÉRIFICATION : Est-ce que l'email existe déjà dans la base ?
-                    $existingUser = $em->getRepository(Users::class)->findOneBy(['email' => $data['email']]);
-                    if ($existingUser) {
-                        $errors['email'] = "Cet email est déjà utilisé. Veuillez vous connecter.";
-                    }
+                // Contrôle de saisie avancé
+                if (!filter_var($data['email'], FILTER_VALIDATE_EMAIL)) {
+                    $errors[] = "L'adresse email n'est pas valide.";
                 }
-
+                if (strlen($password) < 8 || !preg_match('/[A-Z]/', $password) || !preg_match('/[0-9]/', $password)) {
+                    $errors[] = "Le mot de passe doit contenir au moins 8 caractères, une majuscule et un chiffre.";
+                }
                 if ($password !== $confirm) {
-                    $errors['confirm'] = "Les mots de passe ne correspondent pas.";
+                    $errors[] = "Les mots de passe ne correspondent pas.";
+                }
+                if (!preg_match('/^[2459][0-9]{7}$/', $data['phone'])) {
+                    $errors[] = "Le numéro de téléphone doit contenir 8 chiffres (format Tunisien).";
                 }
 
-                // S'il n'y a pas d'erreur, on génère et on envoie l'OTP
                 if (empty($errors)) {
+                    $existingUser = $em->getRepository(User::class)->findOneBy(['email' => $data['email']]); 
+                    if ($existingUser) {
+                        $errors[] = "Cet email est déjà utilisé.";
+                    } else {
+                        $code = (string)random_int(100000, 999999);
+                        $otp = new EmailOtp();
+                        $otp->setEmail($data['email']);
+                        $otp->setCode($code);
+                        $otp->setExpiry(new \DateTime('+5 minutes'));
 
-                    $code = random_int(100000, 999999);
+                        $em->persist($otp);
+                        $em->flush();
 
-                    $otp = new EmailOtp();
-                    $otp->setEmail($data['email']);
-                    $otp->setCode((string)$code);
-                    $otp->setExpiry(new \DateTime('+5 minutes'));
+                        $emailService->sendOtp($data['email'], $code);
+                        $this->addFlash('success', 'Code OTP envoyé à ' . $data['email']);
 
-                    $em->persist($otp);
-                    $em->flush();
-
-                    try {
-                        $emailService->sendOtp($data['email'], (string)$code);
-                        $this->addFlash('success', 'Code OTP envoyé avec succès à votre email.');
-                    } catch (\Exception $e) {
-                        $errors['email'] = "Erreur lors de l'envoi de l'email : " . $e->getMessage();
+                        // نسجلو كل شيء في الـ Session بما فيهم الـ Password مؤقتاً
+                        $session->set('pending_user', array_merge($data, ['password' => $password]));
                     }
-
-                    // Sauvegarder dans la session temporairement
-                    $session->set('pending_user', [
-                        'name' => $data['name'],
-                        'email' => $data['email'],
-                        'phone' => $data['phone'],
-                        'password' => $password
-                    ]);
                 }
             }
 
-            // ================= REGISTER =================
+            // 2️⃣ مرحلة التسجيل النهائي
             if ($action === 'register') {
-
                 $pending = $session->get('pending_user');
 
                 if (!$pending) {
-                    $errors['otp'] = "Veuillez d'abord demander un code OTP.";
-                } elseif ($password !== $confirm) {
-                    $errors['confirm'] = "Les mots de passe ne correspondent pas.";
+                    $errors[] = "Session expirée. Veuillez renvoyer le code OTP.";
+                } elseif (empty($faceDescriptorRaw)) {
+                    $errors[] = "Le scan facial est obligatoire.";
+                } elseif (empty($otpCode)) {
+                    $errors[] = "Le code OTP est requis.";
                 } else {
-
                     $otp = $em->getRepository(EmailOtp::class)->findOneBy([
                         'email' => $pending['email'],
-                        'code' => (string)$otpCode
+                        'code' => $otpCode
                     ]);
 
                     if (!$otp || $otp->getExpiry() < new \DateTime()) {
-                        $errors['otp'] = "Code OTP invalide ou expiré.";
+                        $errors[] = "Code OTP incorrect ou expiré.";
                     } else {
-
-                        $user = new Users(); // 🔴 Création avec la classe Users
+                        $user = new User(); 
                         $user->setFullName($pending['name']);
                         $user->setEmail($pending['email']);
                         $user->setPhone($pending['phone']);
-                        
-                        // Prendre le mot de passe actuel du formulaire
-                        $hashedPassword = $passwordHasher->hashPassword($user, $password);
-                        $user->setPasswordHash($hashedPassword);
-                        
+                        $user->setPasswordHash($passwordHasher->hashPassword($user, $pending['password']));
+                        $user->setFaceDescriptor(json_decode($faceDescriptorRaw, true));
                         $user->setRole(UserRole::USER);
                         $user->setCreatedAt(new \DateTimeImmutable());
 
@@ -133,10 +115,8 @@ class RegisterController extends AbstractController
                         $em->remove($otp);
                         $em->flush();
 
-                        // Nettoyer la session
                         $session->remove('pending_user');
-
-                        // Redirection vers la page de connexion
+                        $this->addFlash('success', 'Inscription réussie ! Vous pouvez vous connecter.');
                         return $this->redirectToRoute('app_login');
                     }
                 }

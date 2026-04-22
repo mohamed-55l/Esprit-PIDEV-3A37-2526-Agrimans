@@ -1,0 +1,130 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <title>Agrimans - Login Pro AI</title>
+    <link rel="stylesheet" href="{{ asset('styles/login.css') }}">
+    <script src="https://www.google.com/recaptcha/api.js" async defer></script>
+    <style>
+        .face-login-card {
+            background: #f1f5f9; border-radius: 20px; padding: 20px;
+            text-align: center; border: 2px solid #0f6b3b; margin-bottom: 20px;
+        }
+        .video-container {
+            position: relative; display: inline-block; width: 260px; height: 195px;
+            border-radius: 12px; overflow: hidden; background: #000;
+        }
+        #video { width: 100%; height: 100%; object-fit: cover; transform: scaleX(-1); }
+        #overlay { position: absolute; top: 0; left: 0; width: 100%; height: 100%; pointer-events: none; transform: scaleX(-1); }
+        .status-badge { display: block; margin-top: 10px; font-size: 13px; font-weight: bold; color: #0f6b3b; }
+    </style>
+</head>
+<body>
+
+<div class="app-container">
+    <div class="main-card">
+        <div class="login-box">
+            <p style="font-size: 11px; color: #718096; letter-spacing: 1px;">SÉCURITÉ AGRIMANS</p>
+            <h1 style="margin-bottom: 20px;">Connexion</h1>
+
+            <div class="face-login-card">
+                <div class="video-container">
+                    <video id="video" autoplay muted></video>
+                    <canvas id="overlay"></canvas>
+                </div>
+                <span id="face-status" class="status-badge">Initialisation de l'IA... ⏳</span>
+                <button type="button" id="btn-face-login" class="btn-login" style="background: #1a1a1a; display: none; margin-top: 10px; width:100%; color:white; padding:12px; border-radius:10px; border:none; cursor:pointer;">
+                    🚀 Scanner et Entrer
+                </button>
+            </div>
+
+            <div style="text-align: center; color: #cbd5e0; margin: 10px 0;">— OU —</div>
+
+            <form method="post">
+                <input type="email" name="email" placeholder="Email" required style="width:100%; padding:12px; border-radius:10px; border:1px solid #ddd; margin-bottom:10px;">
+                <input type="password" name="password" placeholder="Mot de passe" required style="width:100%; padding:12px; border-radius:10px; border:1px solid #ddd; margin-bottom:10px;">
+                <div class="g-recaptcha" data-sitekey="{{ recaptcha_site_key }}" style="transform:scale(0.85); transform-origin:center; margin-bottom:10px;"></div>
+                {% if error %}<p style="color:red; font-size:12px; text-align:center;">{{ error }}</p>{% endif %}
+                <button type="submit" style="width:100%; background:#0f6b3b; color:white; border:none; padding:12px; border-radius:10px; font-weight:bold; cursor:pointer;">
+                    Connexion Classique
+                </button>
+            </form>
+        </div>
+
+        <div class="image-box" style="flex:1; background:#0f6b3b; display:flex; overflow:hidden;">
+            <img src="{{ asset('images/login.png') }}" alt="Agri" style="width:100%; height:100%; object-fit:cover;">
+        </div>
+    </div>
+</div>
+
+<script src="{{ asset('js/face-api.min.js') }}"></script>
+<script>
+    const video = document.getElementById('video');
+    const canvas = document.getElementById('overlay');
+    const status = document.getElementById('face-status');
+    const btnFace = document.getElementById('btn-face-login');
+
+    async function initAI() {
+        try {
+            const MODEL_PATH = '/js/models';
+            await Promise.all([
+                faceapi.nets.ssdMobilenetv1.loadFromUri(MODEL_PATH),
+                faceapi.nets.faceLandmark68Net.loadFromUri(MODEL_PATH),
+                faceapi.nets.faceRecognitionNet.loadFromUri(MODEL_PATH)
+            ]);
+            
+            const stream = await navigator.mediaDevices.getUserMedia({ video: {} });
+            video.srcObject = stream;
+            
+            status.innerText = "IA Active ✅";
+            btnFace.style.display = "block";
+            
+            // 🚀 Start drawing landmarks immediately to help the user position themselves
+            startTracking();
+        } catch (e) {
+            status.innerText = "Erreur AI ❌";
+        }
+    }
+
+    function startTracking() {
+        const displaySize = { width: video.clientWidth, height: video.clientHeight };
+        faceapi.matchDimensions(canvas, displaySize);
+
+        setInterval(async () => {
+            // Use SSD Mobilenet for high precision tracking
+            const detections = await faceapi.detectAllFaces(video, new faceapi.SsdMobilenetv1Options({ minConfidence: 0.5 }))
+                .withFaceLandmarks();
+            
+            const resizedResults = faceapi.resizeResults(detections, displaySize);
+            canvas.getContext('2d').clearRect(0, 0, canvas.width, canvas.height);
+            
+            // Draw visual feedback (Box + Mesh)
+            faceapi.draw.drawDetections(canvas, resizedResults);
+            faceapi.draw.drawFaceLandmarks(canvas, resizedResults);
+        }, 100);
+    }
+
+    btnFace.addEventListener('click', async () => {
+        status.innerText = "Identification biométrique... ⏳";
+        const detection = await faceapi.detectSingleFace(video, new faceapi.SsdMobilenetv1Options())
+            .withFaceLandmarks()
+            .withFaceDescriptor();
+
+        if (detection) {
+            const response = await fetch('{{ path('app_login_face') }}', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ descriptor: Array.from(detection.descriptor) })
+            });
+            const result = await response.json();
+            if (result.success) window.location.href = result.redirect;
+            else status.innerText = result.message + " ❌";
+        } else {
+            status.innerText = "Visage non reconnu ❌";
+        }
+    });
+
+    window.addEventListener('DOMContentLoaded', initAI);
+</script>
+</body>
+</html>

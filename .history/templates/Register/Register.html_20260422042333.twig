@@ -1,0 +1,198 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <title>S'inscrire - Agrimans Face ID</title>
+    <link rel="stylesheet" href="{{ asset('styles/register.css') }}">
+    <style>
+        /* ستايل خفيف باش الكاميرا تجي في الوسط ومنظمة */
+        .face-capture-zone {
+            grid-column: span 2;
+            text-align: center;
+            background: #f8fafc;
+            padding: 20px;
+            border-radius: 12px;
+            border: 2px dashed #cbd5e0;
+            margin: 15px 0;
+        }
+        #video {
+            border-radius: 8px;
+            background: #000;
+            box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+            transform: scaleX(-1); /* تأثير المراة */
+        }
+        .status-msg {
+            font-size: 14px;
+            margin-top: 10px;
+            font-weight: 500;
+        }
+    </style>
+</head>
+<body>
+
+<div class="app-container">
+    <div class="main-card">
+        <div class="form-box">
+            <h1 class="title-main">S'inscrire</h1>
+            <p class="subtitle">Créez votre compte avec Face ID</p>
+
+            {# Flash Messages #}
+            {% for type, messages in app.flashes %}
+                {% for message in messages %}
+                    <div class="alert alert-{{ type }}">{{ message }}</div>
+                {% endfor %}
+            {% endfor %}
+
+            {# Errors #}
+            {% if errors %}
+                <div class="alert alert-danger">
+                    {% for error in errors %}<p>{{ error }}</p>{% endfor %}
+                </div>
+            {% endif %}
+
+            <form method="post" id="registerForm">
+                <div class="form-grid">
+                    {% set is_pending = app.session.get('pending_user') %}
+
+                    <div class="form-group">
+                        <label>Nom et prénom</label>
+                        <input type="text" name="name" value="{{ is_pending ? is_pending.name : (data.name ?? '') }}" {% if is_pending %}readonly{% endif %} required>
+                    </div>
+
+                    <div class="form-group">
+                        <label>Mot de passe</label>
+                        <input type="password" name="password" required>
+                    </div>
+
+                    <div class="form-group">
+                        <label>Adresse email</label>
+                        <input type="email" name="email" value="{{ is_pending ? is_pending.email : (data.email ?? '') }}" {% if is_pending %}readonly{% endif %} required>
+                    </div>
+
+                    <div class="form-group">
+                        <label>Confirmer mot de passe</label>
+                        <input type="password" name="confirm" required>
+                    </div>
+
+                    {# --- FACE ID SECTION --- #}
+                    <div class="face-capture-zone">
+                        <label style="font-weight: bold; display: block; margin-bottom: 10px;">Vérification Biométrique</label>
+                        <video id="video" width="320" height="240" autoplay muted></video>
+                        
+                        <div style="margin-top: 15px;">
+                            <button type="button" id="btn-scan" class="btn btn-secondary" style="width: auto; padding: 0 25px; margin-top:0;">
+                                📸 Scanner mon visage
+                            </button>
+                        </div>
+                        
+                        <p id="scan-status" class="status-msg">Initialisation... ⏳</p>
+                        
+                        {# Hidden input for face data #}
+                        <input type="hidden" name="face_descriptor" id="face_descriptor">
+                    </div>
+                    {# ------------------------ #}
+
+                    <div class="form-group">
+                        <label>Téléphone</label>
+                        <input type="text" name="phone" value="{{ is_pending ? is_pending.phone : (data.phone ?? '') }}" {% if is_pending %}readonly{% endif %} required>
+                    </div>
+
+                    <div class="form-group">
+                        <label>Code OTP</label>
+                        <input type="text" name="otp" maxlength="6" placeholder="Code reçu par email" {% if not is_pending %}disabled{% endif %}>
+                    </div>
+                    
+                    <div class="form-group flex-bottom">
+                        <button type="submit" name="action" value="send_otp" class="btn btn-secondary" formnovalidate {% if is_pending %}disabled style="opacity: 0.5;"{% endif %}>
+                            {{ is_pending ? '✓ Code envoyé' : 'Envoyer code' }}
+                        </button>
+                    </div>
+                </div>
+
+                <div class="form-footer">
+                    <button type="submit" name="action" value="register" class="btn btn-primary" {% if not is_pending %}disabled style="opacity: 0.5;"{% endif %}>
+                        S'inscrire
+                    </button>
+                    <p class="login-link">Déjà inscrit ? <a href="{{ path('app_login') }}">Se connecter</a></p>
+                </div>
+            </form>
+        </div>
+
+        <div class="image-box">
+            <img src="{{ asset('images/login.png') }}" alt="Agrimans">
+        </div>
+    </div>
+</div>
+
+{# --- SCRIPTS --- #}
+{# 1. تحميل المكتبة أولاً بدون defer #}
+<script src="{{ asset('js/face-api.min.js') }}"></script>
+
+{# 2. كود الـ Logic #}
+<script>
+    const video = document.getElementById('video');
+    const btnScan = document.getElementById('btn-scan');
+    const statusText = document.getElementById('scan-status');
+    const descriptorInput = document.getElementById('face_descriptor');
+
+    async function initFaceID() {
+        statusText.innerText = "Chargement des modèles AI... ⏳";
+        try {
+            const MODEL_PATH = '/js/models'; 
+            
+            // تحميل الموديلات
+            await Promise.all([
+                faceapi.nets.tinyFaceDetector.loadFromUri(MODEL_PATH),
+                faceapi.nets.faceLandmark68Net.loadFromUri(MODEL_PATH),
+                faceapi.nets.faceRecognitionNet.loadFromUri(MODEL_PATH)
+            ]);
+
+            console.log("Face-api models loaded ✅");
+
+            // طلب الكاميرا
+            const stream = await navigator.mediaDevices.getUserMedia({ video: {} });
+            video.srcObject = stream;
+            
+            statusText.innerText = "Prêt pour le scan ✅";
+            statusText.style.color = "#2b6cb0";
+        } catch (err) {
+            console.error("Erreur Face-ID:", err);
+            statusText.innerText = "Erreur: Accès caméra refusé ou modèles manquants ❌";
+            statusText.style.color = "#e53e3e";
+        }
+    }
+
+    // إطلاق الـ Init كي تحضر الـ Page
+    window.addEventListener('DOMContentLoaded', initFaceID);
+
+    // كود الـ Scan
+    btnScan.addEventListener('click', async () => {
+        if (!video.srcObject) {
+            alert("La caméra n'est pas activée.");
+            return;
+        }
+
+        statusText.innerText = "Analyse du visage... ⏳";
+        statusText.style.color = "#d69e2e";
+
+        const detections = await faceapi.detectSingleFace(video, new faceapi.TinyFaceDetectorOptions())
+            .withFaceLandmarks()
+            .withFaceDescriptor();
+
+        if (detections) {
+            const descriptor = Array.from(detections.descriptor);
+            descriptorInput.value = JSON.stringify(descriptor);
+            
+            statusText.innerText = "Visage enregistré avec succès ! ✅";
+            statusText.style.color = "#2f855a";
+            btnScan.style.background = "#2f855a";
+            btnScan.innerText = "📸 Visage Scanné";
+        } else {
+            statusText.innerText = "Visage non détecté. Cadrez bien votre visage ❌";
+            statusText.style.color = "#e53e3e";
+        }
+    });
+</script>
+
+</body>
+</html>

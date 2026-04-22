@@ -1,0 +1,99 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="UTF-8">
+    <title>AGRI Samir - Modern Authentication</title>
+    <link rel="stylesheet" href="{{ asset('styles/login.css') }}">
+    <script src="https://www.google.com/recaptcha/api.js" async defer></script>
+</head>
+<body>
+
+<div class="app-container">
+    <div class="main-card">
+        <div class="login-box">
+            <p class="welcome">Connexion Intelligente</p>
+            <h1>Bienvenue</h1>
+
+            <div class="face-auth-wrapper">
+                <div class="video-container">
+                    <video id="video" autoplay muted></video>
+                    <canvas id="overlay"></canvas>
+                </div>
+                <div id="status" class="status-indicator">Initialisation des modèles AI...</div>
+                <button type="button" id="btn-scan" class="btn-login face-btn" style="display:none;">
+                    🔍 Vérifier l'identité
+                </button>
+            </div>
+
+            <div class="divider"><span>OU</span></div>
+
+            <form method="post">
+                <input type="email" name="email" placeholder="Email" required>
+                <input type="password" name="password" placeholder="Mot de passe" required>
+                <div class="g-recaptcha" data-sitekey="{{ recaptcha_site_key }}"></div>
+                {% if error %}<p class="error-msg">{{ error }}</p>{% endif %}
+                <button type="submit" class="btn-login">Connexion Email</button>
+            </form>
+        </div>
+        <div class="image-box">
+            <img src="{{ asset('images/login.png') }}" alt="Agri">
+        </div>
+    </div>
+</div>
+
+<script src="{{ asset('js/face-api.min.js') }}"></script>
+<script>
+    const video = document.getElementById('video');
+    const canvas = document.getElementById('overlay');
+    const status = document.getElementById('status');
+    const btn = document.getElementById('btn-scan');
+
+    async function setupAI() {
+        const MODELS = '/js/models';
+        await Promise.all([
+            faceapi.nets.ssdMobilenetv1.loadFromUri(MODELS), // Pro Model
+            faceapi.nets.faceLandmark68Net.loadFromUri(MODELS),
+            faceapi.nets.faceRecognitionNet.loadFromUri(MODELS)
+        ]);
+        
+        const stream = await navigator.mediaDevices.getUserMedia({ video: {} });
+        video.srcObject = stream;
+
+        // Draw green box around face every 100ms
+        video.addEventListener('play', () => {
+            const displaySize = { width: video.width, height: video.height };
+            faceapi.matchDimensions(canvas, displaySize);
+            
+            setInterval(async () => {
+                const detections = await faceapi.detectAllFaces(video).withFaceLandmarks();
+                const resizedDetections = faceapi.resizeResults(detections, displaySize);
+                canvas.getContext('2d').clearRect(0, 0, canvas.width, canvas.height);
+                faceapi.draw.drawDetections(canvas, resizedDetections);
+            }, 100);
+
+            status.innerText = "IA Active: Prêt pour le scan ✅";
+            btn.style.display = "block";
+        });
+    }
+
+    btn.addEventListener('click', async () => {
+        status.innerText = "Analyse biométrique... ⏳";
+        const result = await faceapi.detectSingleFace(video).withFaceLandmarks().withFaceDescriptor();
+        
+        if (result) {
+            const response = await fetch('{{ path('app_login_face') }}', {
+                method: 'POST',
+                body: JSON.stringify({ descriptor: Array.from(result.descriptor) })
+            });
+            const data = await response.json();
+            if (data.success) window.location.href = data.redirect;
+            else status.innerText = data.message + " ❌";
+        } else {
+            status.innerText = "Positionnez-vous face à la caméra ❌";
+        }
+    });
+
+    window.addEventListener('DOMContentLoaded', setupAI);
+</script>
+</body>
+</html>
