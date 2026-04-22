@@ -38,7 +38,6 @@
     "knplabs/knp-paginator-bundle": {
         "version": "v6.10.0"
     },
-<<<<<<< HEAD
     "nelmio/cors-bundle": {
         "version": "2.6",
         "recipe": {
@@ -51,8 +50,6 @@
             "./config/packages/nelmio_cors.yaml"
         ]
     },
-=======
->>>>>>> 45843e398e8d6f4eeb7979c39a74bfa3f8a8ef4e
     "phpunit/phpunit": {
         "version": "9.6",
         "recipe": {
@@ -246,7 +243,7 @@
         ]
     },
     "symfony/stimulus-bundle": {
-        "version": "2.34",
+        "version": "2.35",
         "recipe": {
             "repo": "github.com/symfony/recipes",
             "branch": "main",
@@ -289,7 +286,7 @@
         "version": "v2.35.0"
     },
     "symfony/ux-turbo": {
-        "version": "2.34",
+        "version": "2.35",
         "recipe": {
             "repo": "github.com/symfony/recipes",
             "branch": "main",
@@ -320,18 +317,6 @@
         "files": [
             "./config/packages/web_profiler.yaml",
             "./config/routes/web_profiler.yaml"
-        ]
-    },
-    "symfony/webapp-pack": {
-        "version": "1.4",
-        "recipe": {
-            "repo": "github.com/symfony/recipes",
-            "branch": "main",
-            "version": "1.0",
-            "ref": "b9e6cc8e7b6069d0e8a816665809a423864eb4dd"
-        },
-        "files": [
-            "./config/packages/messenger.yaml"
         ]
     },
     "twig/extra-bundle": {
