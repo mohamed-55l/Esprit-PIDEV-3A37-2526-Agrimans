@@ -66,4 +66,52 @@
         transform: translateY(-2px);
     }
 </style>
+
+{% block javascripts %}
+    <script>
+        let map;
+        let marker;
+
+        function initMap() {
+            var latInput = document.getElementById('parcelle_latitude');
+            var lngInput = document.getElementById('parcelle_longitude');
+            
+            // Default center (Tunisia)
+            var startLat = latInput.value ? parseFloat(latInput.value) : 36.8065;
+            var startLng = lngInput.value ? parseFloat(lngInput.value) : 10.1815;
+
+            var startLocation = { lat: startLat, lng: startLng };
+
+            map = new google.maps.Map(document.getElementById('form-map'), {
+                zoom: 6,
+                center: startLocation,
+                mapTypeId: 'satellite'
+            });
+
+            if (latInput.value && lngInput.value) {
+                marker = new google.maps.Marker({
+                    position: startLocation,
+                    map: map
+                });
+            }
+
+            map.addListener('click', function(e) {
+                var lat = e.latLng.lat();
+                var lng = e.latLng.lng();
+                
+                latInput.value = lat.toFixed(6);
+                lngInput.value = lng.toFixed(6);
+
+                if (marker) {
+                    marker.setMap(null);
+                }
+                marker = new google.maps.Marker({
+                    position: e.latLng,
+                    map: map
+                });
+            });
+        }
+    </script>
+    <script async defer src="https://maps.googleapis.com/maps/api/js?key=AIzaSyDnah4CRHAH0TZvd1OewUBULi3RMWlqL0w&callback=initMap"></script>
+{% endblock %}
 {% endblock %}

@@ -12,6 +12,8 @@ use App\Repository\UsersRepository;
 use App\Entity\Users;
 use App\Enum\UserRole;
 use Doctrine\ORM\EntityManagerInterface;
+use App\Repository\CultureRepository;
+use App\Repository\ParcelleRepository;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
@@ -221,6 +223,34 @@ class AdminController extends AbstractController
         return $this->render('Update/updateuser.html.twig', [
             'user' => $user,
             'errors' => $errors
+        ]);
+    }
+
+    #[Route('/view-parcelles-cultures', name: 'app_admin_view_parcelles_cultures')]
+    public function viewParcellesCultures(Request $request, ParcelleRepository $parcelleRepository, CultureRepository $cultureRepository, \Knp\Component\Pager\PaginatorInterface $paginator): Response
+    {
+        $parcellesQuery = $parcelleRepository->findAll();
+        $culturesQuery = $cultureRepository->findAll();
+
+        $parcelles = $paginator->paginate(
+            $parcellesQuery,
+            $request->query->getInt('page_p', 1),
+            5,
+            ['pageParameterName' => 'page_p']
+        );
+
+        $cultures = $paginator->paginate(
+            $culturesQuery,
+            $request->query->getInt('page_c', 1),
+            5,
+            ['pageParameterName' => 'page_c']
+        );
+
+        return $this->render('admin/index.html.twig', [
+            'controller_name' => 'AdminController',
+            'view_mode' => 'parcelles_cultures',
+            'parcelles' => $parcelles,
+            'cultures' => $cultures,
         ]);
     }
 }

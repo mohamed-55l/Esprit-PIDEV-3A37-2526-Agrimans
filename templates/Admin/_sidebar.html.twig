@@ -33,6 +33,11 @@
         <a href="{{ path('admin_review_index') }}" class="nav-item {{ active == 'reviews' ? 'active' : '' }}">
             <i class="fa-solid fa-star"></i> Avis & Reviews
         </a>
+
+        <div class="nav-section">Agriculture</div>
+        <a href="{{ path('app_admin_view_parcelles_cultures') }}" class="nav-item {{ active == 'agriculture' ? 'active' : '' }}">
+            <i class="fa-solid fa-eye"></i> Parcelle & Culture
+        </a>
     </nav>
 
     <div class="sidebar-footer">
