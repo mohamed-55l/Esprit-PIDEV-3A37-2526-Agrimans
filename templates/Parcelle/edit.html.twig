@@ -2,10 +2,6 @@
 
 {% block title %}Modifier la Parcelle | Agrimans{% endblock %}
 
-{% block stylesheets %}
-    <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" integrity="sha256-p4NxAoJBhIIN+hmNHrzRCf9tD/miZyoHS5obTRR9BMY=" crossorigin=""/>
-{% endblock %}
-
 {% block body %}
 <div class="content-section" style="max-width: 800px; margin: 2rem auto;">
     <div class="page-header" style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 2rem;">
@@ -75,12 +71,13 @@
         transform: translateY(-2px);
     }
 </style>
-</style>
 
 {% block javascripts %}
-    <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js" integrity="sha256-20nQCchB9co0qIjJZRGuk2/Z9VM+kNiyxNV1lvTlZBo=" crossorigin=""></script>
     <script>
-        document.addEventListener('DOMContentLoaded', function() {
+        let map;
+        let marker;
+
+        function initMap() {
             var latInput = document.getElementById('parcelle_latitude');
             var lngInput = document.getElementById('parcelle_longitude');
             
@@ -88,31 +85,38 @@
             var startLat = latInput.value ? parseFloat(latInput.value) : 36.8065;
             var startLng = lngInput.value ? parseFloat(lngInput.value) : 10.1815;
 
-            var map = L.map('form-map').setView([startLat, startLng], 6);
+            var startLocation = { lat: startLat, lng: startLng };
 
-            L.tileLayer('https://tile.openstreetmap.org/{z}/{x}/{y}.png', {
-                maxZoom: 19,
-                attribution: '&copy; OpenStreetMap'
-            }).addTo(map);
+            map = new google.maps.Map(document.getElementById('form-map'), {
+                zoom: 6,
+                center: startLocation,
+                mapTypeId: 'satellite'
+            });
 
-            var marker;
             if (latInput.value && lngInput.value) {
-                marker = L.marker([startLat, startLng]).addTo(map);
+                marker = new google.maps.Marker({
+                    position: startLocation,
+                    map: map
+                });
             }
 
-            map.on('click', function(e) {
-                var lat = e.latlng.lat.toFixed(6);
-                var lng = e.latlng.lng.toFixed(6);
+            map.addListener('click', function(e) {
+                var lat = e.latLng.lat();
+                var lng = e.latLng.lng();
                 
-                latInput.value = lat;
-                lngInput.value = lng;
+                latInput.value = lat.toFixed(6);
+                lngInput.value = lng.toFixed(6);
 
                 if (marker) {
-                    map.removeLayer(marker);
+                    marker.setMap(null);
                 }
-                marker = L.marker([lat, lng]).addTo(map);
+                marker = new google.maps.Marker({
+                    position: e.latLng,
+                    map: map
+                });
             });
-        });
+        }
     </script>
+    <script async defer src="https://maps.googleapis.com/maps/api/js?key=AIzaSyDnah4CRHAH0TZvd1OewUBULi3RMWlqL0w&callback=initMap"></script>
 {% endblock %}
 {% endblock %}
