@@ -19,7 +19,7 @@ class EquipementRepository extends ServiceEntityRepository
 
         if ($query) {
             $qb->andWhere('e.nom LIKE :query OR e.type LIKE :query')
-               ->setParameter('query', '%' . $query . '%');
+                ->setParameter('query', '%' . $query . '%');
         }
 
         $allowedSorts = ['nom', 'prix', 'type', 'disponibilite'];
@@ -38,15 +38,15 @@ class EquipementRepository extends ServiceEntityRepository
     public function getStatistics(): array
     {
         $qb = $this->createQueryBuilder('e');
-        
+
         $total = $qb->select('COUNT(e.id) as total')->getQuery()->getSingleScalarResult();
-        
+
         $dispos = $this->createQueryBuilder('e')
             ->select('e.disponibilite, COUNT(e.id) as count')
             ->groupBy('e.disponibilite')
             ->getQuery()
             ->getResult();
-            
+
         $repartition = [];
         foreach ($dispos as $d) {
             $key = $d['disponibilite'] ?: 'Non défini';
@@ -57,5 +57,39 @@ class EquipementRepository extends ServiceEntityRepository
             'total' => $total,
             'repartition' => $repartition
         ];
+    }
+
+    /**
+     * Récupère les équipements assignés à un utilisateur spécifique
+     */
+    public function findByUser(\App\Entity\Users $user, ?string $query = null): array
+    {
+        $qb = $this->createQueryBuilder('e')
+            ->andWhere('e.user = :user')
+            ->setParameter('user', $user);
+
+        if ($query) {
+            $qb->andWhere('e.nom LIKE :query OR e.type LIKE :query')
+               ->setParameter('query', '%' . $query . '%');
+        }
+
+        return $qb->orderBy('e.nom', 'ASC')
+            ->getQuery()
+            ->getResult();
+    }
+
+    /**
+     * Récupère tous les équipements en chargeant l’utilisateur associé par LEFT JOIN.
+     * Cela évite les erreurs de proxy Doctrine quand un user_id pointe vers
+     * un utilisateur supprimé (retourne null au lieu de lever une exception).
+     */
+    public function findAllWithUser(): array
+    {
+        return $this->createQueryBuilder('e')
+            ->leftJoin('e.user', 'u')
+            ->addSelect('u')
+            ->orderBy('e.nom', 'ASC')
+            ->getQuery()
+            ->getResult();
     }
 }

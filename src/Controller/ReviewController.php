@@ -53,7 +53,7 @@ class ReviewController extends AbstractController
         if ($form->isSubmitted() && $form->isValid()) {
             // Remplissage automatique comme demandé
             $review->setDateReview(new \DateTime());
-            $review->setUser($entityManager->getReference(\App\Entity\User::class, 1)); // Utilisateur fixé à 1
+            $review->setUser($entityManager->getReference(\App\Entity\Users::class, 1)); // Utilisateur fixé à 1
 
             $entityManager->persist($review);
             $entityManager->flush();

@@ -66,4 +66,23 @@ class ReviewRepository extends ServiceEntityRepository
             'distribution' => $notesDistribution
         ];
     }
+
+    /**
+     * Récupère les reviews rédigées par un utilisateur spécifique
+     */
+    public function findByUser(\App\Entity\Users $user, ?string $query = null): array
+    {
+        $qb = $this->createQueryBuilder('r')
+            ->andWhere('r.user = :user')
+            ->setParameter('user', $user);
+
+        if ($query) {
+            $qb->andWhere('r.commentaire LIKE :query')
+               ->setParameter('query', '%' . $query . '%');
+        }
+
+        return $qb->orderBy('r.date_review', 'DESC')
+            ->getQuery()
+            ->getResult();
+    }
 }

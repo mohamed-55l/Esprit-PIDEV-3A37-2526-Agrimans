@@ -2,7 +2,7 @@
 
 namespace App\Controller;
 
-use App\Entity\User; 
+use App\Entity\Users;
 use App\Entity\EmailOtp;
 use App\Enum\UserRole;
 use App\Service\EmailService;
@@ -61,7 +61,7 @@ class RegisterController extends AbstractController
                 }
 
                 if (empty($errors)) {
-                    $existingUser = $em->getRepository(User::class)->findOneBy(['email' => $data['email']]); 
+                    $existingUser = $em->getRepository(Users::class)->findOneBy(['email' => $data['email']]);
                     if ($existingUser) {
                         $errors[] = "Cet email est déjà utilisé.";
                     } else {
@@ -102,7 +102,7 @@ class RegisterController extends AbstractController
                     if (!$otp || $otp->getExpiry() < new \DateTime()) {
                         $errors[] = "Code OTP incorrect ou expiré.";
                     } else {
-                        $user = new User(); 
+                        $user = new Users();
                         $user->setFullName($pending['name']);
                         $user->setEmail($pending['email']);
                         $user->setPhone($pending['phone']);

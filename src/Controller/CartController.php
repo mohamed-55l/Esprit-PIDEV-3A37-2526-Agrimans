@@ -2,11 +2,14 @@
 
 namespace App\Controller;
 
-use App\Entity\CartItem;
 use App\Entity\Product;
 use App\Repository\CartItemRepository;
-use App\Service\CartService;
+use App\Service\SessionCartService;
+use App\Service\ExchangeRateService;
+use Stripe\Stripe;
+use Stripe\Checkout\Session;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
+use Symfony\Component\Routing\Generator\UrlGeneratorInterface;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Attribute\Route;
@@ -17,25 +20,51 @@ final class CartController extends AbstractController
     private const DEFAULT_BUYER_ID = 1;
 
     #[Route(name: 'app_marketplace_cart', methods: ['GET'])]
-    public function index(CartService $cartService): Response
+    public function index(SessionCartService $sessionCartService, \App\Repository\ProductRepository $productRepository, \App\Repository\ProductBundleRepository $bundleRepository): Response
     {
-        $cart = $cartService->getOrCreateCart(self::DEFAULT_BUYER_ID);
+        $sessionItems = $sessionCartService->getCart();
+        $enrichedItems = [];
+
+        foreach ($sessionItems as $key => $item) {
+            if (isset($item['isBundle']) && $item['isBundle']) {
+                $bundle = $bundleRepository->find($item['id']);
+                if ($bundle) {
+                    $enrichedItems[] = [
+                        'id' => $key,
+                        'isBundle' => true,
+                        'bundle' => $bundle,
+                        'quantity' => $item['quantity'],
+                        'lineTotal' => $item['price'] * $item['quantity']
+                    ];
+                }
+            } else {
+                $product = $productRepository->find($item['id']);
+                if ($product) {
+                    $enrichedItems[] = [
+                        'id' => $key,
+                        'isBundle' => false,
+                        'product' => $product,
+                        'quantity' => $item['quantity'],
+                        'lineTotal' => $item['price'] * $item['quantity']
+                    ];
+                }
+            }
+        }
 
         return $this->render('cart/index.html.twig', [
-            'cart' => $cart,
-            'items' => $cart->getItems(),
-            'total' => $cart->getTotal(),
+            'items' => $enrichedItems,
+            'total' => $sessionCartService->getCartTotal(),
         ]);
     }
 
     #[Route('/add/{id}', name: 'app_marketplace_cart_add', methods: ['POST'])]
-    public function addToCart(Request $request, Product $product, CartService $cartService): Response
+    public function addToCart(Request $request, Product $product, SessionCartService $sessionCartService): Response
     {
         $quantity = (int) $request->request->get('quantity', 1);
 
         try {
-            $cartService->addToCart(self::DEFAULT_BUYER_ID, $product, $quantity);
-            $this->addFlash('success', "{$quantity} kg de '{$product->getName()}' ajoutÃ©(s) au panier !");
+            $sessionCartService->addToCart($product->getId(), $product->getPrice(), $product->getName(), $quantity);
+            $this->addFlash('success', "{$quantity} kg de '{$product->getName()}' ajouté(s) au panier !");
         } catch (\InvalidArgumentException $e) {
             $this->addFlash('error', $e->getMessage());
         }
@@ -44,42 +73,98 @@ final class CartController extends AbstractController
     }
 
     #[Route('/remove/{id}', name: 'app_marketplace_cart_remove', methods: ['POST'])]
-    public function removeItem(Request $request, CartItem $cartItem, CartService $cartService): Response
+    public function removeItem(Request $request, string $id, SessionCartService $sessionCartService): Response
     {
-        if ($this->isCsrfTokenValid('remove' . $cartItem->getId(), $request->request->get('_token'))) {
-            $cartService->removeFromCart($cartItem);
-            $this->addFlash('success', 'Article retirÃ© du panier.');
+        if ($this->isCsrfTokenValid('remove' . $id, $request->request->get('_token'))) {
+            $sessionCartService->removeFromCart($id);
+            $this->addFlash('success', 'Article retiré du panier.');
         }
 
         return $this->redirectToRoute('app_marketplace_cart');
     }
 
     #[Route('/clear', name: 'app_marketplace_cart_clear', methods: ['POST'])]
-    public function clearCart(CartService $cartService): Response
+    public function clearCart(SessionCartService $sessionCartService): Response
     {
-        $cartService->clearCart(self::DEFAULT_BUYER_ID);
-        $this->addFlash('success', 'Panier vidÃ©.');
+        $sessionCartService->clearCart();
+        $this->addFlash('success', 'Panier vidé.');
 
         return $this->redirectToRoute('app_marketplace_cart');
     }
 
     #[Route('/checkout', name: 'app_marketplace_cart_checkout', methods: ['POST'])]
-    public function checkout(CartService $cartService): Response
+    public function checkout(SessionCartService $sessionCartService, ExchangeRateService $exchangeRateService): Response
     {
-        try {
-            $result = $cartService->checkout(self::DEFAULT_BUYER_ID);
-
-            $this->addFlash('success', sprintf(
-                'Commande validÃ©e ! Total: %.2f DT (%d article(s)).',
-                $result['total'],
-                count($result['items'])
-            ));
-        } catch (\InvalidArgumentException $e) {
-            $this->addFlash('error', $e->getMessage());
+        $cart = $sessionCartService->getCart();
+        if (empty($cart)) {
+            $this->addFlash('error', 'Votre panier est vide.');
             return $this->redirectToRoute('app_marketplace_cart');
         }
 
+        Stripe::setApiKey($this->getParameter('stripe_secret_key'));
+
+        $lineItems = [];
+        foreach ($cart as $item) {
+            // Convert price to EUR for Stripe
+            $priceEur = $exchangeRateService->convert($item['price'], 'EUR');
+            
+            $lineItems[] = [
+                'price_data' => [
+                    'currency' => 'eur',
+                    'product_data' => [
+                        'name' => $item['name'],
+                    ],
+                    'unit_amount' => (int) round($priceEur * 100), // Stripe expects cents for EUR
+                ],
+                'quantity' => $item['quantity'],
+            ];
+        }
+
+        $session = Session::create([
+            'payment_method_types' => ['card'],
+            'line_items' => $lineItems,
+            'mode' => 'payment',
+            'success_url' => $this->generateUrl('app_marketplace_cart_success', [], UrlGeneratorInterface::ABSOLUTE_URL),
+            'cancel_url' => $this->generateUrl('app_marketplace_cart_cancel', [], UrlGeneratorInterface::ABSOLUTE_URL),
+        ]);
+
+        return $this->redirect($session->url, 303);
+    }
+
+    #[Route('/checkout/success', name: 'app_marketplace_cart_success', methods: ['GET'])]
+    public function checkoutSuccess(SessionCartService $sessionCartService, \Doctrine\ORM\EntityManagerInterface $entityManager, \App\Repository\ProductRepository $productRepository, \App\Repository\ProductBundleRepository $bundleRepository): Response
+    {
+        $cart = $sessionCartService->getCart();
+        
+        foreach ($cart as $item) {
+            if (isset($item['isBundle']) && $item['isBundle']) {
+                $bundle = $bundleRepository->find($item['id']);
+                if ($bundle) {
+                    foreach ($bundle->getProducts() as $product) {
+                        $newQty = max(0, $product->getQuantity() - $item['quantity']);
+                        $product->setQuantity($newQty);
+                    }
+                }
+            } else {
+                $product = $productRepository->find($item['id']);
+                if ($product) {
+                    $newQty = max(0, $product->getQuantity() - $item['quantity']);
+                    $product->setQuantity($newQty);
+                }
+            }
+        }
+        $entityManager->flush();
+
+        $sessionCartService->clearCart();
+        $this->addFlash('success', 'Paiement réussi ! Merci pour votre commande.');
         return $this->redirectToRoute('app_marketplace_index');
+    }
+
+    #[Route('/checkout/cancel', name: 'app_marketplace_cart_cancel', methods: ['GET'])]
+    public function checkoutCancel(): Response
+    {
+        $this->addFlash('error', 'Le paiement a été annulé. Vous pouvez réessayer quand vous le souhaitez.');
+        return $this->redirectToRoute('app_marketplace_cart');
     }
 
     #[Route('/stats', name: 'app_marketplace_stats', methods: ['GET'])]

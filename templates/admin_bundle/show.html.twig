@@ -1,0 +1,74 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}Détails du Pack{% endblock %}
+
+{% block body %}
+    <section class="content-section" style="margin-top: 2rem;">
+        <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 2rem;">
+            <h2><i class="fa-solid fa-gift"></i> Pack: {{ product_bundle.name }}</h2>
+            <div style="display: flex; gap: 0.5rem;">
+                <a href="{{ path('app_admin_bundle_index') }}" class="btn btn-secondary">
+                    <i class="fa-solid fa-arrow-left"></i> Retour
+                </a>
+                <a href="{{ path('app_admin_bundle_edit', {'id': product_bundle.id}) }}" class="btn btn-primary">
+                    <i class="fa-solid fa-pen"></i> Modifier
+                </a>
+                {{ include('admin_bundle/_delete_form.html.twig') }}
+            </div>
+        </div>
+
+        <div class="glass-card" style="padding: 2rem;">
+            <table class="styled-table" style="width: 100%; margin-bottom: 2rem;">
+                <tbody>
+                    <tr>
+                        <th>Id</th>
+                        <td>{{ product_bundle.id }}</td>
+                    </tr>
+                    <tr>
+                        <th>Nom</th>
+                        <td>{{ product_bundle.name }}</td>
+                    </tr>
+                    <tr>
+                        <th>Description</th>
+                        <td>{{ product_bundle.description }}</td>
+                    </tr>
+                    <tr>
+                        <th>Prix Original</th>
+                        <td><s>{{ product_bundle.originalPrice }} DT</s></td>
+                    </tr>
+                    <tr>
+                        <th>Prix du Pack</th>
+                        <td><strong style="color: var(--primary-color); font-size: 1.2rem;">{{ product_bundle.bundlePrice }} DT</strong></td>
+                    </tr>
+                    <tr>
+                        <th>Remise appliquée</th>
+                        <td>-{{ product_bundle.discountPercentage }}% (Économie de {{ product_bundle.savings }} DT)</td>
+                    </tr>
+                    <tr>
+                        <th>Statut</th>
+                        <td>
+                            {% if product_bundle.isActive %}
+                                <span class="badge badge-success">Actif</span>
+                            {% else %}
+                                <span class="badge badge-danger">Inactif</span>
+                            {% endif %}
+                        </td>
+                    </tr>
+                    <tr>
+                        <th>Date de création</th>
+                        <td>{{ product_bundle.createdAt ? product_bundle.createdAt|date('Y-m-d H:i:s') : '' }}</td>
+                    </tr>
+                </tbody>
+            </table>
+
+            <h3>Produits inclus ({{ product_bundle.products|length }})</h3>
+            <ul>
+                {% for product in product_bundle.products %}
+                    <li><a href="{{ path('app_marketplace_product_show', {'id': product.id}) }}" style="color: #7DBF6C;">{{ product.name }}</a> ({{ product.price }} DT/kg)</li>
+                {% else %}
+                    <li style="color: rgba(255,255,255,0.5);">Aucun produit dans ce pack.</li>
+                {% endfor %}
+            </ul>
+        </div>
+    </section>
+{% endblock %}

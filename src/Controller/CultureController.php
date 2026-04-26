@@ -15,12 +15,18 @@ use Symfony\Component\Routing\Attribute\Route;
 final class CultureController extends AbstractController
 {
     #[Route(name: 'app_culture_index', methods: ['GET'])]
-    public function index(Request $request, CultureRepository $cultureRepository): Response
+    public function index(Request $request, CultureRepository $cultureRepository, \Knp\Component\Pager\PaginatorInterface $paginator): Response
     {
         $search = trim((string) $request->query->get('search', ''));
-        $cultures = $search !== ''
+        $query = $search !== ''
             ? $cultureRepository->findBySearchTerm($search)
             : $cultureRepository->findAllOrderByDateRecoltePrevueAsc();
+
+        $cultures = $paginator->paginate(
+            $query,
+            $request->query->getInt('page', 1),
+            5
+        );
 
         return $this->render('culture/index.html.twig', [
             'cultures' => $cultures,

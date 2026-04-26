@@ -44,7 +44,7 @@
                         <td>{{ user.fullName }}</td>
                         <td>{{ user.email }}</td>
                         <td>{{ user.phone }}</td>
-                        <td>{{ user.role.value }}</td>
+                        <td>{{ user.role.value is defined ? user.role.value : user.role }}</td>
                         <td>{{ user.createdAt|date('d/m/Y H:i') }}</td>
                         <td>
                             <a href="{{ path('user_update', {id: user.id}) }}" class="btn update">

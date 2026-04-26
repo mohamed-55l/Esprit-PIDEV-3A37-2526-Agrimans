@@ -1,0 +1,54 @@
+{#
+  Sidebar partagée admin — inclut automatiquement le CSS unifié.
+  Usage : {% include 'admin/_sidebar.html.twig' with {active: 'dashboard'} %}
+  Valeurs de `active` : 'dashboard' | 'users' | 'marketplace' | 'equipements' | 'reviews'
+#}
+<link rel="stylesheet" href="{{ asset('styles/admin-sidebar.css') }}">
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+
+<aside class="sidebar">
+    <div class="sidebar-header">
+        <i class="fa-solid fa-shield-halved"></i>
+        <span>AGRIMANS <sup>ADMIN</sup></span>
+    </div>
+
+    <nav class="sidebar-nav">
+        <a href="{{ path('admin_dashboard') }}" class="nav-item {{ active == 'dashboard' ? 'active' : '' }}">
+            <i class="fa-solid fa-gauge-high"></i> Tableau de Bord
+        </a>
+
+        <div class="nav-section">Administration</div>
+        <a href="{{ path('app_user_management') }}" class="nav-item {{ active == 'users' ? 'active' : '' }}">
+            <i class="fa-solid fa-users"></i> Utilisateurs
+        </a>
+        <a href="{{ path('app_marketplace_index') }}" class="nav-item {{ active == 'marketplace' ? 'active' : '' }}">
+            <i class="fa-solid fa-store"></i> Boutique
+        </a>
+
+        <div class="nav-section">Équipements & Garages</div>
+        <a href="{{ path('admin_equipement_index') }}" class="nav-item {{ active == 'equipements' ? 'active' : '' }}">
+            <i class="fa-solid fa-tractor"></i> Équipements
+        </a>
+        <a href="{{ path('admin_garage_index') }}" class="nav-item {{ active == 'garages' ? 'active' : '' }}">
+            <i class="fa-solid fa-warehouse"></i> Garages
+        </a>
+        <a href="{{ path('admin_review_index') }}" class="nav-item {{ active == 'reviews' ? 'active' : '' }}">
+            <i class="fa-solid fa-star"></i> Avis & Reviews
+        </a>
+
+        <div class="nav-section">Agriculture</div>
+        <a href="{{ path('app_admin_view_parcelles_cultures') }}" class="nav-item {{ active == 'agriculture' ? 'active' : '' }}">
+            <i class="fa-solid fa-eye"></i> Parcelle & Culture
+        </a>
+    </nav>
+
+    <div class="sidebar-footer">
+        <a href="{{ path('app_logout') }}" class="nav-item nav-item-logout">
+            <i class="fa-solid fa-right-from-bracket"></i> Déconnexion
+        </a>
+        <a href="{{ path('app_home') }}" class="nav-item">
+            <i class="fa-solid fa-arrow-left"></i> Retour au site
+        </a>
+    </div>
+</aside>

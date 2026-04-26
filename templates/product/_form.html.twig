@@ -1,55 +1,65 @@
-{{ form_start(form, {'attr': {'class': 'form-wrapper', 'enctype': 'multipart/form-data'}}) }}
+{{ form_start(form, {'attr': {'class': 'form-wrapper', 'enctype': 'multipart/form-data', 'id': 'productForm', 'novalidate': 'novalidate'}}) }}
 
     <div class="form-group">
         {{ form_label(form.name) }}
-        {{ form_widget(form.name, {'attr': {'class': 'form-control'}}) }}
+        {{ form_widget(form.name, {'attr': {'class': 'form-control', 'id': 'product_name', 'data-validate': 'required'}}) }}
+        <div class="error-message" id="error-name" style="color: #e74c3c; font-size: 0.85rem; margin-top: 0.3rem; display: none;"></div>
         <div style="color: #e74c3c; font-size: 0.85rem; margin-top: 0.3rem;">{{ form_errors(form.name) }}</div>
     </div>
 
     <div class="form-group">
         {{ form_label(form.description) }}
-        {{ form_widget(form.description, {'attr': {'class': 'form-control'}}) }}
+        {{ form_widget(form.description, {'attr': {'class': 'form-control', 'id': 'product_description', 'data-validate': 'required|minLength:10'}}) }}
+        <div class="error-message" id="error-description" style="color: #e74c3c; font-size: 0.85rem; margin-top: 0.3rem; display: none;"></div>
+        <div style="color: rgba(255,255,255,0.4); font-size: 0.8rem; margin-top: 0.3rem;">Minimum 10 caractères</div>
         <div style="color: #e74c3c; font-size: 0.85rem; margin-top: 0.3rem;">{{ form_errors(form.description) }}</div>
     </div>
 
     <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 1rem;">
         <div class="form-group">
             {{ form_label(form.price) }}
-            {{ form_widget(form.price, {'attr': {'class': 'form-control'}}) }}
+            {{ form_widget(form.price, {'attr': {'class': 'form-control', 'id': 'product_price', 'data-validate': 'required|numeric|positive'}}) }}
+            <div class="error-message" id="error-price" style="color: #e74c3c; font-size: 0.85rem; margin-top: 0.3rem; display: none;"></div>
+            <div style="color: rgba(255,255,255,0.4); font-size: 0.8rem; margin-top: 0.3rem;">Doit être positif (> 0)</div>
             <div style="color: #e74c3c; font-size: 0.85rem; margin-top: 0.3rem;">{{ form_errors(form.price) }}</div>
         </div>
 
         <div class="form-group">
             {{ form_label(form.quantity) }}
-            {{ form_widget(form.quantity, {'attr': {'class': 'form-control'}}) }}
+            {{ form_widget(form.quantity, {'attr': {'class': 'form-control', 'id': 'product_quantity', 'data-validate': 'required|numeric|positive'}}) }}
+            <div class="error-message" id="error-quantity" style="color: #e74c3c; font-size: 0.85rem; margin-top: 0.3rem; display: none;"></div>
+            <div style="color: rgba(255,255,255,0.4); font-size: 0.8rem; margin-top: 0.3rem;">Doit être positif (> 0)</div>
             <div style="color: #e74c3c; font-size: 0.85rem; margin-top: 0.3rem;">{{ form_errors(form.quantity) }}</div>
         </div>
     </div>
 
     <div class="form-group">
         {{ form_label(form.category) }}
-        {{ form_widget(form.category, {'attr': {'class': 'form-control'}}) }}
+        {{ form_widget(form.category, {'attr': {'class': 'form-control', 'id': 'product_category', 'data-validate': 'required'}}) }}
+        <div class="error-message" id="error-category" style="color: #e74c3c; font-size: 0.85rem; margin-top: 0.3rem; display: none;"></div>
         <div style="color: #e74c3c; font-size: 0.85rem; margin-top: 0.3rem;">{{ form_errors(form.category) }}</div>
     </div>
 
     <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 1rem;">
         <div class="form-group">
             {{ form_label(form.supplier) }}
-            {{ form_widget(form.supplier, {'attr': {'class': 'form-control'}}) }}
+            {{ form_widget(form.supplier, {'attr': {'class': 'form-control', 'id': 'product_supplier'}}) }}
             <div style="color: #e74c3c; font-size: 0.85rem; margin-top: 0.3rem;">{{ form_errors(form.supplier) }}</div>
         </div>
 
         <div class="form-group">
             {{ form_label(form.expiryDate) }}
-            {{ form_widget(form.expiryDate, {'attr': {'class': 'form-control'}}) }}
+            {{ form_widget(form.expiryDate, {'attr': {'class': 'form-control', 'id': 'product_expiryDate', 'data-validate': 'minDate'}}) }}
+            <div class="error-message" id="error-expiryDate" style="color: #e74c3c; font-size: 0.85rem; margin-top: 0.3rem; display: none;"></div>
+            <div style="color: rgba(255,255,255,0.4); font-size: 0.8rem; margin-top: 0.3rem;">Minimum demain</div>
             <div style="color: #e74c3c; font-size: 0.85rem; margin-top: 0.3rem;">{{ form_errors(form.expiryDate) }}</div>
         </div>
     </div>
 
     <div class="form-group">
         {{ form_label(form.imageFile) }}
-        {{ form_widget(form.imageFile, {'attr': {'class': 'form-control', 'style': 'padding: 0.5rem;'}}) }}
-        <div style="color: #e74c3c; font-size: 0.85rem; margin-top: 0.3rem;">{{ form_errors(form.imageFile) }}</div>
+        {{ form_widget(form.imageFile, {'attr': {'class': 'form-control', 'style': 'padding: 0.5rem;', 'id': 'product_imageFile'}}) }}
+        <div class="error-message" id="error-imageFile" style="color: #e74c3c; font-size: 0.85rem; margin-top: 0.3rem; display: none;"></div>
         <div style="color: rgba(255,255,255,0.4); font-size: 0.8rem; margin-top: 0.3rem;">Formats: JPG, PNG, WEBP, GIF. Max: 5 Mo.</div>
         {% if form.vars.data and form.vars.data.image %}
             <div style="margin-top: 0.5rem;">
@@ -59,5 +69,188 @@
         {% endif %}
     </div>
 
-    <button class="btn btn-primary" style="width: 100%; margin-top: 1rem;">{{ button_label|default('Enregistrer') }}</button>
+    <button type="submit" class="btn btn-primary" style="width: 100%; margin-top: 1rem;">{{ button_label|default('Enregistrer') }}</button>
 {{ form_end(form) }}
+
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    const form = document.getElementById('productForm');
+    
+    // Set minimum date to tomorrow for the expiry date field
+    const expiryDateField = document.getElementById('product_expiryDate');
+    if (expiryDateField) {
+        const today = new Date();
+        const tomorrow = new Date(today);
+        tomorrow.setDate(tomorrow.getDate() + 1);
+        
+        // Format as YYYY-MM-DD for the date input
+        const minDate = tomorrow.toISOString().split('T')[0];
+        expiryDateField.setAttribute('min', minDate);
+    }
+    
+    // Validation messages in French
+    const messages = {
+        required: 'Ce champ est obligatoire',
+        minLength: 'Minimum {min} caractères requis',
+        numeric: 'Veuillez entrer un nombre valide',
+        positive: 'La valeur doit être positive et supérieure à 0',
+        minDate: 'La date doit être au minimum demain',
+        invalidFile: 'Format de fichier non autorisé'
+    };
+
+    // Validation rules for each field
+    const validationRules = {
+        'product_name': {
+            validators: ['required']
+        },
+        'product_description': {
+            validators: ['required', 'minLength'],
+            minLength: 10
+        },
+        'product_price': {
+            validators: ['required', 'numeric', 'positive']
+        },
+        'product_quantity': {
+            validators: ['required', 'numeric', 'positive']
+        },
+        'product_category': {
+            validators: ['required']
+        },
+        'product_expiryDate': {
+            validators: ['minDate']
+        }
+    };
+
+    // Validation functions
+    const validators = {
+        required: function(value) {
+            return value && value.trim() !== '';
+        },
+        minLength: function(value, rule) {
+            return value.length >= rule.minLength;
+        },
+        numeric: function(value) {
+            return !isNaN(value) && value !== '';
+        },
+        positive: function(value) {
+            return !isNaN(value) && parseFloat(value) > 0;
+        },
+        minDate: function(value) {
+            if (!value) return true; // Optional field
+            
+            const selectedDate = new Date(value);
+            const today = new Date();
+            today.setHours(0, 0, 0, 0);
+            
+            // Tomorrow is today + 1 day
+            const tomorrow = new Date(today);
+            tomorrow.setDate(tomorrow.getDate() + 1);
+            
+            // The selected date must be >= tomorrow
+            return selectedDate >= tomorrow;
+        }
+    };
+
+    // Validate a single field
+    function validateField(fieldId, rules) {
+        const field = document.getElementById(fieldId);
+        const errorDiv = document.getElementById('error-' + fieldId.replace('product_', ''));
+        
+        if (!field) return true;
+
+        const value = field.value.trim();
+
+        for (let validator of rules.validators) {
+            let isValid = false;
+
+            if (validator === 'required') {
+                isValid = validators.required(value);
+                if (!isValid) {
+                    errorDiv.textContent = messages.required;
+                    errorDiv.style.display = 'block';
+                    field.style.borderColor = '#e74c3c';
+                    return false;
+                }
+            } else if (validator === 'minLength') {
+                isValid = validators.minLength(value, { minLength: rules.minLength });
+                if (!isValid) {
+                    errorDiv.textContent = messages.minLength.replace('{min}', rules.minLength);
+                    errorDiv.style.display = 'block';
+                    field.style.borderColor = '#e74c3c';
+                    return false;
+                }
+            } else if (validator === 'numeric') {
+                isValid = validators.numeric(value);
+                if (!isValid) {
+                    errorDiv.textContent = messages.numeric;
+                    errorDiv.style.display = 'block';
+                    field.style.borderColor = '#e74c3c';
+                    return false;
+                }
+            } else if (validator === 'positive') {
+                isValid = validators.positive(value);
+                if (!isValid) {
+                    errorDiv.textContent = messages.positive;
+                    errorDiv.style.display = 'block';
+                    field.style.borderColor = '#e74c3c';
+                    return false;
+                }
+            } else if (validator === 'minDate') {
+                isValid = validators.minDate(value);
+                if (!isValid) {
+                    errorDiv.textContent = messages.minDate;
+                    errorDiv.style.display = 'block';
+                    field.style.borderColor = '#e74c3c';
+                    return false;
+                }
+            }
+        }
+
+        // Clear error if valid
+        errorDiv.style.display = 'none';
+        field.style.borderColor = '';
+        return true;
+    }
+
+    // Real-time validation on input
+    Object.keys(validationRules).forEach(fieldId => {
+        const field = document.getElementById(fieldId);
+        if (field) {
+            field.addEventListener('blur', function() {
+                validateField(fieldId, validationRules[fieldId]);
+            });
+            
+            field.addEventListener('change', function() {
+                validateField(fieldId, validationRules[fieldId]);
+            });
+            
+            field.addEventListener('input', function() {
+                const errorDiv = document.getElementById('error-' + fieldId.replace('product_', ''));
+                if (errorDiv && errorDiv.style.display === 'block') {
+                    validateField(fieldId, validationRules[fieldId]);
+                }
+            });
+        }
+    });
+
+    // Form submission validation
+    form.addEventListener('submit', function(e) {
+        let isFormValid = true;
+
+        Object.keys(validationRules).forEach(fieldId => {
+            if (!validateField(fieldId, validationRules[fieldId])) {
+                isFormValid = false;
+            }
+        });
+
+        if (!isFormValid) {
+            e.preventDefault();
+            // Scroll to first error
+            const firstError = form.querySelector('[style*="color: rgb(231"]');
+            if (firstError) {
+                firstError.scrollIntoView({ behavior: 'smooth', block: 'center' });
+            }
+        }
+    });
+});
+</script>

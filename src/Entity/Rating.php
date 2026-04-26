@@ -9,6 +9,7 @@ use Doctrine\Common\Collections\Collection;
 
 use App\Repository\RatingRepository;
 
+
 #[ORM\Entity(repositoryClass: RatingRepository::class)]
 #[ORM\Table(name: 'ratings')]
 class Rating
@@ -17,6 +18,14 @@ class Rating
     #[ORM\GeneratedValue]
     #[ORM\Column(type: 'integer')]
     private ?int $id = null;
+
+    #[ORM\OneToMany(mappedBy: 'rating', targetEntity: RatingLike::class, orphanRemoval: true)]
+    private Collection $likes;
+
+    public function __construct()
+    {
+        $this->likes = new ArrayCollection();
+    }
 
     public function getId(): ?int
     {
@@ -41,6 +50,21 @@ class Rating
     public function setProduct(?Product $product): self
     {
         $this->product = $product;
+        return $this;
+    }
+
+    #[ORM\ManyToOne(targetEntity: Users::class)]
+    #[ORM\JoinColumn(name: 'user_id', referencedColumnName: 'id', nullable: true)]
+    private ?Users $user = null;
+
+    public function getUser(): ?Users
+    {
+        return $this->user;
+    }
+
+    public function setUser(?Users $user): self
+    {
+        $this->user = $user;
         return $this;
     }
 
@@ -150,4 +174,42 @@ class Rating
         return $this;
     }
 
+    /**
+     * @return Collection<int, RatingLike>
+     */
+    public function getLikes(): Collection
+    {
+        return $this->likes;
+    }
+
+    public function addLike(RatingLike $like): self
+    {
+        if (!$this->likes->contains($like)) {
+            $this->likes->add($like);
+            $like->setRating($this);
+        }
+
+        return $this;
+    }
+
+    public function removeLike(RatingLike $like): self
+    {
+        if ($this->likes->removeElement($like)) {
+            if ($like->getRating() === $this) {
+                $like->setRating(null);
+            }
+        }
+
+        return $this;
+    }
+
+    public function getUpvotes(): int
+    {
+        return count(array_filter($this->likes->toArray(), fn($l) => $l->isLike()));
+    }
+
+    public function getDownvotes(): int
+    {
+        return count(array_filter($this->likes->toArray(), fn($l) => !$l->isLike()));
+    }
 }

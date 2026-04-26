@@ -1,0 +1,92 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}Modifier mon Avis | Agrimans{% endblock %}
+
+{% block body %}
+<section class="content-section" style="margin-top: 2rem; max-width: 680px; margin-left: auto; margin-right: auto;">
+
+    <div style="margin-bottom: 2rem;">
+        <a href="{{ path('user_review_index') }}" style="color: rgba(255,255,255,0.4); text-decoration: none; font-size: 0.85rem; display: inline-flex; align-items: center; gap: 6px;">
+            <i class="fa-solid fa-arrow-left"></i> Retour à mes avis
+        </a>
+    </div>
+
+    <h1 style="font-size: 2rem; font-weight: 800; margin-bottom: 0.5rem;">
+        <i class="fa-solid fa-pen" style="color: #5dade2; margin-right: 10px;"></i>Modifier mon Avis
+    </h1>
+
+    <div style="background: rgba(41,128,185,0.08); border: 1px solid rgba(41,128,185,0.2); border-radius: 12px; padding: 1rem 1.2rem; margin-bottom: 2rem; display: flex; align-items: center; gap: 12px;">
+        <i class="fa-solid fa-info-circle" style="color: #5dade2; font-size: 1.1rem;"></i>
+        <div>
+            <div style="font-size: 0.75rem; color: rgba(255,255,255,0.4); text-transform: uppercase; letter-spacing: .5px;">Avis sur</div>
+            <div style="font-weight: 700; font-size: 1rem;">{{ review.equipement ? review.equipement.nom : 'Équipement supprimé' }}</div>
+        </div>
+    </div>
+
+    <div style="background: rgba(255,255,255,0.04); border: 1px solid rgba(255,255,255,0.1); border-radius: 18px; padding: 2rem;">
+        {{ form_start(form, {attr: {novalidate: 'novalidate'}}) }}
+
+            <div style="margin-bottom: 1.5rem;">
+                <label style="display: block; font-size: 0.82rem; text-transform: uppercase; letter-spacing: .5px; color: rgba(255,255,255,0.5); margin-bottom: 0.5rem;">Équipement</label>
+                {{ form_widget(form.equipement) }}
+                {{ form_errors(form.equipement) }}
+            </div>
+
+            <!-- Star picker -->
+            <div style="margin-bottom: 1.5rem;">
+                <label style="display: block; font-size: 0.82rem; text-transform: uppercase; letter-spacing: .5px; color: rgba(255,255,255,0.5); margin-bottom: 0.75rem;">Votre note</label>
+                <div id="star-picker" style="display: flex; gap: 0.5rem; margin-bottom: 0.75rem;">
+                    {% for i in 1..5 %}
+                    <i class="fa-solid fa-star star-pick" data-val="{{ i }}"
+                       style="font-size: 2rem; color: {{ i <= review.note ? '#f1c40f' : 'rgba(255,255,255,0.15)' }}; cursor: pointer; transition: color 0.15s;"></i>
+                    {% endfor %}
+                </div>
+                {{ form_widget(form.note, {attr: {style: 'display:none;', class: 'note-input'}}) }}
+                {{ form_errors(form.note) }}
+            </div>
+
+            <div style="margin-bottom: 1.5rem;">
+                <label style="display: block; font-size: 0.82rem; text-transform: uppercase; letter-spacing: .5px; color: rgba(255,255,255,0.5); margin-bottom: 0.5rem;">Commentaire</label>
+                {{ form_widget(form.commentaire, {attr: {style: 'background: rgba(0,0,0,0.3); border: 1px solid rgba(255,255,255,0.1); color: white; padding: 0.8rem 1rem; border-radius: 10px; width: 100%; resize: vertical; font-family: Inter, sans-serif; font-size: 0.92rem; outline: none;'}}) }}
+                {{ form_errors(form.commentaire) }}
+            </div>
+
+            <div style="display: flex; gap: 1rem; margin-top: 1.5rem; flex-wrap: wrap;">
+                <button type="submit" style="display: inline-flex; align-items: center; gap: 6px; background: #2980b9; color: white; border: none; padding: 0.7rem 1.4rem; border-radius: 10px; font-size: 0.9rem; font-weight: 600; cursor: pointer; transition: background 0.2s;"
+                        onmouseover="this.style.background='#1f6391'" onmouseout="this.style.background='#2980b9'">
+                    <i class="fa-solid fa-save"></i> Enregistrer les modifications
+                </button>
+                <a href="{{ path('user_review_index') }}" style="display: inline-flex; align-items: center; gap: 6px; padding: 0.7rem 1.2rem; border-radius: 10px; background: rgba(255,255,255,0.05); border: 1px solid rgba(255,255,255,0.1); color: rgba(255,255,255,0.6); text-decoration: none; font-size: 0.9rem; transition: all 0.2s;">
+                    <i class="fa-solid fa-times"></i> Annuler
+                </a>
+            </div>
+        {{ form_end(form) }}
+    </div>
+</section>
+
+<script>
+document.addEventListener('DOMContentLoaded', function () {
+    const stars = document.querySelectorAll('.star-pick');
+    const select = document.querySelector('.note-input');
+
+    function paintStars(val) {
+        stars.forEach(s => {
+            s.style.color = parseInt(s.dataset.val) <= val ? '#f1c40f' : 'rgba(255,255,255,0.15)';
+        });
+    }
+
+    if (select && select.value) paintStars(parseInt(select.value));
+
+    stars.forEach(star => {
+        star.addEventListener('mouseover', () => paintStars(parseInt(star.dataset.val)));
+        star.addEventListener('mouseleave', () => paintStars(select ? parseInt(select.value) || 0 : 0));
+        star.addEventListener('click', () => {
+            if (select) {
+                select.value = star.dataset.val;
+                paintStars(parseInt(star.dataset.val));
+            }
+        });
+    });
+});
+</script>
+{% endblock %}

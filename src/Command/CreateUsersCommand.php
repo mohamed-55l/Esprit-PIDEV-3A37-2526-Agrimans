@@ -2,7 +2,8 @@
 
 namespace App\Command;
 
-use App\Entity\User;
+use App\Entity\Users;
+use App\Enum\UserRole;
 use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Component\Console\Attribute\AsCommand;
 use Symfony\Component\Console\Command\Command;
@@ -29,33 +30,33 @@ class CreateUsersCommand extends Command
     protected function execute(InputInterface $input, OutputInterface $output): int
     {
         // Update or create Admin
-        $admin = $this->entityManager->getRepository(User::class)->findOneBy(['email' => 'admin@agrimans.com']);
+        $admin = $this->entityManager->getRepository(Users::class)->findOneBy(['email' => 'admin@agrimans.com']);
         if (!$admin) {
-            $admin = new User();
+            $admin = new Users();
             $admin->setEmail('admin@agrimans.com');
-            $admin->setCreatedAt(new \DateTime());
+            $admin->setCreatedAt(new \DateTimeImmutable());
             $this->entityManager->persist($admin);
             $output->writeln('Admin created.');
         } else {
             $output->writeln('Admin updated.');
         }
         $admin->setFullName('Admin Agrimans');
-        $admin->setRole('ADMIN');
+        $admin->setRole(UserRole::ADMIN);
         $admin->setPasswordHash($this->passwordHasher->hashPassword($admin, '123'));
 
         // Update or create User
-        $user = $this->entityManager->getRepository(User::class)->findOneBy(['email' => 'user@agrimans.com']);
+        $user = $this->entityManager->getRepository(Users::class)->findOneBy(['email' => 'user@agrimans.com']);
         if (!$user) {
-            $user = new User();
+            $user = new Users();
             $user->setEmail('user@agrimans.com');
-            $user->setCreatedAt(new \DateTime());
+            $user->setCreatedAt(new \DateTimeImmutable());
             $this->entityManager->persist($user);
             $output->writeln('User created.');
         } else {
             $output->writeln('User updated.');
         }
         $user->setFullName('User Agrimans');
-        $user->setRole('USER');
+        $user->setRole(UserRole::USER);
         $user->setPasswordHash($this->passwordHasher->hashPassword($user, '123'));
 
         $this->entityManager->flush();

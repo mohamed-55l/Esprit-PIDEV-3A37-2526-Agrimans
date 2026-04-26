@@ -45,7 +45,10 @@
                         <a href="#"><i class="fa-solid fa-envelope"></i> Contact</a>
                         <a href="{{ path('app_marketplace_index') }}" class="nav-link-professional"><i class="fa-solid fa-store"></i> Boutique</a>
                     {% elseif is_granted('ROLE_ADMIN') %}
-                        <!-- Admin sees no navigation menu, only dashboard access -->
+                        <!-- Admin Navigation -->
+                        <a href="{{ path('app_admin_bundle_index') }}" class="nav-link-professional"><i class="fa-solid fa-gift"></i> Gestion Packs</a>
+                        <a href="{{ path('app_statistics_index') }}" class="nav-link-professional"><i class="fa-solid fa-chart-bar"></i> Statistiques</a>
+                        <a href="{{ path('app_marketplace_index') }}" class="nav-link-professional"><i class="fa-solid fa-store"></i> Boutique</a>
                     {% else %}
                         <div class="dropdown">
                             <a href="{{ path('app_home') }}"><i class="fa-solid fa-gauge-high"></i> Tableau de bord</a>
@@ -59,10 +62,10 @@
                         <div class="dropdown">
                             <a href="#" style="cursor:default;"><i class="fa-solid fa-tractor"></i> Ressources agro</a>
                             <div class="dropdown-content">
-                                <a href="{{ path('app_equipement_index') }}"><i class="fa-solid fa-toolbox"></i> Stock équipements</a>
+                                <a href="{{ path('user_equipement_index') }}"><i class="fa-solid fa-toolbox"></i> Stock équipements</a>
                                 <a href="#"><i class="fa-solid fa-map-location-dot"></i> Suivi GPS & Garages</a>
                                 <a href="#"><i class="fa-solid fa-tasks"></i> Demandes & Assignements</a>
-                                <a href="{{ path('app_review_index') }}"><i class="fa-solid fa-star"></i> Avis & Évaluations</a>
+                                <a href="{{ path('user_review_index') }}"><i class="fa-solid fa-star"></i> Avis & Évaluations</a>
                             </div>
                         </div>
 
@@ -73,6 +76,11 @@
                                 <a href="{{ path('app_culture_index') }}"><i class="fa-solid fa-seedling"></i> Suivi des Cultures</a>
                                 <a href="{{ path('waad_animal_index') }}"><i class="fa-solid fa-cow"></i> Gestion des Animaux</a>
                                 <a href="{{ path('waad_nourriture_index') }}"><i class="fa-solid fa-bowl-food"></i> Stocks Alimentaires</a>
+                                <div style="height:1px;background:rgba(255,255,255,0.08);margin:0.4rem 0;"></div>
+                                <a href="{{ path('app_agriculture_rendement') }}" style="color:#27ae60;"><i class="fa-solid fa-wheat-awn"></i> Calcul Rendement</a>
+                                <a href="{{ path('app_agriculture_statistiques') }}" style="color:#3498db;"><i class="fa-solid fa-chart-pie"></i> Statistiques Cultures</a>
+                                <a href="{{ path('app_agriculture_compatibilite') }}" style="color:#9b59b6;"><i class="fa-solid fa-flask"></i> Compatibilité Sol</a>
+                                <a href="{{ path('app_agriculture_calendrier') }}" style="color:#e67e22;"><i class="fa-solid fa-calendar-days"></i> Calendrier Cultural</a>
                             </div>
                         </div>
                     {% endif %}
@@ -99,9 +107,18 @@
                             background: rgba(255, 255, 255, 0.1); color: #fff;
                             transition: all 0.3s ease; text-decoration: none;
                             font-size: 1.1rem;
+                            position: relative;
                         }
                         .nav-cart-icon:hover {
                             background: #198B61; color: #fff; transform: scale(1.1); box-shadow: 0 4px 10px rgba(25, 139, 97, 0.4);
+                        }
+                        .nav-cart-badge {
+                            position: absolute; top: -8px; right: -8px;
+                            background: #e74c3c; color: white;
+                            border-radius: 50%; width: 22px; height: 22px;
+                            display: flex; align-items: center; justify-content: center;
+                            font-size: 0.75rem; font-weight: bold;
+                            border: 2px solid rgba(255, 255, 255, 0.3);
                         }
                     </style>
 
@@ -110,7 +127,14 @@
                             <!-- Admin has no action buttons in navbar -->
                         {% else %}
                             <a href="{{ path('app_marketplace_index') }}" class="nav-link-professional" style="margin-right: 10px;"><i class="fa-solid fa-store"></i> Boutique</a>
-                            <a href="{{ path('app_marketplace_cart') }}" class="nav-cart-icon" title="Panier"><i class="fa-solid fa-shopping-cart"></i></a>
+                            <a href="{{ path('app_marketplace_bundles') }}" class="nav-link-professional" style="margin-right: 10px;"><i class="fa-solid fa-gift"></i> Packs</a>
+                            <a href="{{ path('app_marketplace_cart') }}" class="nav-cart-icon" title="Panier">
+                                <i class="fa-solid fa-shopping-cart"></i>
+                                {% set cartCount = sessionCartService.getCartCount() %}
+                                {% if cartCount > 0 %}
+                                    <span class="nav-cart-badge">{{ cartCount }}</span>
+                                {% endif %}
+                            </a>
                         {% endif %}
                         <div class="dropdown" style="margin-left: 1rem;">
                             <a href="#" class="top-btn btn-outline" style="background: rgba(255,255,255,0.1); border-radius:12px; padding: 0.6rem 1.2rem;"><i class="fa-solid fa-user"></i> {{ app.user.email }}</a>
@@ -121,7 +145,13 @@
                             </div>
                         </div>
                     {% else %}
-                        <a href="{{ path('app_marketplace_cart') }}" class="nav-cart-icon" title="Panier" style="margin-right: 1rem;"><i class="fa-solid fa-shopping-cart"></i></a>
+                        <a href="{{ path('app_marketplace_cart') }}" class="nav-cart-icon" title="Panier" style="margin-right: 1rem;">
+                            <i class="fa-solid fa-shopping-cart"></i>
+                            {% set cartCount = sessionCartService.getCartCount() %}
+                            {% if cartCount > 0 %}
+                                <span class="nav-cart-badge">{{ cartCount }}</span>
+                            {% endif %}
+                        </a>
                         <a href="{{ path('app_login') }}" class="top-btn btn-outline" style="padding: 0.6rem 1.5rem; border-radius: 12px;"><i class="fa-solid fa-sign-in-alt"></i> Connexion</a>
                     {% endif %}
                 </div>
@@ -129,6 +159,21 @@
 
         <div class="app-wrapper">
             <main>
+                {# Global Flash Messages #}
+                <div style="position: fixed; top: 80px; right: 20px; z-index: 1000; width: 350px;">
+                    {% for type, messages in app.flashes %}
+                        {% for message in messages %}
+                            <div class="flash-toast flash-{{ type }}" style="padding: 1rem; margin-bottom: 0.5rem; border-radius: 8px; background: {{ type == 'success' ? 'rgba(125, 191, 108, 0.9)' : 'rgba(231, 76, 60, 0.9)' }}; color: white; box-shadow: 0 4px 12px rgba(0,0,0,0.2); backdrop-filter: blur(10px); display: flex; align-items: center; gap: 0.8rem; animation: slideInRight 0.3s ease forwards;">
+                                <i class="fa-solid {{ type == 'success' ? 'fa-check-circle' : 'fa-exclamation-circle' }}" style="font-size: 1.2rem;"></i> 
+                                <span style="font-weight: 500;">{{ message }}</span>
+                            </div>
+                        {% endfor %}
+                    {% endfor %}
+                </div>
+                <style>
+                    @keyframes slideInRight { from { opacity: 0; transform: translateX(100%); } to { opacity: 1; transform: translateX(0); } }
+                </style>
+
                 {% block body %}{% endblock %}
             </main>
         </div>

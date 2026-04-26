@@ -50,6 +50,13 @@ class CultureType extends AbstractType
                 'required' => true,
                 'placeholder' => 'Sélectionner une parcelle',
                 'attr' => ['class' => 'form-control'],
+            ])
+            ->add('infoFile', \Vich\UploaderBundle\Form\Type\VichFileType::class, [
+                'label' => 'Fichier de formation (PDF)',
+                'required' => false,
+                'allow_delete' => true,
+                'download_uri' => true,
+                'attr' => ['class' => 'form-control', 'accept' => '.pdf'],
             ]);
     }
 
