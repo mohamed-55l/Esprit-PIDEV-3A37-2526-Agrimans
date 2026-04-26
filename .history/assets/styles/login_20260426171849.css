@@ -21,8 +21,8 @@ body {
 
 /* جهة الفورم - بيضاء */
 .login-box {
-    flex: 1;
-    padding: 50px 70px;
+    flex: 1; /* تاخد 50% بالضبط */
+    padding: 40px 60px;
     display: flex;
     flex-direction: column;
     justify-content: center;
@@ -73,46 +73,7 @@ body {
     margin: 10px 0;
 }
 
-/* Conteneur pour les deux colonnes */
-.form-row {
-    display: flex;
-    gap: 20px;
-    margin-bottom: 15px;
-}
-
-.form-group {
-    flex: 1;
-}
-
-.form-group label {
-    font-size: 14px;
-    color: #4a5568;
-    margin-bottom: 8px;
-    display: block;
-    font-weight: 500;
-}
-
-.form-group input[type="email"],
-.form-group input[type="password"] {
-    width: 100%;
-    height: 48px;
-    padding: 10px 15px;
-    background-color: #f1f5f9;
-    border: 1px solid transparent;
-    border-radius: 8px;
-    font-size: 15px;
-    outline: none;
-    transition: all 0.3s ease;
-    box-sizing: border-box;
-}
-
-.form-group input[type="email"]:focus,
-.form-group input[type="password"]:focus {
-    border: 1px solid #16774c;
-    background-color: #ffffff;
-}
-
-/* tنسيق Labels & Inputs */
+/* تنسيق Labels & Inputs */
 .login-box form label {
     font-size: 14px;
     color: #4a5568;
