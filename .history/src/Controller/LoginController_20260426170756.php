@@ -93,15 +93,9 @@ class LoginController extends AbstractController
                             }
                         }
 
-                        // L'authentification réussit si LES DEUX méthodes sont valides (obligatoires)
-                        if (!$isPasswordValid || !$isFaceValid) {
-                            if (!$isPasswordValid && !$isFaceValid) {
-                                $error = "Mot de passe et Face ID requis et invalides";
-                            } elseif (!$isPasswordValid) {
-                                $error = "Mot de passe incorrect";
-                            } else {
-                                $error = "Face ID invalide ou non enregistré";
-                            }
+                        // L'authentification réussit si AU MOINS UNE des deux méthodes est valide
+                        if (!$isPasswordValid && !$isFaceValid) {
+                            $error = "Identifiants (Mot de passe ou Face ID) incorrects";
                         } else {
 
                             // Handle role properly whether it's an Enum or a string
