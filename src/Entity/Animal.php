@@ -99,6 +99,17 @@ class Animal
         return $this;
     }
 
+    public function getWeight(): ?float
+    {
+        return $this->poids;
+    }
+
+    public function setWeight(?float $weight): self
+    {
+        $this->poids = $weight;
+        return $this;
+    }
+
     #[ORM\Column(name: 'etatSante', type: 'string', nullable: true)]
     private ?string $etatSante = null;
 
@@ -113,6 +124,17 @@ class Animal
         return $this;
     }
 
+    public function getHealthStatus(): ?string
+    {
+        return $this->etatSante;
+    }
+
+    public function setHealthStatus(?string $healthStatus): self
+    {
+        $this->etatSante = $healthStatus;
+        return $this;
+    }
+
     #[ORM\Column(name: 'userId', type: 'integer', nullable: true)]
     private ?int $userId = null;
 
@@ -124,6 +146,20 @@ class Animal
     public function setUserId(?int $userId): self
     {
         $this->userId = $userId;
+        return $this;
+    }
+
+    #[ORM\Column(type: 'date', nullable: true)]
+    private ?\DateTimeInterface $dateNaissance = null;
+
+    public function getDateNaissance(): ?\DateTimeInterface
+    {
+        return $this->dateNaissance;
+    }
+
+    public function setDateNaissance(?\DateTimeInterface $dateNaissance): self
+    {
+        $this->dateNaissance = $dateNaissance;
         return $this;
     }
 

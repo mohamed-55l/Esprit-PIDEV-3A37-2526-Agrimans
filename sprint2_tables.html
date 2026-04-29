@@ -1,0 +1,406 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8">
+<title>Sprint 2 — Tableaux Agrimans</title>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Fira+Mono:wght@400;500&display=swap" rel="stylesheet">
+<style>
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+  body {
+    font-family: 'Inter', sans-serif;
+    background: #dde2e8;
+    padding: 40px 30px;
+    display: flex;
+    flex-direction: column;
+    gap: 52px;
+  }
+
+  /* ══ WRAPPER ════════════════════════════════ */
+  .tbl {
+    width: 920px;
+    margin: 0 auto;
+    border-radius: 8px;
+    overflow: hidden;
+    box-shadow: 0 4px 20px rgba(0,0,0,0.16);
+    border: 1px solid #b0bec5;
+  }
+
+  /* ══ HEADER ═════════════════════════════════ */
+  .hdr {
+    background: #2e4a6e;
+    color: #fff;
+    padding: 12px 20px;
+    font-size: 14px;
+    font-weight: 700;
+    letter-spacing: 0.3px;
+    display: flex;
+    align-items: center;
+    gap: 9px;
+  }
+
+  /* ══ COLUMN TITLES ══════════════════════════ */
+  .col-titles {
+    display: grid;
+    background: #3a5f8a;
+    border-bottom: 1px solid #2e4a6e;
+  }
+  .col-titles.grid-3  { grid-template-columns: 220px 240px 1fr; }
+  .col-titles.grid-st { grid-template-columns: 200px 1fr 1fr; }
+
+  .col-titles div {
+    padding: 9px 16px;
+    font-size: 10px;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 1.3px;
+    color: #ffffff;
+    border-right: 1px solid #2e4a6e;
+  }
+  .col-titles div:last-child { border-right: none; }
+
+  /* ══ SECTION SEPARATOR ══════════════════════ */
+  .sep {
+    background: #eceff1;
+    border-top: 1px solid #cfd8dc;
+    border-bottom: 1px solid #cfd8dc;
+    padding: 5px 16px;
+    font-size: 9.5px;
+    font-weight: 800;
+    text-transform: uppercase;
+    letter-spacing: 1.8px;
+    color: #78909c;
+  }
+
+  /* ══ DATA ROW ═══════════════════════════════ */
+  .row {
+    display: grid;
+    background: #ffffff;
+    border-bottom: 1px solid #e8ecef;
+  }
+  .row.grid-3  { grid-template-columns: 220px 240px 1fr; }
+  .row.grid-st { grid-template-columns: 200px 1fr 1fr; }
+  .row:last-child { border-bottom: none; }
+  .row:nth-child(even) { background: #f7f9fa; }
+
+  .cell {
+    padding: 11px 16px;
+    border-right: 1px solid #e4e9ec;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    gap: 5px;
+  }
+  .cell:last-child { border-right: none; }
+
+  /* ══ LEFT CELL — US info ════════════════════ */
+  .us-badges { display: flex; gap: 5px; flex-wrap: wrap; margin-bottom: 4px; }
+
+  .ub { /* user story badge */
+    font-family: 'Fira Mono', monospace;
+    font-size: 10px;
+    font-weight: 700;
+    padding: 2px 8px;
+    border-radius: 4px;
+    border: 1.5px solid;
+  }
+  .ub-purple { background: #ede7f6; border-color: #9c6dc5; color: #5e35b1; }
+  .ub-blue   { background: #e3f2fd; border-color: #64b5f6; color: #1565c0; }
+  .ub-teal   { background: #e0f2f1; border-color: #4db6ac; color: #00695c; }
+  .ub-orange { background: #fff3e0; border-color: #ffb74d; color: #e65100; }
+
+  .us-desc { font-size: 11.5px; color: #455a64; line-height: 1.55; font-style: italic; }
+  .cell-cls { font-weight: 700; font-size: 12px; color: #1a3a52; }
+  .cell-sub { font-size: 10px; color: #78909c; margin-top: 1px; }
+
+  /* ══ MIDDLE CELL — task badges ══════════════ */
+  .t-row { display: flex; align-items: center; gap: 7px; font-size: 12px; color: #37474f; padding: 2px 0; }
+
+  .tb { /* task badge */
+    font-family: 'Fira Mono', monospace;
+    font-size: 9px;
+    font-weight: 600;
+    padding: 2px 7px;
+    border-radius: 3px;
+    white-space: nowrap;
+    flex-shrink: 0;
+  }
+  .tb-blue   { background: #bbdefb; color: #0d47a1; }
+  .tb-teal   { background: #b2dfdb; color: #004d40; }
+  .tb-orange { background: #ffe0b2; color: #bf360c; }
+  .tb-purple { background: #e1bee7; color: #4a148c; }
+
+  /* ══ RIGHT CELL — code pills ════════════════ */
+  .pills { display: flex; flex-wrap: wrap; gap: 5px; align-items: flex-start; }
+
+  .pl {
+    font-family: 'Fira Mono', monospace;
+    font-size: 10.5px;
+    padding: 3px 9px;
+    border-radius: 4px;
+    white-space: nowrap;
+    border: 1px solid;
+  }
+  .pl-blue   { background: #e3f2fd; border-color: #90caf9; color: #0d47a1; }
+  .pl-pink   { background: #fce4ec; border-color: #f48fb1; color: #880e4f; }
+  .pl-orange { background: #fff8e1; border-color: #ffe082; color: #e65100; }
+  .pl-gray   { background: #f1f3f4; border-color: #b0bec5; color: #455a64; }
+  .pl-teal   { background: #e0f2f1; border-color: #80cbc4; color: #004d40; }
+  .pl-purple { background: #f3e5f5; border-color: #ce93d8; color: #4a148c; }
+
+  /* ══ STORY TEST CELLS ═══════════════════════ */
+  .st-us {
+    background: #ffffff;
+    font-style: italic;
+    font-size: 13px;
+    font-weight: 600;
+    color: #2c3e50;
+    line-height: 1.6;
+  }
+  .st-ok  { background: #f2fbf5; }
+  .st-nok { background: #fdf5f4; }
+
+  .gwt {
+    display: inline-block;
+    background: #fcf1b8;
+    color: #4a3800;
+    font-weight: 700;
+    font-size: 11px;
+    padding: 3px 8px;
+    border-radius: 4px;
+    margin-right: 5px;
+    margin-bottom: 5px;
+  }
+  .st-p { margin-bottom: 15px; font-size: 12.5px; line-height: 1.65; color: #333; }
+  .st-p:last-child { margin-bottom: 0; }
+
+  code.inline {
+    font-family: 'Fira Mono', monospace;
+    font-size: 10.5px;
+    padding: 1px 6px;
+    border-radius: 3px;
+  }
+</style>
+</head>
+<body>
+
+<!-- ══════════════════════════════════════════════════════════ -->
+<!-- TABLEAU 1 — Gestion des Équipements                       -->
+<!-- ══════════════════════════════════════════════════════════ -->
+<div class="tbl">
+  <div class="hdr">⚙️ &nbsp;Tableau 1 – Détail Technique par Couche · Gestion des Équipements</div>
+  <div class="col-titles grid-3">
+    <div>User Story</div><div>Tâche</div><div>Détail Technique</div>
+  </div>
+
+  <!-- CONTROLLER -->
+  <div class="sep">Controller</div>
+  <div class="row grid-3">
+    <div class="cell">
+      <div class="us-badges">
+        <span class="ub ub-purple">US-004</span>
+        <span class="ub ub-blue">S2</span>
+        <span class="ub ub-teal">ADMIN</span>
+      </div>
+      <div class="us-desc">En tant qu'admin, je veux gérer les équipements agricoles du parc</div>
+    </div>
+    <div class="cell">
+      <div class="t-row"><span class="tb tb-blue">US-004-T01</span> Créer un équipement</div>
+      <div class="t-row"><span class="tb tb-blue">US-004-T02</span> Modifier un équipement</div>
+      <div class="t-row"><span class="tb tb-blue">US-004-T03</span> Supprimer un équipement</div>
+      <div class="t-row"><span class="tb tb-blue">US-004-T04</span> Assigner à un utilisateur</div>
+      <div class="t-row"><span class="tb tb-blue">US-004-T05</span> Alerte de stock critique</div>
+    </div>
+    <div class="cell">
+      <div class="pills">
+        <span class="pl pl-blue">equipementNew() — AdminController.php</span>
+        <span class="pl pl-blue">equipementEdit() — AdminController.php</span>
+        <span class="pl pl-pink">equipementDelete() — AdminController.php</span>
+        <span class="pl pl-blue">equipementAssign() — AdminController.php</span>
+        <span class="pl pl-orange">checkAndSendAlert() — StockAlertService.php</span>
+      </div>
+    </div>
+  </div>
+
+  <!-- SERVICE -->
+  <div class="sep">Service / Logic</div>
+  <div class="row grid-3">
+    <div class="cell">
+      <div class="cell-cls">StockAlertService</div>
+      <div class="cell-sub">EquipementRepository</div>
+    </div>
+    <div class="cell">
+      <div class="t-row"><span class="tb tb-teal">US-004-T01</span> Persister l'équipement en base</div>
+      <div class="t-row"><span class="tb tb-teal">US-004-T02</span> Envoyer une alerte email stock</div>
+      <div class="t-row"><span class="tb tb-teal">US-004-T03</span> Calculer les statistiques</div>
+    </div>
+    <div class="cell">
+      <div class="pills">
+        <span class="pl pl-gray">-- EntityManager::persist()</span>
+        <span class="pl pl-gray">-- EntityManager::flush()</span>
+        <span class="pl pl-orange">-- StockAlertService.php</span>
+        <span class="pl pl-gray">getStatistics() — EquipementRepository.php</span>
+      </div>
+    </div>
+  </div>
+
+  <!-- TWIG -->
+  <div class="sep">Twig</div>
+  <div class="row grid-3">
+    <div class="cell">
+      <div class="cell-cls">Interface HTML</div>
+    </div>
+    <div class="cell">
+      <div class="t-row"><span class="tb tb-orange">US-004-T01</span> Formulaire création équipement</div>
+      <div class="t-row"><span class="tb tb-orange">US-004-T02</span> Formulaire modification</div>
+      <div class="t-row"><span class="tb tb-orange">US-004-T03</span> Liste équipements + stats</div>
+      <div class="t-row"><span class="tb tb-orange">US-004-T04</span> Formulaire assignation</div>
+    </div>
+    <div class="cell">
+      <div class="pills">
+        <span class="pl pl-orange">admin/equipements/new.html.twig</span>
+        <span class="pl pl-orange">admin/equipements/edit.html.twig</span>
+        <span class="pl pl-orange">admin/equipements/index.html.twig</span>
+        <span class="pl pl-orange">admin/equipements/assign.html.twig</span>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ══════════════════════════════════════════════════════════ -->
+<!-- TABLEAU 2 — Gestion des Avis (Reviews)                    -->
+<!-- ══════════════════════════════════════════════════════════ -->
+<div class="tbl">
+  <div class="hdr">⭐ &nbsp;Tableau 2 – Détail Technique par Couche · Gestion des Avis (Reviews)</div>
+  <div class="col-titles grid-3">
+    <div>User Story</div><div>Tâche</div><div>Détail Technique</div>
+  </div>
+
+  <!-- CONTROLLER -->
+  <div class="sep">Controller</div>
+  <div class="row grid-3">
+    <div class="cell">
+      <div class="us-badges">
+        <span class="ub ub-orange">US-003</span>
+        <span class="ub ub-blue">S2</span>
+        <span class="ub ub-teal">USER</span>
+      </div>
+      <div class="us-desc">En tant qu'utilisateur, je veux soumettre un avis sur un équipement agricole</div>
+    </div>
+    <div class="cell">
+      <div class="t-row"><span class="tb tb-blue">US-003-T01</span> Afficher la liste des avis</div>
+      <div class="t-row"><span class="tb tb-blue">US-003-T02</span> Créer un nouvel avis</div>
+      <div class="t-row"><span class="tb tb-blue">US-003-T03</span> Modifier un avis existant</div>
+      <div class="t-row"><span class="tb tb-blue">US-003-T04</span> Supprimer un avis (user)</div>
+      <div class="t-row"><span class="tb tb-blue">US-003-T05</span> Supprimer un avis (admin)</div>
+    </div>
+    <div class="cell">
+      <div class="pills">
+        <span class="pl pl-blue">index() — ReviewController.php</span>
+        <span class="pl pl-blue">new() — ReviewController.php</span>
+        <span class="pl pl-blue">edit() — ReviewController.php</span>
+        <span class="pl pl-pink">delete() — ReviewController.php</span>
+        <span class="pl pl-pink">reviewDelete() — AdminController.php</span>
+      </div>
+    </div>
+  </div>
+
+  <!-- REPOSITORY -->
+  <div class="sep">Service / Repository</div>
+  <div class="row grid-3">
+    <div class="cell">
+      <div class="cell-cls">ReviewRepository</div>
+      <div class="cell-sub">ServiceEntityRepository</div>
+    </div>
+    <div class="cell">
+      <div class="t-row"><span class="tb tb-teal">US-003-T01</span> Rechercher et trier les avis</div>
+      <div class="t-row"><span class="tb tb-teal">US-003-T02</span> Afficher les statistiques globales</div>
+    </div>
+    <div class="cell">
+      <div class="pills">
+        <span class="pl pl-gray">searchAndSort() — ReviewRepository.php</span>
+        <span class="pl pl-gray">getStatistics() — ReviewRepository.php</span>
+      </div>
+    </div>
+  </div>
+
+  <!-- TWIG -->
+  <div class="sep">Twig</div>
+  <div class="row grid-3">
+    <div class="cell">
+      <div class="cell-cls">Interface HTML</div>
+    </div>
+    <div class="cell">
+      <div class="t-row"><span class="tb tb-orange">US-003-T01</span> Formulaire de création d'avis</div>
+      <div class="t-row"><span class="tb tb-orange">US-003-T02</span> Liste des avis + recherche</div>
+      <div class="t-row"><span class="tb tb-orange">US-003-T03</span> Formulaire de modification</div>
+      <div class="t-row"><span class="tb tb-orange">US-003-T04</span> Vue admin des avis</div>
+    </div>
+    <div class="cell">
+      <div class="pills">
+        <span class="pl pl-orange">user/reviews/new.html.twig</span>
+        <span class="pl pl-orange">user/reviews/index.html.twig</span>
+        <span class="pl pl-orange">user/reviews/edit.html.twig</span>
+        <span class="pl pl-orange">admin/reviews/index.html.twig</span>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ══════════════════════════════════════════════════════════ -->
+<!-- TABLEAU 3 — Story Tests                                   -->
+<!-- ══════════════════════════════════════════════════════════ -->
+<div class="tbl">
+  <div class="hdr" style="background:#2e4a6e">🧪 &nbsp;Tableau 3 – Story Tests · Gestion des Avis sur Équipement</div>
+  <div class="col-titles grid-st" style="background:#3a5f8a; border-bottom:1px solid #2e4a6e">
+    <div style="color:#ffffff">User Story</div>
+    <div style="color:#ffffff">✅ Story Test d'Acceptation</div>
+    <div style="color:#ffffff">❌ Story Test de Refus</div>
+  </div>
+
+  <div class="row grid-st" style="align-items:stretch">
+    <!-- US column -->
+    <div class="cell st-us">
+      <div class="us-badges" style="margin-bottom:8px">
+        <span class="ub ub-orange">US-003</span>
+        <span class="ub ub-blue">S2</span>
+        <span class="ub ub-teal">USER</span>
+      </div>
+      <div>En tant qu'utilisateur, je veux laisser un avis sur un équipement pour partager mon expérience</div>
+    </div>
+
+    <!-- SUCCESS column -->
+    <div class="cell st-ok" style="justify-content:flex-start; gap:0; padding-top:16px;">
+      <div class="st-p">
+        <span class="gwt">Étant donné</span><br>
+        l'utilisateur <strong>'Mohamed'</strong> ayant utilisé l'équipement <strong>'Tracteur John Deere'</strong> disponible dans la plateforme
+      </div>
+      <div class="st-p">
+        <span class="gwt">Quand</span><br>
+        il soumet le formulaire avec le commentaire <em>"Excellent équipement"</em> et une note de <strong>5 étoiles</strong>
+      </div>
+      <div class="st-p">
+        <span class="gwt">Alors</span><br>
+        l'avis est enregistré avec <code class="inline" style="background:#e8f5e9;color:#155724">date_review = now()</code>, Mohamed est redirigé vers la liste des avis
+      </div>
+    </div>
+
+    <!-- FAILURE column -->
+    <div class="cell st-nok" style="justify-content:flex-start; gap:0; padding-top:16px;">
+      <div class="st-p">
+        <span class="gwt">Étant donné</span><br>
+        l'utilisateur <strong>'Aziz'</strong> sur le formulaire d'avis pour l'équipement <strong>'Tracteur John Deere'</strong>
+      </div>
+      <div class="st-p">
+        <span class="gwt">Quand</span><br>
+        il soumet le formulaire <strong>sans renseigner la note</strong> (champ obligatoire vide)
+      </div>
+      <div class="st-p">
+        <span class="gwt">Alors</span><br>
+        le formulaire est réaffiché avec l'erreur <em style="color:#c0392b">"La note est requise"</em>, aucune donnée n'est sauvegardée en base
+      </div>
+    </div>
+  </div>
+</div>
+
+</body>
+</html>

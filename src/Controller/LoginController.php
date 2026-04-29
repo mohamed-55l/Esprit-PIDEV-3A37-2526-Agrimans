@@ -53,79 +53,79 @@ class LoginController extends AbstractController
                 $error = "reCAPTCHA invalide.";
             } else {
 
-                    // 🔍 chercher user 
-                    $user = $em->getRepository(Users::class)->findOneBy([
-                        'email' => $email
-                    ]);
+                // 🔍 chercher user 
+                $user = $em->getRepository(Users::class)->findOneBy([
+                    'email' => $email
+                ]);
 
-                    if (!$user) {
-                        $error = "Email introuvable";
-                    } else {
+                if (!$user) {
+                    $error = "Email introuvable";
+                } else {
 
-                        // 🔐 Vérifier l'authentification: mot de passe OU reconnaissance faciale
-                        $faceDescriptorRaw = $request->request->get('face_descriptor');
-                        
-                        $isPasswordValid = false;
-                        $isFaceValid = false;
+                    // 🔐 Vérifier l'authentification: mot de passe OU reconnaissance faciale
+                    $faceDescriptorRaw = $request->request->get('face_descriptor');
 
-                        // Méthode 1: Vérification du mot de passe
-                        if (!empty($password)) {
-                            $isPasswordValid = password_verify($password, $user->getPasswordHash());
-                        }
+                    $isPasswordValid = false;
+                    $isFaceValid = false;
 
-                        // Méthode 2: Vérification de la reconnaissance faciale
-                        if (!empty($faceDescriptorRaw) && $user->getFaceDescriptor() !== null) {
-                            $clientDescriptor = json_decode($faceDescriptorRaw, true);
-                            $savedDescriptor = $user->getFaceDescriptor();
+                    // Méthode 1: Vérification du mot de passe
+                    if (!empty($password)) {
+                        $isPasswordValid = password_verify($password, $user->getPasswordHash());
+                    }
 
-                            if (is_array($clientDescriptor) && is_array($savedDescriptor) && count($clientDescriptor) === 128 && count($savedDescriptor) === 128) {
-                                // Calculer la distance euclidienne entre les descripteurs
-                                $distance = 0.0;
-                                for ($i = 0; $i < 128; $i++) {
-                                    $distance += pow($clientDescriptor[$i] - $savedDescriptor[$i], 2);
-                                }
-                                $distance = sqrt($distance);
+                    // Méthode 2: Vérification de la reconnaissance faciale
+                    if (!empty($faceDescriptorRaw) && $user->getFaceDescriptor() !== null) {
+                        $clientDescriptor = json_decode($faceDescriptorRaw, true);
+                        $savedDescriptor = $user->getFaceDescriptor();
 
-                                // Seuil de tolérance pour la reconnaissance faciale
-                                if ($distance < 0.5) {
-                                    $isFaceValid = true;
-                                }
+                        if (is_array($clientDescriptor) && is_array($savedDescriptor) && count($clientDescriptor) === 128 && count($savedDescriptor) === 128) {
+                            // Calculer la distance euclidienne entre les descripteurs
+                            $distance = 0.0;
+                            for ($i = 0; $i < 128; $i++) {
+                                $distance += pow($clientDescriptor[$i] - $savedDescriptor[$i], 2);
                             }
-                        }
+                            $distance = sqrt($distance);
 
-                        // L'authentification réussit si LES DEUX méthodes sont valides (obligatoires)
-                        if (!$isPasswordValid || !$isFaceValid) {
-                            if (!$isPasswordValid && !$isFaceValid) {
-                                $error = "Mot de passe et Face ID requis et invalides";
-                            } elseif (!$isPasswordValid) {
-                                $error = "Mot de passe incorrect";
-                            } else {
-                                $error = "Face ID invalide ou non enregistré";
-                            }
-                        } else {
-
-                            // Handle role properly whether it's an Enum or a string
-                            $role = $user->getRole();
-                            $roleValue = $role instanceof \App\Enum\UserRole ? $role->value : $role;
-
-                            // ✅ SESSION
-                            $session->set('user_id', $user->getId());
-                            $session->set('user_name', $user->getFullName());
-                            $session->set('user_role', $roleValue);
-
-                            // Authentification Symfony (pour rendre #[IsGranted] et $this->getUser() fonctionnels)
-                            $token = new PostAuthenticationToken($user, 'main', $user->getRoles());
-                            $tokenStorage->setToken($token);
-                            $session->set('_security_main', serialize($token));
-
-                            // 🚀 REDIRECTION
-                            if ($roleValue === 'ADMIN') {
-                                return $this->redirectToRoute('admin_dashboard');
-                            } else {
-                                return $this->redirectToRoute('app_user_dashboard');
+                            // Seuil de tolérance pour la reconnaissance faciale
+                            if ($distance < 0.5) {
+                                $isFaceValid = true;
                             }
                         }
                     }
+
+                    // L'authentification réussit si LES DEUX méthodes sont valides (obligatoires)
+                    if (!$isPasswordValid || !$isFaceValid) {
+                        if (!$isPasswordValid && !$isFaceValid) {
+                            $error = "Mot de passe et Face ID requis et invalides";
+                        } elseif (!$isPasswordValid) {
+                            $error = "Mot de passe incorrect";
+                        } else {
+                            $error = "Face ID invalide ou non enregistré";
+                        }
+                    } else {
+
+                        // Handle role properly whether it's an Enum or a string
+                        $role = $user->getRole();
+                        $roleValue = $role instanceof \App\Enum\UserRole ? $role->value : $role;
+
+                        // ✅ SESSION
+                        $session->set('user_id', $user->getId());
+                        $session->set('user_name', $user->getFullName());
+                        $session->set('user_role', $roleValue);
+
+                        // Authentification Symfony (pour rendre #[IsGranted] et $this->getUser() fonctionnels)
+                        $token = new PostAuthenticationToken($user, 'main', $user->getRoles());
+                        $tokenStorage->setToken($token);
+                        $session->set('_security_main', serialize($token));
+
+                        // 🚀 REDIRECTION
+                        if ($roleValue === 'ADMIN') {
+                            return $this->redirectToRoute('admin_dashboard');
+                        } else {
+                            return $this->redirectToRoute('app_user_dashboard');
+                        }
+                    }
+                }
             }
         }
 

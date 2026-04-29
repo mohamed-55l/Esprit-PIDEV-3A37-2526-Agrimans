@@ -1,118 +1,136 @@
 {% extends 'base.html.twig' %}
 
-{% block title %}Liste des Ã‰valuations (Reviews){% endblock %}
+{% block title %}Liste des Ã‰valuations (Reviews)
+{% endblock %}
 
 {% block body %}
-    <section class="content-section" style="margin-top: 2rem;">
-        <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 2rem;">
-            <div>
-                <h2 style="font-size: 2rem; margin-bottom: 0.5rem;">Ã‰valuations Ã‰quipement</h2>
-                <p style="color: rgba(255,255,255,0.7);">Consultez les notes et retours des utilisateurs.</p>
-            </div>
-            <a href="{{ path('app_review_new') }}" class="hero-btn-primary" style="font-size: 0.9rem;">
-                + Ajouter une Ã©valuation
-            </a>
-        </div>
+	<section class="content-section" style="margin-top: 2rem;">
+		<div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 2rem;">
+			<div>
+				<h2 style="font-size: 2rem; margin-bottom: 0.5rem;">Ã‰valuations Ã‰quipement</h2>
+				<p style="color: rgba(255,255,255,0.7);">Consultez les notes et retours des utilisateurs.</p>
+			</div>
+			<a href="{{ path('app_review_new') }}" class="hero-btn-primary" style="font-size: 0.9rem;">
+				+ Ajouter une évaluation
+			</a>
+		</div>
 
-        <!-- Section de Statistiques Review -->
-        <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 1.5rem; margin-bottom: 2rem;">
-            <div style="background: rgba(255, 255, 255, 0.05); border: 1px solid rgba(255, 255, 255, 0.1); padding: 1.5rem; border-radius: 16px; text-align: center;">
-                <h3 style="font-size: 1rem; color: rgba(255,255,255,0.7); margin-bottom: 0.5rem;">Nombre d'Ã©valuations</h3>
-                <div style="font-size: 2.5rem; font-weight: 800; color: var(--white);">{{ statistics.total|default(0) }}</div>
-            </div>
-            <div style="background: rgba(241, 196, 15, 0.1); border: 1px solid rgba(241, 196, 15, 0.3); padding: 1.5rem; border-radius: 16px; text-align: center;">
-                <h3 style="font-size: 1rem; color: rgba(255,255,255,0.7); margin-bottom: 0.5rem;">Note Moyenne globale</h3>
-                <div style="font-size: 2.5rem; font-weight: 800; color: #f1c40f;">{{ statistics.average|default(0) }} <span style="font-size: 1rem;">/ 5</span></div>
-            </div>
-            
-            <div style="background: rgba(255, 255, 255, 0.05); border: 1px solid rgba(255, 255, 255, 0.1); padding: 1.5rem; border-radius: 16px;">
-                <h3 style="font-size: 0.9rem; color: rgba(255,255,255,0.7); margin-bottom: 0.5rem; text-align: center;">RÃ©partition des notes</h3>
-                <div style="display: flex; justify-content: center; gap: 10px; font-size: 0.8rem;">
-                    {% for note in 5..1 %}
-                        <div style="text-align: center;">
-                            <div style="color: #f1c40f;">{{ note }}<i class="fa-solid fa-star"></i></div>
-                            <div style="font-weight: bold;">{{ statistics.distribution[note]|default(0) }}</div>
-                        </div>
-                    {% endfor %}
-                </div>
-            </div>
-        </div>
+		<!-- Section de Statistiques Review -->
+		<div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 1.5rem; margin-bottom: 2rem;">
+			<div style="background: rgba(255, 255, 255, 0.05); border: 1px solid rgba(255, 255, 255, 0.1); padding: 1.5rem; border-radius: 16px; text-align: center;">
+				<h3 style="font-size: 1rem; color: rgba(255,255,255,0.7); margin-bottom: 0.5rem;">Nombre d'Ã©valuations</h3>
+				<div style="font-size: 2.5rem; font-weight: 800; color: var(--white);">{{ statistics.total|default(0) }}</div>
+			</div>
+			<div style="background: rgba(241, 196, 15, 0.1); border: 1px solid rgba(241, 196, 15, 0.3); padding: 1.5rem; border-radius: 16px; text-align: center;">
+				<h3 style="font-size: 1rem; color: rgba(255,255,255,0.7); margin-bottom: 0.5rem;">Note Moyenne globale</h3>
+				<div style="font-size: 2.5rem; font-weight: 800; color: #f1c40f;">{{ statistics.average|default(0) }}
+					<span style="font-size: 1rem;">/ 5</span>
+				</div>
+			</div>
 
-        <!-- Barre de Recherche et Tri pour Review -->
-        <div style="background: rgba(255,255,255,0.03); border: 1px solid rgba(255,255,255,0.08); border-radius: 16px; padding: 1.5rem; margin-bottom: 2rem;">
-            <form method="get" action="{{ path('app_review_index') }}" style="display: flex; gap: 1rem; flex-wrap: wrap; align-items: flex-end;">
-                <div style="flex-grow: 1; min-width: 250px;">
-                    <label style="display: block; font-size: 0.85rem; color: rgba(255,255,255,0.6); margin-bottom: 0.4rem;">Rechercher un commentaire</label>
-                    <input type="text" name="q" value="{{ currentQuery|default('') }}" class="form-control" placeholder="Mots-clÃ©s..." style="width: 100%;">
-                </div>
-                <div>
-                    <label style="display: block; font-size: 0.85rem; color: rgba(255,255,255,0.6); margin-bottom: 0.4rem;">Trier par</label>
-                    <select name="sort" class="form-control">
-                        <option value="dateReview" {% if currentSort|default('dateReview') == 'dateReview' %}selected{% endif %}>Date de l'avis</option>
-                        <option value="note" {% if currentSort|default('dateReview') == 'note' %}selected{% endif %}>Note d'Ã©valuation</option>
-                    </select>
-                </div>
-                <div>
-                    <label style="display: block; font-size: 0.85rem; color: rgba(255,255,255,0.6); margin-bottom: 0.4rem;">Ordre</label>
-                    <select name="order" class="form-control">
-                        <option value="DESC" {% if currentOrder|default('DESC') == 'DESC' %}selected{% endif %}>Descendant</option>
-                        <option value="ASC" {% if currentOrder|default('DESC') == 'ASC' %}selected{% endif %}>Ascendant</option>
-                    </select>
-                </div>
-                <div>
-                    <button type="submit" class="hero-btn-primary" style="padding: 0.8rem 1.5rem; font-size: 0.95rem; display: flex; align-items: center; gap: 8px;">
-                        <i class="fa-solid fa-search"></i> Filtrer
-                    </button>
-                </div>
-                {% if currentQuery|default('') != '' or currentSort|default('dateReview') != 'dateReview' %}
-                <div>
-                    <a href="{{ path('app_review_index') }}" class="btn btn-danger" style="padding: 0.8rem 1.5rem;"><i class="fa-solid fa-times"></i></a>
-                </div>
-                {% endif %}
-            </form>
-        </div>        <div class="table-wrapper">
-            <table class="styled-table">
-                <thead>
-                    <tr>
-                        <th>Ã‰quipement</th>
-                        <th>Utilisateur</th>
-                        <th>Note</th>
-                        <th>AperÃ§u Commentaire</th>
-                        <th>Date</th>
-                        <th>Actions</th>
-                    </tr>
-                </thead>
-                <tbody>
-                {% for review in reviews %}
-                    <tr>
-                        <td><strong>{{ review.equipement ? review.equipement.nom : 'N/A' }}</strong></td>
-                        <td><span class="badge badge-warning"><i class="fa-solid fa-user"></i> {{ review.userId }}</span></td>
-                        <td style="color: #f1c40f;">
-                            {% for i in 1..5 %}
-                                {% if review.note >= i %}
-                                    <i class="fa-solid fa-star"></i>
-                                {% else %}
-                                    <i class="fa-regular fa-star" style="color: rgba(255,255,255,0.2);"></i>
-                                {% endif %}
-                            {% endfor %}
-                        </td>
-                        <td>{{ review.commentaire|length > 30 ? review.commentaire|slice(0, 30) ~ '...' : review.commentaire }}</td>
-                        <td>{{ review.dateReview ? review.dateReview|date('d/m/Y') : '' }}</td>
-                        <td>
-                            <a href="{{ path('app_review_show', {'id': review.id}) }}" class="btn btn-secondary"><i class="fa-solid fa-eye"></i></a>
-                            <a href="{{ path('app_review_edit', {'id': review.id}) }}" class="btn btn-primary" style="margin-left: 0.5rem;"><i class="fa-solid fa-pen"></i></a>
-                        </td>
-                    </tr>
-                {% else %}
-                    <tr>
-                        <td colspan="7" style="text-align: center; padding: 3rem; color: rgba(255,255,255,0.6);">
-                            <i class="fa-solid fa-comments" style="font-size: 3rem; margin-bottom: 1rem; opacity: 0.5;"></i><br>
-                            Aucune Ã©valuation enregistrÃ©e pour le moment.
-                        </td>
-                    </tr>
-                {% endfor %}
-                </tbody>
-            </table>
-        </div>
-    </section>
+			<div style="background: rgba(255, 255, 255, 0.05); border: 1px solid rgba(255, 255, 255, 0.1); padding: 1.5rem; border-radius: 16px;">
+				<h3 style="font-size: 0.9rem; color: rgba(255,255,255,0.7); margin-bottom: 0.5rem; text-align: center;">RÃ©partition des notes</h3>
+				<div style="display: flex; justify-content: center; gap: 10px; font-size: 0.8rem;">
+					{% for note in 5..1 %}
+						<div style="text-align: center;">
+							<div style="color: #f1c40f;">{{ note }}<i class="fa-solid fa-star"></i>
+							</div>
+							<div style="font-weight: bold;">{{ statistics.distribution[note]|default(0) }}</div>
+						</div>
+					{% endfor %}
+				</div>
+			</div>
+		</div>
+
+		<!-- Barre de Recherche et Tri pour Review -->
+		<div style="background: rgba(255,255,255,0.03); border: 1px solid rgba(255,255,255,0.08); border-radius: 16px; padding: 1.5rem; margin-bottom: 2rem;">
+			<form method="get" action="{{ path('app_review_index') }}" style="display: flex; gap: 1rem; flex-wrap: wrap; align-items: flex-end;">
+				<div style="flex-grow: 1; min-width: 250px;">
+					<label style="display: block; font-size: 0.85rem; color: rgba(255,255,255,0.6); margin-bottom: 0.4rem;">Rechercher un commentaire</label>
+					<input type="text" name="q" value="{{ currentQuery|default('') }}" class="form-control" placeholder="Mots-clÃ©s..." style="width: 100%;">
+				</div>
+				<div>
+					<label style="display: block; font-size: 0.85rem; color: rgba(255,255,255,0.6); margin-bottom: 0.4rem;">Trier par</label>
+					<select name="sort" class="form-control">
+						<option value="dateReview" {% if currentSort|default('dateReview') == 'dateReview' %} selected {% endif %}>Date de l'avis</option>
+						<option value="note" {% if currentSort|default('dateReview') == 'note' %} selected {% endif %}>Note d'Ã©valuation</option>
+					</select>
+				</div>
+				<div>
+					<label style="display: block; font-size: 0.85rem; color: rgba(255,255,255,0.6); margin-bottom: 0.4rem;">Ordre</label>
+					<select name="order" class="form-control">
+						<option value="DESC" {% if currentOrder|default('DESC') == 'DESC' %} selected {% endif %}>Descendant</option>
+						<option value="ASC" {% if currentOrder|default('DESC') == 'ASC' %} selected {% endif %}>Ascendant</option>
+					</select>
+				</div>
+				<div>
+					<button type="submit" class="hero-btn-primary" style="padding: 0.8rem 1.5rem; font-size: 0.95rem; display: flex; align-items: center; gap: 8px;">
+						<i class="fa-solid fa-search"></i>
+						Filtrer
+					</button>
+				</div>
+				{% if currentQuery|default('') != '' or currentSort|default('dateReview') != 'dateReview' %}
+					<div>
+						<a href="{{ path('app_review_index') }}" class="btn btn-danger" style="padding: 0.8rem 1.5rem;">
+							<i class="fa-solid fa-times"></i>
+						</a>
+					</div>
+				{% endif %}
+			</form>
+		</div>
+		<div class="table-wrapper">
+			<table class="styled-table">
+				<thead>
+					<tr>
+						<th>Ã‰quipement</th>
+						<th>Utilisateur</th>
+						<th>Note</th>
+						<th>AperÃ§u Commentaire</th>
+						<th>Date</th>
+						<th>Actions</th>
+					</tr>
+				</thead>
+				<tbody>
+					{% for review in reviews %}
+						<tr>
+							<td>
+								<strong>{{ review.equipement ? review.equipement.nom : 'N/A' }}</strong>
+							</td>
+							<td>
+								<span class="badge badge-warning">
+									<i class="fa-solid fa-user"></i>
+									{{ review.userId }}</span>
+							</td>
+							<td style="color: #f1c40f;">
+								{% for i in 1..5 %}
+									{% if review.note >= i %}
+										<i class="fa-solid fa-star"></i>
+									{% else %}
+										<i class="fa-regular fa-star" style="color: rgba(255,255,255,0.2);"></i>
+									{% endif %}
+								{% endfor %}
+							</td>
+							<td>{{ review.commentaire|length > 30 ? review.commentaire|slice(0, 30) ~ '...' : review.commentaire }}</td>
+							<td>{{ review.dateReview ? review.dateReview|date('d/m/Y') : '' }}</td>
+							<td>
+								<a href="{{ path('app_review_show', {'id': review.id}) }}" class="btn btn-secondary">
+									<i class="fa-solid fa-eye"></i>
+								</a>
+								<a href="{{ path('app_review_edit', {'id': review.id}) }}" class="btn btn-primary" style="margin-left: 0.5rem;">
+									<i class="fa-solid fa-pen"></i>
+								</a>
+							</td>
+						</tr>
+					{% else %}
+						<tr>
+							<td colspan="7" style="text-align: center; padding: 3rem; color: rgba(255,255,255,0.6);">
+								<i class="fa-solid fa-comments" style="font-size: 3rem; margin-bottom: 1rem; opacity: 0.5;"></i><br>
+								Aucune Ã©valuation enregistrÃ©e pour le moment.
+							</td>
+						</tr>
+					{% endfor %}
+				</tbody>
+			</table>
+		</div>
+	</section>
 {% endblock %}

@@ -55,7 +55,7 @@ class UserDashboardController extends AbstractController
         $equipements = $equipementRepository->findByUser($user, $query);
 
         // Chart Equipements
-        $dispoCount = ['Disponible' => 0, 'Indisponible' => 0, 'En Panne' => 0];
+        $dispoCount = ['Disponible' => 0, 'Indisponible' => 0, 'En panne' => 0, 'En maintenance' => 0];
         foreach ($equipements as $eq) {
             $dispo = ucfirst(strtolower(trim($eq->getDisponibilite() ?? '')));
             if (isset($dispoCount[$dispo])) {
@@ -72,7 +72,7 @@ class UserDashboardController extends AbstractController
             'datasets' => [
                 [
                     'label' => 'Mes Équipements',
-                    'backgroundColor' => ['#2ecc71', '#e74c3c', '#f1c40f', '#95a5a6'],
+                    'backgroundColor' => ['#2ecc71', '#e74c3c', '#e67e22', '#3498db', '#95a5a6'],
                     'borderColor' => '#1e2529',
                     'data' => array_values($dispoCount),
                 ],

@@ -57,7 +57,7 @@ class AdminController extends AbstractController
 
         // 📊 Graphique 1 : Répartition des Équipements par Disponibilité
         $equipements = $equipementRepository->findAll();
-        $dispoCount = ['Disponible' => 0, 'Indisponible' => 0, 'En Panne' => 0];
+        $dispoCount = ['Disponible' => 0, 'Indisponible' => 0, 'En panne' => 0, 'En maintenance' => 0];
         foreach ($equipements as $eq) {
             $dispo = ucfirst(strtolower(trim($eq->getDisponibilite() ?? '')));
             if (isset($dispoCount[$dispo])) {
@@ -74,7 +74,7 @@ class AdminController extends AbstractController
             'datasets' => [
                 [
                     'label' => 'Équipements',
-                    'backgroundColor' => ['#2ecc71', '#e74c3c', '#f1c40f', '#95a5a6'],
+                    'backgroundColor' => ['#2ecc71', '#e74c3c', '#e67e22', '#3498db', '#95a5a6'],
                     'borderColor' => '#1e2529',
                     'data' => array_values($dispoCount),
                 ],
