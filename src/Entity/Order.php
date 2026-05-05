@@ -42,15 +42,15 @@ class Order
         return $this;
     }
 
-    #[ORM\Column(type: 'float', nullable: false)]
-    private ?float $total_amount = null;
+    #[ORM\Column(type: 'decimal', precision: 10, scale: 3, nullable: false)]
+    private ?string $total_amount = null;
 
-    public function getTotal_amount(): ?float
+    public function getTotal_amount(): ?string
     {
         return $this->total_amount;
     }
 
-    public function setTotal_amount(float $total_amount): self
+    public function setTotal_amount(string $total_amount): self
     {
         $this->total_amount = $total_amount;
         return $this;
@@ -96,12 +96,12 @@ class Order
         return $this;
     }
 
-    public function getTotalAmount(): ?float
+    public function getTotalAmount(): ?string
     {
         return $this->total_amount;
     }
 
-    public function setTotalAmount(float $total_amount): static
+    public function setTotalAmount(string $total_amount): static
     {
         $this->total_amount = $total_amount;
 

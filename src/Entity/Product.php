@@ -57,15 +57,15 @@ class Product
         return $this;
     }
 
-    #[ORM\Column(type: 'float', nullable: false)]
-    private ?float $price = null;
+    #[ORM\Column(type: 'decimal', precision: 10, scale: 3, nullable: false)]
+    private ?string $price = null;
 
-    public function getPrice(): ?float
+    public function getPrice(): ?string
     {
         return $this->price;
     }
 
-    public function setPrice(float $price): self
+    public function setPrice(string $price): self
     {
         $this->price = $price;
         return $this;
@@ -213,7 +213,7 @@ class Product
         $this->getRatings()->removeElement($rating);
         return $this;
     }
-    #[ORM\OneToMany(targetEntity: CartItem::class, mappedBy: 'product', cascade: ['persist', 'remove'])]
+    #[ORM\OneToMany(targetEntity: CartItem::class, mappedBy: 'product', cascade: ['persist', 'remove'], orphanRemoval: true)]
     private Collection $cartItems;
 
     public function __construct()

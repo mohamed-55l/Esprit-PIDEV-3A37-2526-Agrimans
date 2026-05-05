@@ -22,11 +22,11 @@ class ProductBundle
     #[ORM\Column(type: 'text', nullable: true)]
     private ?string $description = null;
 
-    #[ORM\Column(type: 'float', nullable: false)]
-    private ?float $originalPrice = null;
+    #[ORM\Column(type: 'decimal', precision: 10, scale: 3, nullable: false)]
+    private ?string $originalPrice = null;
 
-    #[ORM\Column(type: 'float', nullable: false)]
-    private ?float $bundlePrice = null;
+    #[ORM\Column(type: 'decimal', precision: 10, scale: 3, nullable: false)]
+    private ?string $bundlePrice = null;
 
     #[ORM\Column(type: 'float', nullable: false)]
     private ?float $discountPercentage = 0.0;
@@ -83,24 +83,24 @@ class ProductBundle
         return $this;
     }
 
-    public function getOriginalPrice(): ?float
+    public function getOriginalPrice(): ?string
     {
         return $this->originalPrice;
     }
 
-    public function setOriginalPrice(float $originalPrice): self
+    public function setOriginalPrice(string $originalPrice): self
     {
         $this->originalPrice = $originalPrice;
         $this->calculateDiscount();
         return $this;
     }
 
-    public function getBundlePrice(): ?float
+    public function getBundlePrice(): ?string
     {
         return $this->bundlePrice;
     }
 
-    public function setBundlePrice(float $bundlePrice): self
+    public function setBundlePrice(string $bundlePrice): self
     {
         $this->bundlePrice = $bundlePrice;
         $this->calculateDiscount();
