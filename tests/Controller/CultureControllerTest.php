@@ -75,10 +75,10 @@ class CultureControllerTest extends WebTestCase
 
         $this->assertResponseIsSuccessful();
 
-        $form = $crawler->selectButton('Enregistrer')->form();
+        $form = $crawler->selectButton('Save')->form();
         $formName = $form->getName();
 
-        $client->submitForm('Enregistrer', [
+        $client->submitForm('Save', [
             $formName . '[nom]'          => 'Blé Test Unitaire',
             $formName . '[type_culture]' => 'Céréale',
             $formName . '[etat_culture]' => 'En cours',
