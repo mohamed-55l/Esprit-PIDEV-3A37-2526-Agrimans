@@ -535,9 +535,12 @@
             </div>
             
             <div class="charts-container" style="grid-template-columns: 1fr;">
-                <div class="chart-card" style="margin-top: 20px;">
+                <div class="chart-card" style="margin-top: 20px; cursor: pointer; transition: border-color 0.3s;" onclick="location.href='{{ path('app_statistics_index') }}'" onmouseover="this.style.borderColor='#9b59b6'" onmouseout="this.style.borderColor=''">
                     <div class="card-header">
                         <h3 class="card-title"><i class="fa-solid fa-shopping-cart" style="color: #9b59b6;"></i> État des Commandes Marketplace</h3>
+                        <a href="{{ path('app_statistics_index') }}" style="font-size:0.82rem; color:#9b59b6; text-decoration:none; display:flex; align-items:center; gap:5px;">
+                            <i class="fa-solid fa-arrow-right"></i> Voir détails
+                        </a>
                     </div>
                     <div style="height: 300px; width: 100%; display: flex; justify-content: center;">
                         <canvas id="marketplaceChart"></canvas>
