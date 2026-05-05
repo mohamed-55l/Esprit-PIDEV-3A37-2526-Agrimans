@@ -1,0 +1,339 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+  <meta charset="UTF-8">
+  <title>Gestion Parcelles & Cultures – Tableaux Techniques</title>
+  <style>
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+    body { font-family: 'Segoe UI', Arial, sans-serif; background: #f0f4f8; color: #222; font-size: 13px; }
+    .page { width: 980px; margin: 30px auto; display: flex; flex-direction: column; gap: 36px; }
+
+    /* ── Card shell ── */
+    .card { background: #fff; border-radius: 8px; overflow: hidden; box-shadow: 0 3px 12px rgba(0,0,0,.12); }
+    .card-header {
+      background: #1e3a5f; color: #fff;
+      padding: 13px 20px; font-size: 15px; font-weight: 700;
+      display: flex; align-items: center; gap: 10px;
+    }
+
+    table { width: 100%; border-collapse: collapse; }
+    th { background: #eaf0f8; color: #1e3a5f; font-weight: 700; font-size: 11px;
+         text-transform: uppercase; letter-spacing: .5px; padding: 8px 14px;
+         text-align: left; border-bottom: 2px solid #c8d8ea; }
+    td { padding: 9px 14px; border-bottom: 1px solid #edf0f5; vertical-align: middle; }
+    tr:last-child td { border-bottom: none; }
+
+    /* layer separators */
+    .layer-row td { background: #f4f7fb; color: #6b7a90; font-size: 10px;
+                    font-weight: 700; text-transform: uppercase; letter-spacing: 1px;
+                    padding: 5px 14px; border-bottom: 1px solid #dce8f0; }
+
+    .ctrl-label { font-weight: 700; color: #1e3a5f; font-size: 12px; }
+    .ctrl-sub   { color: #6b7a90; font-size: 11px; line-height: 1.6; }
+
+    /* US badge */
+    .us-badge {
+      display: inline-block; background: #1e3a5f; color: #fff;
+      border-radius: 12px; padding: 3px 10px; font-size: 11px; font-weight: 700; white-space: nowrap;
+    }
+
+    /* File badges */
+    .badges { display: flex; flex-wrap: wrap; gap: 5px; }
+    .badge  { display: inline-block; border-radius: 4px; padding: 2px 8px; font-size: 11px; font-weight: 600; white-space: nowrap; }
+    .b-blue   { background: #dbeafe; color: #1d4ed8; }
+    .b-green  { background: #d1fae5; color: #065f46; }
+    .b-purple { background: #ede9fe; color: #5b21b6; }
+    .b-orange { background: #ffedd5; color: #9a3412; }
+    .b-env    { background: #fef3c7; color: #92400e; }
+
+    /* Priority badge */
+    .prio { background: #1e3a5f; color: #fff; border-radius: 5px; padding: 4px 12px; font-size: 11px; font-weight: 700; }
+
+    /* Feature circle */
+    .feat-circle {
+      width: 36px; height: 36px; border-radius: 50%;
+      background: #1e3a5f; color: #fff;
+      font-weight: 700; font-size: 14px;
+      display: flex; align-items: center; justify-content: center;
+    }
+
+    /* Tableau 3 header cells */
+    .h-green { background: #27ae60; color: #fff; font-weight: 700; padding: 9px 14px; font-size: 12px; }
+    .h-red   { background: #c0392b; color: #fff; font-weight: 700; padding: 9px 14px; font-size: 12px; }
+    .cell-us   { width: 24%; font-size: 12px; line-height: 1.6; padding: 12px 14px; border-right: 1px solid #edf0f5; vertical-align: top; }
+    .cell-test { width: 38%; font-size: 12px; line-height: 1.8; padding: 12px 14px; border-right: 1px solid #edf0f5; vertical-align: top; }
+
+    .page-num { text-align: right; font-size: 24px; font-weight: 700; color: #1e3a5f; }
+  </style>
+</head>
+<body>
+<div class="page">
+
+<!-- ══════════════════════════════════════════════════════════ -->
+<!-- TABLEAU 1 – Détail Technique par Couche                  -->
+<!-- ══════════════════════════════════════════════════════════ -->
+<div class="card">
+  <div class="card-header">⚙️&nbsp; Tableau 1 – Détail Technique par Couche</div>
+  <table>
+    <thead>
+      <tr>
+        <th style="width:18%">COUCHE</th>
+        <th style="width:26%">TÂCHE</th>
+        <th>DÉTAIL TECHNIQUE</th>
+      </tr>
+    </thead>
+    <tbody>
+
+      <tr class="layer-row"><td colspan="3">CONTROLLER</td></tr>
+
+      <tr>
+        <td rowspan="5">
+          <div class="ctrl-label">ParcelleController</div>
+          <div class="ctrl-sub">CultureController<br>AgricultureController</div>
+        </td>
+        <td><span class="us-badge">US-001-T01</span>&nbsp; Créer / Modifier / Supprimer</td>
+        <td><div class="badges">
+          <span class="badge b-blue">new() → ParcelleController.php</span>
+          <span class="badge b-blue">edit() → ParcelleController.php</span>
+          <span class="badge b-blue">delete() → ParcelleController.php</span>
+          <span class="badge b-blue">new() → CultureController.php</span>
+        </div></td>
+      </tr>
+      <tr>
+        <td><span class="us-badge">US-001-T02</span>&nbsp; Consulter liste (Admin / User)</td>
+        <td><div class="badges">
+          <span class="badge b-blue">index() → ParcelleController.php</span>
+          <span class="badge b-blue">index() → CultureController.php</span>
+        </div></td>
+      </tr>
+      <tr>
+        <td><span class="us-badge">US-001-T03</span>&nbsp; Visualiser sur carte Maps</td>
+        <td><div class="badges">
+          <span class="badge b-blue">show() → ParcelleController.php</span>
+          <span class="badge b-env">🌍 env: GOOGLE_MAPS_API_KEY</span>
+        </div></td>
+      </tr>
+      <tr>
+        <td><span class="us-badge">US-001-T05</span>&nbsp; Recommandation IA culture</td>
+        <td><div class="badges">
+          <span class="badge b-blue">aiRecommendation() → ParcelleController.php</span>
+          <span class="badge b-blue">applyAiRecommendation() → ParcelleController.php</span>
+        </div></td>
+      </tr>
+      <tr>
+        <td><span class="us-badge">US-001-T06</span>&nbsp; Estimation du rendement</td>
+        <td><div class="badges">
+          <span class="badge b-blue">rendement() → AgricultureController.php</span>
+          <span class="badge b-blue">statistiques() → AgricultureController.php</span>
+        </div></td>
+      </tr>
+
+      <tr class="layer-row"><td colspan="3">SERVICE</td></tr>
+
+      <tr>
+        <td rowspan="4">
+          <div class="ctrl-label">AgricultureService</div>
+          <div class="ctrl-sub">CropRecommendationService<br>EmailService</div>
+        </td>
+        <td><span class="us-badge">US-001-T01</span>&nbsp; Gestion CRUD métier</td>
+        <td><div class="badges">
+          <span class="badge b-green">-- AgricultureService.php</span>
+        </div></td>
+      </tr>
+      <tr>
+        <td><span class="us-badge">US-001-T04</span>&nbsp; Notification email récolte</td>
+        <td><div class="badges">
+          <span class="badge b-green">-- EmailService.php</span>
+          <span class="badge b-green">-- AgricultureService.php</span>
+        </div></td>
+      </tr>
+      <tr>
+        <td><span class="us-badge">US-001-T05</span>&nbsp; Recommandation IA (OpenAI)</td>
+        <td><div class="badges">
+          <span class="badge b-green">-- CropRecommendationService.php</span>
+          <span class="badge b-env">🔑 env: OPENAI_API_KEY</span>
+        </div></td>
+      </tr>
+      <tr>
+        <td><span class="us-badge">US-001-T06</span>&nbsp; Calcul rendement &amp; compatibilité</td>
+        <td><div class="badges">
+          <span class="badge b-green">calculerRendement() – AgricultureService.php</span>
+          <span class="badge b-green">getCompatibiliteSol() – AgricultureService.php</span>
+        </div></td>
+      </tr>
+
+      <tr class="layer-row"><td colspan="3">TWIG</td></tr>
+
+      <tr>
+        <td><div class="ctrl-label" style="color:#7c3aed">Interface HTML</div></td>
+        <td>Vues Gestion Parcelles &amp; Cultures</td>
+        <td><div class="badges">
+          <span class="badge b-purple">parcelle/new.html.twig</span>
+          <span class="badge b-purple">parcelle/edit.html.twig</span>
+          <span class="badge b-purple">parcelle/index.html.twig</span>
+          <span class="badge b-purple">parcelle/show.html.twig</span>
+          <span class="badge b-purple">parcelle/ai_recommendation.html.twig</span>
+          <span class="badge b-purple">culture/index.html.twig</span>
+          <span class="badge b-purple">culture/new.html.twig</span>
+          <span class="badge b-purple">culture/show.html.twig</span>
+          <span class="badge b-purple">culture/edit.html.twig</span>
+          <span class="badge b-orange">agriculture/rendement.html.twig</span>
+          <span class="badge b-orange">agriculture/statistiques.html.twig</span>
+          <span class="badge b-orange">agriculture/calendrier.html.twig</span>
+          <span class="badge b-orange">agriculture/compatibilite.html.twig</span>
+        </div></td>
+      </tr>
+
+    </tbody>
+  </table>
+</div>
+<div class="page-num">15</div>
+
+<!-- ══════════════════════════════════════════════════════════ -->
+<!-- TABLEAU 2 – User Story                                   -->
+<!-- ══════════════════════════════════════════════════════════ -->
+<div class="card">
+  <div class="card-header">📋&nbsp; Tableau 2 – User Story · Gestion Parcelles &amp; Cultures</div>
+  <table>
+    <thead>
+      <tr>
+        <th style="width:8%">ID Feature</th>
+        <th style="width:18%">Feature</th>
+        <th style="width:11%">ID User Story</th>
+        <th>User Story</th>
+        <th style="width:10%">Priorité</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td rowspan="6" style="text-align:center;vertical-align:middle;">
+          <div class="feat-circle">1</div>
+        </td>
+        <td rowspan="6" style="vertical-align:middle;font-weight:600;color:#1e3a5f;">Gestion Parcelles &amp; Cultures</td>
+        <td style="text-align:center;"><span class="us-badge">1.1</span></td>
+        <td>En tant qu'<b>agriculteur (user)</b>, je veux <b>créer, modifier, supprimer et consulter</b> une parcelle ou une culture afin de gérer efficacement mes activités agricoles.</td>
+        <td style="text-align:center;"><span class="prio">Élevée</span></td>
+      </tr>
+      <tr>
+        <td style="text-align:center;"><span class="us-badge">1.2</span></td>
+        <td>En tant qu'<b>administrateur</b>, je veux <b>consulter la liste de toutes les parcelles et cultures</b> afin de superviser et gérer les données globales.</td>
+        <td style="text-align:center;"><span class="prio">Élevée</span></td>
+      </tr>
+      <tr>
+        <td style="text-align:center;"><span class="us-badge">1.3</span></td>
+        <td>En tant qu'<b>agriculteur (user)</b>, je veux <b>visualiser ma parcelle sur une carte réelle</b> avec ses coordonnées exactes (API Maps) afin de localiser précisément mon terrain.</td>
+        <td style="text-align:center;"><span class="prio">Élevée</span></td>
+      </tr>
+      <tr>
+        <td style="text-align:center;"><span class="us-badge">1.4</span></td>
+        <td>En tant qu'<b>agriculteur (user)</b>, je veux <b>recevoir un email avant chaque date de récolte</b> afin de ne pas manquer le moment optimal de récolte.</td>
+        <td style="text-align:center;"><span class="prio">Élevée</span></td>
+      </tr>
+      <tr>
+        <td style="text-align:center;"><span class="us-badge">1.5</span></td>
+        <td>En tant qu'<b>agriculteur (user)</b>, je veux <b>obtenir des recommandations de cultures</b> en fonction du type de sol afin d'optimiser la production.</td>
+        <td style="text-align:center;"><span class="prio">Élevée</span></td>
+      </tr>
+      <tr>
+        <td style="text-align:center;"><span class="us-badge">1.6</span></td>
+        <td>En tant qu'<b>agriculteur (user)</b>, je veux une <b>estimation du rendement</b> basée sur les informations de la parcelle et des cultures afin de prévoir ma production.</td>
+        <td style="text-align:center;"><span class="prio">Élevée</span></td>
+      </tr>
+    </tbody>
+  </table>
+</div>
+<div class="page-num">16</div>
+
+<!-- ══════════════════════════════════════════════════════════ -->
+<!-- TABLEAU 3 – Story Test                                   -->
+<!-- ══════════════════════════════════════════════════════════ -->
+<div class="card">
+  <div class="card-header">✏️&nbsp; Tableau 3 – Gestion Parcelles &amp; Cultures · Story Test</div>
+  <table>
+    <thead>
+      <tr>
+        <th style="width:24%">User Story</th>
+        <th class="h-green" style="width:38%">✅ Story Test d'acceptation (Cas de réussite)</th>
+        <th class="h-red"   style="width:38%">❌ Story Test de refus (Cas d'échec)</th>
+      </tr>
+    </thead>
+    <tbody>
+
+      <tr>
+        <td class="cell-us">En tant qu'<b>agriculteur (user)</b>, je veux <b>créer, modifier et supprimer</b> une parcelle ou une culture afin de gérer mes activités agricoles.</td>
+        <td class="cell-test">
+          <b>Étant donné</b> l'agriculteur 'A1' remplit le formulaire avec le nom <b>'Parcelle Nord'</b>, superficie <b>5 ha</b>, type sol <b>'Limoneux'</b><br>
+          <b>Quand</b> il soumet le formulaire de création<br>
+          <b>Alors</b> la parcelle est visible dans la liste et assignée à son compte
+        </td>
+        <td class="cell-test">
+          <b>Étant donné</b> l'agriculteur 'A2' soumet le formulaire avec le champ <b>superficie vide</b><br>
+          <b>Quand</b> le système valide les champs obligatoires<br>
+          <b>Alors</b> la parcelle <b>n'est pas créée</b>, un message d'erreur <b>'Superficie obligatoire'</b> est affiché
+        </td>
+      </tr>
+
+      <tr>
+        <td class="cell-us">En tant qu'<b>administrateur</b>, je veux <b>consulter la liste de toutes les parcelles et cultures</b> afin de superviser les données globales.</td>
+        <td class="cell-test">
+          <b>Étant donné</b> l'administrateur 'Admin1' connecté avec le rôle <b>ROLE_ADMIN</b><br>
+          <b>Quand</b> il accède à la page <b>/parcelle</b><br>
+          <b>Alors</b> toutes les parcelles de tous les utilisateurs s'affichent avec pagination et recherche
+        </td>
+        <td class="cell-test">
+          <b>Étant donné</b> l'agriculteur 'A1' sans rôle admin accède à la liste<br>
+          <b>Quand</b> le système vérifie les droits d'accès<br>
+          <b>Alors</b> seules <b>ses propres parcelles</b> s'affichent, les autres restent masquées
+        </td>
+      </tr>
+
+      <tr>
+        <td class="cell-us">En tant qu'<b>agriculteur (user)</b>, je veux <b>visualiser ma parcelle sur une carte</b> avec ses coordonnées exactes (API Maps).</td>
+        <td class="cell-test">
+          <b>Étant donné</b> l'agriculteur 'A1' a une parcelle avec des <b>coordonnées GPS valides</b><br>
+          <b>Quand</b> il clique sur <b>'Voir sur la carte'</b><br>
+          <b>Alors</b> la carte Google Maps s'affiche avec un <b>marqueur précis</b> sur la localisation
+        </td>
+        <td class="cell-test">
+          <b>Étant donné</b> la parcelle n'a pas de coordonnées GPS renseignées<br>
+          <b>Quand</b> l'agriculteur accède à la page de détail<br>
+          <b>Alors</b> un message <b>'Localisation non disponible'</b> est affiché et la carte n'est pas rendue
+        </td>
+      </tr>
+
+      <tr>
+        <td class="cell-us">En tant qu'<b>agriculteur (user)</b>, je veux <b>obtenir des recommandations de cultures</b> en fonction du type de sol.</td>
+        <td class="cell-test">
+          <b>Étant donné</b> l'agriculteur 'A1' a une parcelle de type sol <b>'Limoneux'</b><br>
+          <b>Quand</b> il clique sur <b>'Recommandation IA'</b><br>
+          <b>Alors</b> le système retourne via <b>OpenAI</b> la culture recommandée avec le rendement estimé et le raisonnement agronomique
+        </td>
+        <td class="cell-test">
+          <b>Étant donné</b> la clé API OpenAI est <b>invalide ou expirée</b><br>
+          <b>Quand</b> le service tente d'appeler l'API<br>
+          <b>Alors</b> le système bascule sur la <b>recommandation de secours (fallback)</b> basée sur le type de sol sans erreur
+        </td>
+      </tr>
+
+      <tr>
+        <td class="cell-us">En tant qu'<b>agriculteur (user)</b>, je veux une <b>estimation du rendement</b> basée sur les informations de la parcelle.</td>
+        <td class="cell-test">
+          <b>Étant donné</b> l'agriculteur 'A1' saisit superficie <b>10 ha</b>, sol <b>'Humifère'</b>, culture <b>'Maïs'</b><br>
+          <b>Quand</b> il soumet le formulaire de calcul<br>
+          <b>Alors</b> le système affiche le rendement estimé <b>117 t</b> avec le conseil agronomique et l'indice <b>5 étoiles</b>
+        </td>
+        <td class="cell-test">
+          <b>Étant donné</b> l'agriculteur 'A2' soumet avec une superficie de <b>0 ha</b><br>
+          <b>Quand</b> le système valide les données<br>
+          <b>Alors</b> le calcul est <b>bloqué</b>, un message <b>'La superficie doit être supérieure à 0'</b> s'affiche
+        </td>
+      </tr>
+
+    </tbody>
+  </table>
+</div>
+<div class="page-num">17</div>
+
+</div>
+</body>
+</html>
