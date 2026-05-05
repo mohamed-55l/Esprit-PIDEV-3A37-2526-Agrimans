@@ -45,7 +45,7 @@ class ProductRepository extends ServiceEntityRepository
     public function search(string $query, ?string $category = null): array
     {
         $qb = $this->createQueryBuilder('p')
-            ->andWhere('p.name LIKE :query OR p.description LIKE :query OR p.supplier LIKE :query')
+            ->andWhere('p.name LIKE :query OR p.description LIKE :query OR p.supplier LIKE :query OR p.category LIKE :query')
             ->setParameter('query', '%' . $query . '%');
 
         if ($category) {
