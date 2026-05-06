@@ -70,6 +70,56 @@ class AnimalController extends AbstractController
         ]);
     }
 
+    #[Route('/at-risk', name: 'waad_animal_at_risk', methods: ['GET'])]
+    public function atRisk(AnimalRepository $animalRepo): Response
+    {
+        $file = $this->getParameter('kernel.project_dir').'/python/var/predictions.json';
+        $generatedAt = null;
+        $predictions = [];
+
+        if (is_file($file)) {
+            $generatedAt = (new \DateTimeImmutable())->setTimestamp((int) filemtime($file));
+            $raw = file_get_contents($file);
+            $decoded = $raw !== false ? json_decode($raw, true) : null;
+            if (is_array($decoded)) {
+                $predictions = $decoded;
+            }
+        }
+
+        $uid = $this->currentUserId();
+        $byId = [];
+        foreach ($animalRepo->createActiveQueryBuilder($uid)->setMaxResults(1000)->getQuery()->getResult() as $a) {
+            \assert($a instanceof Animal);
+            $byId[$a->getId()] = $a;
+        }
+
+        $rows = [];
+        foreach ($predictions as $p) {
+            $id = (int) ($p['animal_id'] ?? 0);
+            if ($id === 0 || !isset($byId[$id])) {
+                continue;
+            }
+            $rows[] = [
+                'animal' => $byId[$id],
+                'risk_score' => (float) ($p['risk_score'] ?? 0.0),
+                'risk_label' => (string) ($p['risk_label'] ?? 'low'),
+            ];
+        }
+
+        $counts = ['high' => 0, 'medium' => 0, 'low' => 0];
+        foreach ($rows as $r) {
+            $counts[$r['risk_label']] = ($counts[$r['risk_label']] ?? 0) + 1;
+        }
+
+        return $this->render('animal/at_risk.html.twig', [
+            'rows' => $rows,
+            'counts' => $counts,
+            'generated_at' => $generatedAt,
+            'predictions_path' => 'python/var/predictions.json',
+            'has_file' => is_file($file),
+        ]);
+    }
+
     #[Route('/historique', name: 'waad_animal_historique', methods: ['GET'])]
     public function historique(AnimalHistoryRepository $historyRepository): Response
     {
@@ -89,7 +139,10 @@ class AnimalController extends AbstractController
     #[Route('/export/pdf', name: 'waad_animal_export_pdf', methods: ['GET'])]
     public function exportPdf(AnimalRepository $animalRepo, AnimalListPdfExporter $exporter): Response
     {
-        $animals = $animalRepo->createActiveQueryBuilder($this->currentUserId())->getQuery()->getResult();
+        $animals = $animalRepo->createActiveQueryBuilder($this->currentUserId())
+            ->setMaxResults(1000)
+            ->getQuery()
+            ->getResult();
         $pdf = $exporter->export($animals);
 
         $filename = 'animaux-'.(new \DateTimeImmutable())->format('Y-m-d').'.pdf';
@@ -199,6 +252,7 @@ class AnimalController extends AbstractController
             $qb->getQuery(),
             $request->query->getInt('page', 1),
             10,
+            ['distinct' => false],
         );
 
         $form = $this->createForm(AnimalType::class, new Animal(), [

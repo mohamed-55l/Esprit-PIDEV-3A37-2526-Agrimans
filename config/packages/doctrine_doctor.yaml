@@ -1,0 +1,6 @@
+doctrine_doctor:
+    enabled: true
+    profiler:
+        show_in_toolbar: true
+    analysis:
+        exclude_third_party_entities: true

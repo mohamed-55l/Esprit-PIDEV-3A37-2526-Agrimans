@@ -63,11 +63,12 @@ class AnimalRepository extends ServiceEntityRepository
     /**
      * @return Animal[]
      */
-    public function findAllArchived(?int $forUserId = null): array
+    public function findAllArchived(?int $forUserId = null, int $limit = 200): array
     {
         $qb = $this->createQueryBuilder('a')
             ->andWhere('a.deletedAt IS NOT NULL')
-            ->orderBy('a.deletedAt', 'DESC');
+            ->orderBy('a.deletedAt', 'DESC')
+            ->setMaxResults($limit);
 
         if ($forUserId !== null) {
             $qb->andWhere('a.userId IS NULL OR a.userId = :uid')

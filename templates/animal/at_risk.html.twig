@@ -1,0 +1,103 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}Animaux à risque (IA) | Agrimans{% endblock %}
+
+{% block body %}
+<div class="content-section" style="max-width: 1200px; margin: 2rem auto;">
+
+    <div class="page-header" style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 2rem; flex-wrap: wrap; gap: 1rem;">
+        <div>
+            <h1 style="font-size: 2.2rem; font-weight: 700; color: #fff; margin-bottom: 0.5rem;">
+                <i class="fa-solid fa-heart-pulse" style="color: #e74c3c; margin-right: 10px;"></i>
+                Animaux à risque <small style="font-size: 0.9rem; color: rgba(255,255,255,0.5);">(prédictions IA)</small>
+            </h1>
+            <p style="color: rgba(255,255,255,0.6); margin: 0;">
+                Modèle Python (River) — entraîné en continu sur l'historique d'alimentation et de santé.
+                {% if generated_at %}
+                    Dernière mise à jour : <strong>{{ generated_at|date('d/m/Y H:i') }}</strong>
+                {% endif %}
+            </p>
+        </div>
+        <a href="{{ path('waad_animal_index') }}" class="btn btn-primary"
+           style="background: rgba(255,255,255,0.08); border: 1px solid rgba(255,255,255,0.15); padding: 0.65rem 1rem; border-radius: 8px; color: #fff; text-decoration: none; font-weight: 600;">
+            <i class="fa-solid fa-arrow-left"></i> Retour
+        </a>
+    </div>
+
+    {% if not has_file %}
+        <div style="background: rgba(241,196,15,0.12); border: 1px solid rgba(241,196,15,0.4); border-radius: 12px; padding: 1.5rem; color: #f1c40f; margin-bottom: 1.5rem;">
+            <strong><i class="fa-solid fa-triangle-exclamation"></i> Aucune prédiction trouvée.</strong><br>
+            Lancez d'abord les commandes Python :
+            <pre style="margin-top: .8rem; background: rgba(0,0,0,0.3); padding: 1rem; border-radius: 6px; color: #fff;">cd python
+python -m animal_health.train
+python -m animal_health.predict --top 50</pre>
+        </div>
+    {% endif %}
+
+    {# Stat cards #}
+    <div style="display: grid; grid-template-columns: repeat(3, 1fr); gap: 1rem; margin-bottom: 2rem;">
+        <div style="background: rgba(231,76,60,0.15); border: 1px solid rgba(231,76,60,0.4); border-radius: 12px; padding: 1.5rem;">
+            <div style="color: #e74c3c; font-size: .8rem; font-weight: 700; letter-spacing: 1px;">RISQUE ÉLEVÉ</div>
+            <div style="color: #fff; font-size: 2.4rem; font-weight: 800;">{{ counts.high }}</div>
+        </div>
+        <div style="background: rgba(241,196,15,0.12); border: 1px solid rgba(241,196,15,0.4); border-radius: 12px; padding: 1.5rem;">
+            <div style="color: #f1c40f; font-size: .8rem; font-weight: 700; letter-spacing: 1px;">RISQUE MOYEN</div>
+            <div style="color: #fff; font-size: 2.4rem; font-weight: 800;">{{ counts.medium }}</div>
+        </div>
+        <div style="background: rgba(46,204,113,0.12); border: 1px solid rgba(46,204,113,0.4); border-radius: 12px; padding: 1.5rem;">
+            <div style="color: #2ecc71; font-size: .8rem; font-weight: 700; letter-spacing: 1px;">RISQUE FAIBLE</div>
+            <div style="color: #fff; font-size: 2.4rem; font-weight: 800;">{{ counts.low }}</div>
+        </div>
+    </div>
+
+    <div style="background: rgba(255,255,255,0.03); border: 1px solid rgba(255,255,255,0.08); border-radius: 12px; overflow: hidden;">
+        <table style="width: 100%; border-collapse: collapse; color: #fff;">
+            <thead style="background: rgba(0,0,0,0.2);">
+                <tr>
+                    <th style="padding: 1rem; text-align: left;">Animal</th>
+                    <th style="padding: 1rem; text-align: left;">Espèce</th>
+                    <th style="padding: 1rem; text-align: left;">Santé actuelle</th>
+                    <th style="padding: 1rem; text-align: left; width: 30%;">Score de risque</th>
+                    <th style="padding: 1rem; text-align: center;">Niveau</th>
+                    <th style="padding: 1rem; text-align: right;">Action</th>
+                </tr>
+            </thead>
+            <tbody>
+            {% for r in rows %}
+                {% set color =
+                    r.risk_label == 'high'   ? '#e74c3c' :
+                    r.risk_label == 'medium' ? '#f1c40f' : '#2ecc71' %}
+                <tr style="border-top: 1px solid rgba(255,255,255,0.05);">
+                    <td style="padding: 1rem; font-weight: 600;">#{{ r.animal.id }} — {{ r.animal.nom }}</td>
+                    <td style="padding: 1rem;">{{ r.animal.espece }}</td>
+                    <td style="padding: 1rem;">{{ r.animal.etatSante ?: '—' }}</td>
+                    <td style="padding: 1rem;">
+                        <div style="background: rgba(255,255,255,0.05); border-radius: 999px; height: 10px; overflow: hidden;">
+                            <div style="background: {{ color }}; height: 100%; width: {{ (r.risk_score * 100)|round }}%;"></div>
+                        </div>
+                        <small style="color: rgba(255,255,255,0.6);">{{ (r.risk_score * 100)|round(1) }} %</small>
+                    </td>
+                    <td style="padding: 1rem; text-align: center;">
+                        <span style="background: {{ color }}22; color: {{ color }}; border: 1px solid {{ color }}55; padding: .25rem .7rem; border-radius: 999px; font-weight: 700; font-size: .8rem; text-transform: uppercase;">
+                            {{ r.risk_label }}
+                        </span>
+                    </td>
+                    <td style="padding: 1rem; text-align: right;">
+                        <a href="{{ path('waad_animal_index') }}#animal-{{ r.animal.id }}"
+                           style="color: var(--primary); text-decoration: none; font-weight: 600;">Détails →</a>
+                    </td>
+                </tr>
+            {% else %}
+                <tr><td colspan="6" style="padding: 2rem; text-align: center; color: rgba(255,255,255,0.5);">
+                    Aucune donnée à afficher.
+                </td></tr>
+            {% endfor %}
+            </tbody>
+        </table>
+    </div>
+
+    <p style="margin-top: 1.5rem; color: rgba(255,255,255,0.4); font-size: .85rem;">
+        Source : <code>{{ predictions_path }}</code> — fichier généré par le script Python <code>animal_health.predict</code>.
+    </p>
+</div>
+{% endblock %}

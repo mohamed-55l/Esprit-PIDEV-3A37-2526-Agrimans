@@ -57,15 +57,15 @@ class Product
         return $this;
     }
 
-    #[ORM\Column(type: 'float', nullable: false)]
-    private ?float $price = null;
+    #[ORM\Column(type: 'decimal', precision: 12, scale: 2, nullable: false)]
+    private ?string $price = null;
 
-    public function getPrice(): ?float
+    public function getPrice(): ?string
     {
         return $this->price;
     }
 
-    public function setPrice(float $price): self
+    public function setPrice(string $price): self
     {
         $this->price = $price;
         return $this;
