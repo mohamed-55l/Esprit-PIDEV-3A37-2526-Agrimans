@@ -59,12 +59,13 @@ class SessionCartService
     public function updateQuantity(int $productId, int $quantity): void
     {
         $cart = $this->getCart();
+        $key = 'product_' . $productId;
 
-        if (isset($cart[$productId])) {
+        if (isset($cart[$key])) {
             if ($quantity <= 0) {
-                $this->removeFromCart($productId);
+                $this->removeFromCart($key);
             } else {
-                $cart[$productId]['quantity'] = $quantity;
+                $cart[$key]['quantity'] = $quantity;
                 $this->requestStack->getSession()->set(self::CART_SESSION_KEY, $cart);
             }
         }

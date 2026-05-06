@@ -8,10 +8,9 @@
         "ext-ctype": "*",
         "ext-iconv": "*",
         "ahmed-bhs/doctrine-doctor": "*",
-        "doctrine/dbal": ">=3.8.2 <4",
+        "doctrine/dbal": "^4.0",
         "doctrine/doctrine-bundle": "^2.18",
         "doctrine/doctrine-migrations-bundle": "^3.7",
-        "doctrine/instantiator": "1.5",
         "doctrine/orm": "^3.6",
         "dompdf/dompdf": "^3.1",
         "knplabs/knp-paginator-bundle": "^6.10",
@@ -104,6 +103,7 @@
         }
     },
     "require-dev": {
+        "phpstan/phpstan": "^2.1",
         "phpunit/phpunit": "^9.5",
         "symfony/browser-kit": "6.4.*",
         "symfony/css-selector": "6.4.*",

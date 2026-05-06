@@ -98,7 +98,7 @@ class ChatbotServiceTest extends TestCase
         $p = $this->createMock(Product::class);
         $p->method('getId')->willReturn($id);
         $p->method('getName')->willReturn($name);
-        $p->method('getPrice')->willReturn($price);
+        $p->method('getPrice')->willReturn((string) $price);
         $p->method('getQuantity')->willReturn($qty);
         $p->method('getCategory')->willReturn($category);
         return $p;
