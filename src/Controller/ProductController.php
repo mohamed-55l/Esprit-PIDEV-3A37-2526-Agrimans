@@ -164,7 +164,7 @@ final class ProductController extends AbstractController
     #[Route('/rating/{id}/delete', name: 'app_marketplace_rating_delete', methods: ['POST'], requirements: ['id' => '\d+'])]
     public function deleteRating(Rating $rating, Request $request, EntityManagerInterface $entityManager): Response
     {
-        $productId = $rating->getProduct()->getId();
+        $productId = $rating->getProduct()?->getId();
 
         // Check CSRF token
         if (!$this->isCsrfTokenValid('delete' . $rating->getId(), $request->request->get('_token'))) {
@@ -188,7 +188,7 @@ final class ProductController extends AbstractController
     #[Route('/rating/{id}/edit', name: 'app_marketplace_rating_edit', methods: ['POST'], requirements: ['id' => '\d+'])]
     public function editRating(Rating $rating, Request $request, EntityManagerInterface $entityManager): Response
     {
-        $productId = $rating->getProduct()->getId();
+        $productId = $rating->getProduct()?->getId();
         $user = $this->getUser();
 
         // Only the owner can edit
@@ -223,7 +223,7 @@ final class ProductController extends AbstractController
         $user = $this->getUser();
         if (!$user) {
             $this->addFlash('error', 'Vous devez être connecté pour voter.');
-            return $this->redirectToRoute('app_marketplace_product_show', ['id' => $rating->getProduct()->getId()]);
+            return $this->redirectToRoute('app_marketplace_product_show', ['id' => $rating->getProduct()?->getId()]);
         }
 
         $isLike = $request->request->get('vote') === 'like';
@@ -246,7 +246,7 @@ final class ProductController extends AbstractController
         }
 
         $entityManager->flush();
-        return $this->redirectToRoute('app_marketplace_product_show', ['id' => $rating->getProduct()->getId()]);
+        return $this->redirectToRoute('app_marketplace_product_show', ['id' => $rating->getProduct()?->getId()]);
     }
 
     #[Route('/{id}/edit', name: 'app_marketplace_product_edit', methods: ['GET', 'POST'], requirements: ['id' => '\d+'])]

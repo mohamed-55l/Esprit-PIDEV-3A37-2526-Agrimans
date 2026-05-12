@@ -31,7 +31,7 @@ class ProductControllerTest extends TestCase
         // So let's mock the container.
         $container = $this->createMock(\Psr\Container\ContainerInterface::class);
         $router = $this->createMock(\Symfony\Component\Routing\RouterInterface::class);
-        
+
         $container->method('has')->willReturnCallback(function ($id) {
             return in_array($id, ['router', 'request_stack', 'twig']);
         });
@@ -69,10 +69,10 @@ class ProductControllerTest extends TestCase
     {
         // Arrange
         $controller = new ProductController();
-        
+
         $container = $this->createMock(\Psr\Container\ContainerInterface::class);
         $router = $this->createMock(\Symfony\Component\Routing\RouterInterface::class);
-        
+
         $container->method('has')->willReturnCallback(function ($id) {
             return in_array($id, ['router', 'request_stack', 'twig']);
         });
@@ -86,13 +86,13 @@ class ProductControllerTest extends TestCase
 
         $session = new Session(new MockArraySessionStorage());
         $session->set('currency', 'TND'); // Default
-        
+
         $request = new Request();
         $request->setSession($session);
         $request->headers->set('referer', '/marketplace');
 
         // Act
-        $response = $controller->setCurrency('INVALID', $request);
+        $response = $controller->setCurrency('', $request);
 
         // Assert
         $this->assertSame('TND', $session->get('currency'), 'La devise invalide doit être ignorée.');

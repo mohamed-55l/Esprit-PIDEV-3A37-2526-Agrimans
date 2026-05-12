@@ -108,7 +108,7 @@ class Order
         return $this;
     }
 
-    public function getOrderDate(): ?\DateTime
+    public function getOrderDate(): ?\DateTimeInterface
     {
         return $this->order_date;
     }

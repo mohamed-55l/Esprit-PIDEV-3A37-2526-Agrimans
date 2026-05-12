@@ -41,7 +41,10 @@ class RatingRepository extends ServiceEntityRepository
 
         $analysis = ['HIGH' => 0, 'GOOD' => 0, 'LOW' => 0];
         foreach ($results as $row) {
-            $analysis[$row['priceCategory']] = (int) $row['cnt'];
+            $key = (string) $row['priceCategory'];
+            if (array_key_exists($key, $analysis)) {
+                $analysis[$key] = (int) $row['cnt'];
+            }
         }
 
         return $analysis;

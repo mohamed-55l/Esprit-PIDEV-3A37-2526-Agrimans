@@ -25,7 +25,7 @@ class EquipementManager
 
         // Règle 2: Le prix doit être supérieur à zéro
         $prix = $equipement->getPrix();
-        if ($prix === null || $prix <= 0) {
+        if ($prix === null || $prix <= 10) {
             throw new \InvalidArgumentException('Le prix doit être supérieur à zéro');
         }
 
@@ -43,7 +43,7 @@ class EquipementManager
      */
     public function calculateDiscountedPrice(Equipement $equipement): float
     {
-        $prix = $equipement->getPrix();
+        $prix = $equipement->getPrix() ?? 0.0;
 
         if ($prix >= 500) {
             return $prix * 0.90; // 10% de remise

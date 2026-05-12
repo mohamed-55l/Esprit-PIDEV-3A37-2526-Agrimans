@@ -51,7 +51,7 @@ class EmailOtp
         return $this;
     }
 
-    public function getExpiry(): ?\DateTime
+    public function getExpiry(): ?\DateTimeInterface
     {
         return $this->expiry;
     }

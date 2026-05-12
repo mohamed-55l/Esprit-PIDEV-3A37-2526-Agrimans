@@ -87,7 +87,7 @@ class UserOtp
         return $this;
     }
 
-    public function getExpiresAt(): ?\DateTime
+    public function getExpiresAt(): ?\DateTimeInterface
     {
         return $this->expires_at;
     }

@@ -249,7 +249,7 @@ class Product
         return $this;
     }
 
-    public function getExpiryDate(): ?\DateTime
+    public function getExpiryDate(): ?\DateTimeInterface
     {
         return $this->expiry_date;
     }

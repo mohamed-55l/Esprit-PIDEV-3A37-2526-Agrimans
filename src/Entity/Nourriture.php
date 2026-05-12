@@ -214,7 +214,7 @@ class Nourriture
         return $this;
     }
 
-    public function getExpiryDate(): ?\DateTime
+    public function getExpiryDate(): ?\DateTimeInterface
     {
         return $this->expiry_date;
     }
@@ -226,7 +226,7 @@ class Nourriture
         return $this;
     }
 
-    public function getDateAdded(): ?\DateTime
+    public function getDateAdded(): ?\DateTimeInterface
     {
         return $this->date_added;
     }

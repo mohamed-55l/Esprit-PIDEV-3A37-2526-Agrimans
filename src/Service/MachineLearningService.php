@@ -12,7 +12,7 @@ class MachineLearningService
 
     public function __construct(ParameterBagInterface $params)
     {
-        $this->projectDir = $params->get('kernel.project_dir');
+        $this->projectDir = (string) $params->get('kernel.project_dir');
     }
 
     /**
