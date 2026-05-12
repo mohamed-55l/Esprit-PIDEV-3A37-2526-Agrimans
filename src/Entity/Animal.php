@@ -263,20 +263,6 @@ class Animal
         return $this;
     }
 
-    #[ORM\Column(type: 'date', nullable: true)]
-    private ?\DateTimeInterface $dateNaissance = null;
-
-    public function getDateNaissance(): ?\DateTimeInterface
-    {
-        return $this->dateNaissance;
-    }
-
-    public function setDateNaissance(?\DateTimeInterface $dateNaissance): self
-    {
-        $this->dateNaissance = $dateNaissance;
-        return $this;
-    }
-
     #[ORM\OneToMany(targetEntity: AnimalNourriture::class, mappedBy: 'animal')]
     private Collection $animalNourritures;
 
