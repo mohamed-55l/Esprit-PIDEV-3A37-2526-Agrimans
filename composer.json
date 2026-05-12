@@ -14,7 +14,6 @@
         "doctrine/orm": "^3.6",
         "dompdf/dompdf": "^3.1",
         "knplabs/knp-paginator-bundle": "^6.10",
-        "nelmio/cors-bundle": "^2.6",
         "phpdocumentor/reflection-docblock": "^5.2",
         "phpstan/phpdoc-parser": "^2.3",
         "stripe/stripe-php": "^20.0",
@@ -50,8 +49,7 @@
         "symfony/yaml": "6.4.*",
         "twig/extra-bundle": "^2.12|^3.0",
         "twig/twig": "^2.12|^3.0",
-        "vich/uploader-bundle": "^2.9",
-        "webmozart/assert": "1.11"
+        "vich/uploader-bundle": "^2.9"
     },
     "config": {
         "allow-plugins": {
@@ -91,7 +89,10 @@
         ],
         "post-update-cmd": [
             "@auto-scripts"
-        ]
+        ],
+        "db:migrate": "php bin/console doctrine:migrations:migrate --no-interaction",
+        "db:migrate:status": "php bin/console doctrine:migrations:status",
+        "db:migrate:prev": "php bin/console doctrine:migrations:migrate prev --no-interaction"
     },
     "conflict": {
         "symfony/symfony": "*"

@@ -1,0 +1,38 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}Historique élevage | Agrimans{% endblock %}
+
+{% block body %}
+<div class="content-section" style="max-width: 900px; margin: 2rem auto;">
+    <a href="{{ path('waad_animal_index') }}" style="color: rgba(255,255,255,0.5); text-decoration:none;"><i class="fa-solid fa-arrow-left"></i> Retour</a>
+    <h1 style="color:#fff; margin:1rem 0;"><i class="fa-solid fa-clock-rotate-left"></i> Historique &amp; journal</h1>
+    <p style="color: rgba(255,255,255,0.6);">Archivages, créations, modifications et repas enregistrés.</p>
+
+    <div style="background: rgba(255,255,255,0.03); border:1px solid rgba(255,255,255,0.08); border-radius:12px; overflow:hidden;">
+        <table style="width:100%; border-collapse:collapse; color:#fff;">
+            <thead style="background: rgba(0,0,0,0.25);">
+            <tr>
+                <th style="padding:1rem; text-align:left;">Date</th>
+                <th style="padding:1rem; text-align:left;">Action</th>
+                <th style="padding:1rem; text-align:left;">Animal #</th>
+                <th style="padding:1rem; text-align:left;">Détail</th>
+            </tr>
+            </thead>
+            <tbody>
+            {% for e in entries %}
+                <tr style="border-bottom:1px solid rgba(255,255,255,0.06);">
+                    <td style="padding:0.85rem;">{{ e.createdAt|date('d/m/Y H:i') }}</td>
+                    <td style="padding:0.85rem;"><code>{{ e.action }}</code></td>
+                    <td style="padding:0.85rem;">{{ e.animalId ?? '—' }}</td>
+                    <td style="padding:0.85rem; color: rgba(255,255,255,0.75); font-size:0.9rem;">
+                        {{ e.detail ?? (e.snapshot ? e.snapshot|json_encode : '') }}
+                    </td>
+                </tr>
+            {% else %}
+                <tr><td colspan="4" style="padding:2rem; text-align:center; opacity:0.5;">Aucun événement.</td></tr>
+            {% endfor %}
+            </tbody>
+        </table>
+    </div>
+</div>
+{% endblock %}

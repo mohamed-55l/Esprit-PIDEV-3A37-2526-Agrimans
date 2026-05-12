@@ -1,0 +1,45 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}Notifications élevage | Agrimans{% endblock %}
+
+{% block body %}
+<div class="content-section" style="max-width: 720px; margin: 2rem auto;">
+    <div style="display:flex; justify-content:space-between; align-items:center; flex-wrap:wrap; gap:1rem;">
+        <div>
+            <a href="{{ path('waad_animal_index') }}" style="color: rgba(255,255,255,0.5); text-decoration:none;"><i class="fa-solid fa-arrow-left"></i> Animaux</a>
+            <h1 style="color:#fff; margin:0.5rem 0 0 0;"><i class="fa-solid fa-bell"></i> Notifications</h1>
+        </div>
+        <form method="post" action="{{ path('waad_animal_notifications_read_all') }}">
+            <input type="hidden" name="_token" value="{{ csrf_token('animal_notif_read_all') }}">
+            <button type="submit" style="background: rgba(255,255,255,0.1); color:#fff; border:1px solid rgba(255,255,255,0.2); padding:0.5rem 1rem; border-radius:8px; cursor:pointer;">Tout marquer comme lu</button>
+        </form>
+    </div>
+
+    <div style="margin-top:2rem; display:flex; flex-direction:column; gap:1rem;">
+        {% for n in notifications %}
+            <div style="background: rgba(255,255,255,0.04); border:1px solid rgba(255,255,255,0.08); border-radius:12px; padding:1.25rem; color:#fff;">
+                <div style="display:flex; justify-content:space-between; gap:1rem;">
+                    <strong>{{ n.title }}</strong>
+                    <span style="font-size:0.8rem; opacity:0.6;">{{ n.createdAt|date('d/m/Y H:i') }}</span>
+                </div>
+                <p style="margin:0.75rem 0; color: rgba(255,255,255,0.8);">{{ n.message }}</p>
+                <div style="display:flex; gap:0.75rem; flex-wrap:wrap;">
+                    {% if n.link %}
+                        <a href="{{ n.link }}" style="color:var(--light-green);">Ouvrir</a>
+                    {% endif %}
+                    {% if not n.readAt %}
+                        <form method="post" action="{{ path('waad_animal_notification_read', { id: n.id }) }}">
+                            <input type="hidden" name="_token" value="{{ csrf_token('animal_notif_read_one') }}">
+                            <button type="submit" style="background:none; border:none; color:#3498db; cursor:pointer; padding:0;">Marquer lu</button>
+                        </form>
+                    {% else %}
+                        <span style="opacity:0.5; font-size:0.85rem;">Lu</span>
+                    {% endif %}
+                </div>
+            </div>
+        {% else %}
+            <p style="color: rgba(255,255,255,0.5);">Aucune notification pour le moment.</p>
+        {% endfor %}
+    </div>
+</div>
+{% endblock %}

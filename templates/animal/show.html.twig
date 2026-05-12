@@ -13,43 +13,77 @@
         </div>
     </div>
 
+    {% if animal.imageName %}
+    <div style="margin-bottom:1.5rem;">
+        <p style="color: rgba(255,255,255,0.55); font-size:0.85rem; margin-bottom:0.5rem;">Photo enregistrée sur le serveur</p>
+        <img src="{{ vich_uploader_asset(animal, 'imageFile') }}" alt="{{ animal.nom }}" style="max-width:320px; width:100%; border-radius:12px; border:1px solid rgba(255,255,255,0.1);">
+    </div>
+    {% endif %}
+
     <div style="background: rgba(255,255,255,0.03); border: 1px solid rgba(255,255,255,0.08); border-radius: 12px; padding: 2rem; margin-bottom: 2rem;">
         <h3 style="color: #f39c12; margin-bottom: 1.5rem; font-size: 1.2rem;"><i class="fa-solid fa-circle-info"></i> Informations de l'Animal</h3>
-        
+
         <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 2rem;">
             <div>
                 <p style="color: rgba(255,255,255,0.5); font-size: 0.85rem; text-transform: uppercase; margin-bottom: 0.2rem;">Espèce</p>
                 <p style="font-size: 1.1rem; font-weight: 500; color: #fff;">{{ animal.espece }}</p>
             </div>
             <div>
-                <p style="color: rgba(255,255,255,0.5); font-size: 0.85rem; text-transform: uppercase; margin-bottom: 0.2rem;">Sexe</p>
-                <p style="font-size: 1.1rem; font-weight: 500; color: #fff;">{{ animal.sexe }}</p>
+                <p style="color: rgba(255,255,255,0.5); font-size: 0.85rem; text-transform: uppercase; margin-bottom: 0.2rem;">Race</p>
+                <p style="font-size: 1.1rem; font-weight: 500; color: #fff;">{{ animal.race ?? '—' }}</p>
             </div>
             <div>
                 <p style="color: rgba(255,255,255,0.5); font-size: 0.85rem; text-transform: uppercase; margin-bottom: 0.2rem;">Etat de santé</p>
-                <p style="font-size: 1.1rem; font-weight: 500; color: #fff;">{{ animal.etatSante }}</p>
+                <p style="font-size: 1.1rem; font-weight: 500; color: #fff;">{{ animal.etatSante ?? '—' }}</p>
             </div>
             <div>
                 <p style="color: rgba(255,255,255,0.5); font-size: 0.85rem; text-transform: uppercase; margin-bottom: 0.2rem;">Poids</p>
-                <p style="font-size: 1.1rem; font-weight: 500; color: #fff;">{{ animal.poids }} kg</p>
+                <p style="font-size: 1.1rem; font-weight: 500; color: #fff;">{% if animal.poids is not null %}{{ animal.poids }} kg{% else %}—{% endif %}</p>
             </div>
             <div>
                 <p style="color: rgba(255,255,255,0.5); font-size: 0.85rem; text-transform: uppercase; margin-bottom: 0.2rem;">Date de naissance</p>
-                <p style="font-size: 1.1rem; font-weight: 500; color: #fff;">{{ animal.dateNaissance ? animal.dateNaissance|date('d/m/Y') : '' }}</p>
+                <p style="font-size: 1.1rem; font-weight: 500; color: #fff;">{{ animal.dateNaissance ? animal.dateNaissance|date('d/m/Y') : '—' }}</p>
             </div>
         </div>
     </div>
-    
+
+    <div style="background: rgba(155, 89, 182, 0.08); border: 1px solid rgba(155,89,182,0.25); border-radius: 12px; padding: 1.5rem; margin-bottom: 2rem;">
+        <h3 style="color: #9b59b6; margin-bottom: 1rem; font-size: 1.1rem;"><i class="fa-solid fa-image"></i> Image IA (Pollinations)</h3>
+        <form method="post" action="{{ path('waad_animal_pollinations', { id: animal.id }) }}" style="display:flex; flex-wrap:wrap; gap:0.75rem; align-items:flex-end;">
+            <input type="hidden" name="_token" value="{{ csrf_token('animal_pollinations') }}">
+            <div style="flex:1; min-width:200px;">
+                <label style="display:block; color:rgba(255,255,255,0.7); font-size:0.85rem; margin-bottom:0.35rem;">Prompt (optionnel)</label>
+                <input type="text" name="prompt" placeholder="ex: vache laitière dans un pré au lever du soleil" style="width:100%; padding:0.65rem; border-radius:8px; border:1px solid rgba(255,255,255,0.15); background:rgba(0,0,0,0.2); color:#fff;">
+            </div>
+            <button type="submit" style="background:#9b59b6; color:#fff; border:none; padding:0.65rem 1.2rem; border-radius:8px; font-weight:600; cursor:pointer;">Générer</button>
+        </form>
+
+        {% if animal.externalImageUrl %}
+        <div style="margin-top:1.25rem; padding-top:1.25rem; border-top:1px solid rgba(155,89,182,0.35);">
+            <p style="color:#fff; font-weight:600; margin:0 0 0.75rem 0;"><i class="fa-solid fa-wand-magic-sparkles"></i> Dernière image générée</p>
+            <img src="{{ animal.externalImageUrl }}"
+                 alt="Aperçu Pollinations"
+                 referrerpolicy="no-referrer"
+                 loading="lazy"
+                 style="max-width:100%; width:min(480px, 100%); border-radius:12px; border:1px solid rgba(155,89,182,0.45); display:block; background:rgba(0,0,0,0.25); min-height:120px;">
+            <p style="margin:0.75rem 0 0 0;">
+                <a href="{{ animal.externalImageUrl }}" target="_blank" rel="noopener noreferrer" style="color:#c39bd3;">Ouvrir l’image dans un nouvel onglet</a>
+                <span style="color:rgba(255,255,255,0.35); font-size:0.8rem; margin-left:0.5rem;">(si l’aperçu reste vide, le service externe bloque peut-être l’affichage intégré — utilise le lien.)</span>
+            </p>
+        </div>
+        {% endif %}
+    </div>
+
     <div style="background: rgba(255,255,255,0.03); border: 1px solid rgba(255,255,255,0.08); border-radius: 12px; padding: 2rem; margin-bottom: 2rem;">
         <h3 style="color: #3498db; margin-bottom: 1.5rem; font-size: 1.2rem;"><i class="fa-solid fa-pen"></i> Editer les informations</h3>
-        
+
         <style>
             .animal-form label { display: block; margin-bottom: 0.5rem; color: rgba(255,255,255,0.8); }
             .animal-form input, .animal-form select { width: 100%; margin-bottom: 1rem; background: rgba(255,255,255,0.05); border: 1px solid rgba(255,255,255,0.1); color: #fff; padding: 0.8rem; border-radius: 8px; }
             .animal-form button { margin-top: 1rem; width: 100%; }
         </style>
         <div class="animal-form">
-            {{ form_start(editForm) }}
+            {{ form_start(editForm, { attr: { enctype: 'multipart/form-data' } }) }}
             {{ form_widget(editForm) }}
             <button class="btn btn-primary" type="submit" style="background-color: var(--primary); border: none; padding: 0.8rem; border-radius: 8px; color: #fff; cursor: pointer; font-weight: 600;">Mettre à jour l'animal</button>
             {{ form_end(editForm) }}

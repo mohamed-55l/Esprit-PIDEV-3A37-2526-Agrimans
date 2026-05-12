@@ -2,12 +2,8 @@
 
 namespace App\Controller;
 
-use App\Entity\Review;
-use App\Form\ReviewType;
-use App\Repository\EquipementRepository;
-use App\Repository\GarageRepository;
-use App\Repository\ReviewRepository;
-use Doctrine\ORM\EntityManagerInterface;
+use App\Entity\User;
+use App\Repository\AnimalRepository;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
@@ -26,12 +22,15 @@ class UserDashboardController extends AbstractController
     // ─────────────────────────────────────────────────────────────────────────
 
     #[Route('/user/dashboard', name: 'app_user_dashboard')]
-    public function index(): Response
+    public function index(AnimalRepository $animalRepository): Response
     {
+        $user = $this->getUser();
+        $uid = $user instanceof User ? $user->getId() : null;
+
         $stats = [
             'total_parcelles' => 0,
             'total_cultures' => 0,
-            'total_animaux' => 0,
+            'total_animaux' => $animalRepository->countActive($uid),
             'commandes_en_cours' => 0,
             'alertes' => 0,
         ];
