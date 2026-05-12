@@ -3,99 +3,195 @@
 namespace App\Tests\Controller;
 
 use App\Controller\ProductController;
+use PHPUnit\Framework\TestCase;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Session\Session;
 use Symfony\Component\HttpFoundation\Session\Storage\MockArraySessionStorage;
-use PHPUnit\Framework\TestCase;
 
 /**
- * Pure unit tests for ProductController without needing a database.
+ * Tests unitaires pour ProductController.
+ *
+ * Règles métier testées :
+ *  1. setCurrency stocke la devise choisie en session et redirige vers le referer.
+ *  2. setCurrency ignore les devises non supportées (la session reste inchangée).
+ *  3. setCurrency redirige vers /marketplace si le referer est absent.
+ *  4. Seules TND, EUR et USD sont des devises valides.
+ *
+ * Ces tests vérifient la logique pure du contrôleur sans serveur HTTP,
+ * sans base de données et sans conteneur Symfony complet.
+ * On utilise un container mocké uniquement pour satisfaire AbstractController
+ * (méthode redirect).
  */
 class ProductControllerTest extends TestCase
 {
     // ─────────────────────────────────────────────────────────────────────────
-    // Test 1: Currency switcher (setCurrency)
+    // Helper : construit un ProductController avec un conteneur minimal mocké
     // ─────────────────────────────────────────────────────────────────────────
 
     /**
-     * Verifies that the setCurrency method stores the requested currency in
-     * the session and returns a RedirectResponse to the referrer.
+     * AbstractController::redirect() passe par le routeur via le conteneur.
+     * On fournit un mock de ContainerInterface qui retourne un RouterInterface
+     * factice pour éviter une exception de service manquant.
      */
-    public function testSetCurrencyStoresInSessionAndRedirects(): void
+    private function buildController(): ProductController
     {
-        // Arrange
         $controller = new ProductController();
-        // Since we are not extending AbstractController to mock the container easily,
-        // we will manually construct the request and pass it.
-        // The setCurrency method calls $this->redirect(), which requires the container.
-        // So let's mock the container.
-        $container = $this->createMock(\Psr\Container\ContainerInterface::class);
+
         $router = $this->createMock(\Symfony\Component\Routing\RouterInterface::class);
-        
-        $container->method('has')->willReturnCallback(function ($id) {
-            return in_array($id, ['router', 'request_stack', 'twig']);
-        });
+
+        $container = $this->createMock(\Psr\Container\ContainerInterface::class);
+        $container->method('has')->willReturnCallback(
+            fn($id) => in_array($id, ['router', 'request_stack', 'twig'], true)
+        );
         $container->method('get')->willReturnCallback(function ($id) use ($router) {
             if ($id === 'router') {
                 return $router;
             }
             return null;
         });
+
         $controller->setContainer($container);
+        return $controller;
+    }
+
+    // ─────────────────────────────────────────────────────────────────────────
+    // Test 1 : setCurrency stocke la devise valide en session
+    // ─────────────────────────────────────────────────────────────────────────
+
+    /**
+     * Règle métier : Quand l'utilisateur choisit une devise supportée (EUR),
+     * celle-ci doit être enregistrée en session sous la clé "currency".
+     * La réponse doit être une redirection HTTP 302 vers le referer.
+     */
+    public function testSetCurrencyStoresValidCurrencyInSession(): void
+    {
+        // Arrange
+        $controller = $this->buildController();
 
         $session = new Session(new MockArraySessionStorage());
         $request = new Request();
         $request->setSession($session);
-        $request->headers->set('referer', '/marketplace?test=1');
+        $request->headers->set('referer', '/marketplace?page=2');
 
         // Act
         $response = $controller->setCurrency('EUR', $request);
 
         // Assert
-        $this->assertSame('EUR', $session->get('currency'), 'La devise EUR doit être enregistrée en session.');
-        $this->assertSame(302, $response->getStatusCode(), 'Doit retourner une redirection (HTTP 302).');
-        $this->assertSame('/marketplace?test=1', $response->headers->get('Location'), 'Doit rediriger vers le referer.');
+        $this->assertSame('EUR', $session->get('currency'),
+            'La devise EUR doit être enregistrée en session.');
+        $this->assertSame(302, $response->getStatusCode(),
+            'La réponse doit être une redirection HTTP 302.');
+        $this->assertSame('/marketplace?page=2', $response->headers->get('Location'),
+            'La redirection doit pointer vers le referer.');
     }
 
     // ─────────────────────────────────────────────────────────────────────────
-    // Test 2: Currency switcher ignores invalid currencies
+    // Test 2 : setCurrency accepte USD
     // ─────────────────────────────────────────────────────────────────────────
 
     /**
-     * Verifies that setCurrency ignores unsupported currencies and doesn't
-     * update the session with an invalid value.
+     * Règle métier : USD est une devise supportée et doit être stockée.
      */
-    public function testSetCurrencyIgnoresInvalidCurrency(): void
+    public function testSetCurrencyAcceptsUsd(): void
     {
         // Arrange
-        $controller = new ProductController();
-        
-        $container = $this->createMock(\Psr\Container\ContainerInterface::class);
-        $router = $this->createMock(\Symfony\Component\Routing\RouterInterface::class);
-        
-        $container->method('has')->willReturnCallback(function ($id) {
-            return in_array($id, ['router', 'request_stack', 'twig']);
-        });
-        $container->method('get')->willReturnCallback(function ($id) use ($router) {
-            if ($id === 'router') {
-                return $router;
-            }
-            return null;
-        });
-        $controller->setContainer($container);
+        $controller = $this->buildController();
 
         $session = new Session(new MockArraySessionStorage());
-        $session->set('currency', 'TND'); // Default
-        
         $request = new Request();
         $request->setSession($session);
         $request->headers->set('referer', '/marketplace');
 
         // Act
-        $response = $controller->setCurrency('INVALID', $request);
+        $controller->setCurrency('USD', $request);
 
         // Assert
-        $this->assertSame('TND', $session->get('currency'), 'La devise invalide doit être ignorée.');
-        $this->assertSame(302, $response->getStatusCode());
+        $this->assertSame('USD', $session->get('currency'),
+            'La devise USD doit être enregistrée en session.');
+    }
+
+    // ─────────────────────────────────────────────────────────────────────────
+    // Test 3 : setCurrency ignore une devise non supportée
+    // ─────────────────────────────────────────────────────────────────────────
+
+    /**
+     * Règle métier : Une devise inconnue (ex. "GBP") ne doit pas modifier
+     * la valeur de la session. La devise courante reste inchangée.
+     * Cela protège l'application contre des valeurs de devise invalides.
+     */
+    public function testSetCurrencyIgnoresUnsupportedCurrency(): void
+    {
+        // Arrange
+        $controller = $this->buildController();
+
+        $session = new Session(new MockArraySessionStorage());
+        $session->set('currency', 'TND'); // devise initiale
+
+        $request = new Request();
+        $request->setSession($session);
+        $request->headers->set('referer', '/marketplace');
+
+        // Act
+        $response = $controller->setCurrency('GBP', $request);
+
+        // Assert
+        $this->assertSame('TND', $session->get('currency'),
+            'Une devise non supportée ne doit pas modifier la session.');
+        $this->assertSame(302, $response->getStatusCode(),
+            'Même pour une devise invalide, on redirige (HTTP 302).');
+    }
+
+    // ─────────────────────────────────────────────────────────────────────────
+    // Test 4 : setCurrency redirige vers /marketplace si pas de referer
+    // ─────────────────────────────────────────────────────────────────────────
+
+    /**
+     * Règle métier : Si l'en-tête "Referer" est absent, la redirection
+     * doit pointer vers /marketplace (valeur de repli).
+     */
+    public function testSetCurrencyRedirectsToDefaultWhenNoReferer(): void
+    {
+        // Arrange
+        $controller = $this->buildController();
+
+        $session = new Session(new MockArraySessionStorage());
+        $request = new Request();
+        $request->setSession($session);
+        // Pas d'en-tête Referer → valeur de repli = '/marketplace'
+
+        // Act
+        $response = $controller->setCurrency('TND', $request);
+
+        // Assert
+        $this->assertSame('/marketplace', $response->headers->get('Location'),
+            'Sans referer, la redirection doit pointer vers /marketplace.');
+    }
+
+    // ─────────────────────────────────────────────────────────────────────────
+    // Test 5 : TND est une devise valide et peut être sélectionnée
+    // ─────────────────────────────────────────────────────────────────────────
+
+    /**
+     * Règle métier : TND est la devise par défaut et doit être acceptée
+     * comme n'importe quelle autre devise supportée.
+     */
+    public function testSetCurrencyAcceptsTndAsDefaultCurrency(): void
+    {
+        // Arrange
+        $controller = $this->buildController();
+
+        $session = new Session(new MockArraySessionStorage());
+        $session->set('currency', 'EUR'); // on part d'EUR
+
+        $request = new Request();
+        $request->setSession($session);
+        $request->headers->set('referer', '/marketplace');
+
+        // Act
+        $controller->setCurrency('TND', $request);
+
+        // Assert
+        $this->assertSame('TND', $session->get('currency'),
+            'TND doit pouvoir être sélectionnée et stockée en session.');
     }
 }

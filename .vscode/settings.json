@@ -1,0 +1,13 @@
+{
+    "phpunit.phpunit": "${workspaceFolder}/vendor/bin/phpunit",
+    "phpunit.php": "C:/xampp/php/php.exe",
+    "phpunit.cwd": "${workspaceFolder}",
+    "phpunit.args": [
+        "--configuration",
+        "${workspaceFolder}/phpunit.xml.dist",
+        "--colors=never"
+    ],
+    "phpunit.testDirectory": "${workspaceFolder}/tests",
+    "phpunit.codeLens": true,
+    "editor.codeLens": true
+}
