@@ -50,7 +50,8 @@
         "symfony/yaml": "6.4.*",
         "twig/extra-bundle": "^2.12|^3.0",
         "twig/twig": "^2.12|^3.0",
-        "vich/uploader-bundle": "^2.9"
+        "vich/uploader-bundle": "^2.9",
+        "webmozart/assert": "^1.12"
     },
     "config": {
         "allow-plugins": {
