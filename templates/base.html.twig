@@ -47,7 +47,7 @@
                     {% elseif is_granted('ROLE_ADMIN') %}
                         <!-- Admin Navigation -->
                         <a href="{{ path('app_admin_bundle_index') }}" class="nav-link-professional"><i class="fa-solid fa-gift"></i> Gestion Packs</a>
-                        <a href="{{ path('app_statistics_index') }}" class="nav-link-professional"><i class="fa-solid fa-chart-bar"></i> Statistiques</a>
+                        <a href="{{ path('app_statistics_index') }}" class="nav-link-professional"><i class="fa-solid fa-chart-bar"></i> État des Commandes Marketplace</a>
                         <a href="{{ path('app_marketplace_index') }}" class="nav-link-professional"><i class="fa-solid fa-store"></i> Boutique</a>
                     {% else %}
                         <div class="dropdown">

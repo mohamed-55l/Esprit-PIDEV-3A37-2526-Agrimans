@@ -30,8 +30,8 @@ class CulturesSuperficieValidValidator extends ConstraintValidator
         $nombreCultures = count($value->getCultures());
         if ($nombreCultures > 5 && $superficieParcelle < 10) {
             $this->context->buildViolation($constraint->message)
-                ->setParameter('{{ total }}', $nombreCultures)
-                ->setParameter('{{ parcelle }}', $superficieParcelle)
+                ->setParameter('{{ total }}', (string) $nombreCultures)
+                ->setParameter('{{ parcelle }}', (string) ($superficieParcelle ?? ''))
                 ->addViolation();
         }
     }

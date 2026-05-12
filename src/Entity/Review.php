@@ -106,7 +106,7 @@ class Review
         return $this->user ? $this->user->getId() : null;
     }
 
-    public function getDateReview(): ?\DateTime
+    public function getDateReview(): ?\DateTimeInterface
     {
         return $this->date_review;
     }

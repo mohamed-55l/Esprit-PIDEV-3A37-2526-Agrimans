@@ -58,7 +58,7 @@
     {% else %}
         <div style="background: rgba(25,139,97,0.1); border: 1px solid rgba(25,139,97,0.3); border-radius: 10px; padding: 0.8rem 1rem; margin-bottom: 1rem; font-size: 0.85rem; color: rgba(255,255,255,0.7);">
             <i class="fa-solid fa-circle-check" style="color: #27ae60; margin-right: 6px;"></i>
-            Cette parcelle sera automatiquement assignée à votre compte (<strong>{{ app.user.email }}</strong>).
+            Cette parcelle sera automatiquement assignée à votre compte (<strong>{{ app.user ? app.user.email : 'Non connecté' }}</strong>).
         </div>
     {% endif %}
 

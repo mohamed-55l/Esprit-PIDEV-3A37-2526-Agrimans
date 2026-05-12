@@ -183,7 +183,7 @@ class Garage
         return $this;
     }
 
-    public function getDateCreation(): ?\DateTime
+    public function getDateCreation(): ?\DateTimeInterface
     {
         return $this->date_creation;
     }

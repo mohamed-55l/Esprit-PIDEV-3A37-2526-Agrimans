@@ -1,0 +1,61 @@
+Total pages: 2
+=== PAGE 1 ===
+1 
+ 
+ 
+ 
+ 
+Objectifs 
+Améliorer les performances de votre application (intégrité, sécurité et configuration) 
+ 
+Travail demandé : 
+1- Installer le bundle doctor-doctrine à travers cette commande : 
+▪ 
+composer require --dev ahmed-bhs/doctrine-doctor 
+▪ 
+Voir le lien github suivant pour plus de détails : 
+https://github.com/ahmed-bhs/doctrine-doctor 
+ 
+Au cas où vous rencontrez l’erreur suivante : 
+ 
+Figure 1 : Problème d’installation qui peut se produire 
+▪ 
+Taper la commande : 
+composer require ahmed-bhs/doctrine-doctor:^1.0 webmozart/assert:^1.11 --
+with-all-dependencies 
+▪ 
+Ensuite taper la commande 
+composer require --dev ahmed-bhs/doctrine-doctor 
+2- Accéder à n’importe quelle page dans votre application symfony 
+(dev environment) 
+3- Ouvrir Symfony Web Profiler (toolbar en bas) 
+4- Cliquer sur "Doctrine Doctor" panel  
+ 
+ 
+Année Universitaire : 2025-2026 
+Workshops Framework Symfony6.4 
+UP-Web 
+Workshop : 
+Utilisation de doctor-doctrine dans un projet Symfony 
+
+=== PAGE 2 ===
+2 
+ 
+• Au cas ou vous ne trouvez pas « Doctrine Doctor » dans le profiler, ajouter 
+dans config/bundles.php la ligne suivante : 
+AhmedBhs\DoctrineDoctor\DoctrineDoctorBundle::class => ['dev' => 
+true], 
+5- Faites une capture sur les différents problèmes signalés (integrity, security, 
+configurations, slowest queries) 
+Un problème d’intégrité ressemble à cette figure : (exemple) 
+ 
+Figure 2 : Exemple d’un problème d’intégrité 
+6- Commencez à résoudre chaque problème un par un.  
+7- Suite à chaque correction, afin de déterminer si c’est résolu ou pas, taper : 
+• Symfony server:stop 
+• Php bin/console cache:clear 
+8- Relancer votre serveur et vérifier dans le profiler que le problème est 
+résolu. 
+ 
+ 
+

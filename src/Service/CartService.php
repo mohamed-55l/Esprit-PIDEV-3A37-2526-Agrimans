@@ -33,7 +33,11 @@ class CartService
 
         // Check if product already in cart
         foreach ($cart->getItems() as $item) {
-            if ($item->getProduct()->getId() === $product->getId()) {
+            $itemProduct = $item->getProduct();
+            if ($itemProduct === null) {
+                continue;
+            }
+            if ($itemProduct->getId() === $product->getId()) {
                 $newQty = $item->getQuantity() + $quantity;
                 if ($product->getQuantity() < $newQty) {
                     throw new \InvalidArgumentException("Stock insuffisant pour cette quantité totale.");
@@ -82,6 +86,9 @@ class CartService
         // Validate stock for all items
         foreach ($items as $item) {
             $product = $item->getProduct();
+            if ($product === null) {
+                continue;
+            }
             if ($product->getQuantity() < $item->getQuantity()) {
                 throw new \InvalidArgumentException(
                     "Stock insuffisant pour '{$product->getName()}'. Disponible: {$product->getQuantity()} kg."
@@ -94,12 +101,15 @@ class CartService
         $orderItems = [];
         foreach ($items as $item) {
             $product = $item->getProduct();
+            if ($product === null) {
+                continue;
+            }
             $product->setQuantity($product->getQuantity() - $item->getQuantity());
             $lineTotal = $item->getLineTotal();
             $total += $lineTotal;
             $orderItems[] = [
-                'product' => $product->getName(),
-                'quantity' => $item->getQuantity(),
+                'product'   => $product->getName(),
+                'quantity'  => $item->getQuantity(),
                 'unitPrice' => $product->getPrice(),
                 'lineTotal' => $lineTotal,
             ];

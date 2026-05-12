@@ -127,15 +127,15 @@ class Nourriture
         return $this;
     }
 
-    #[ORM\Column(type: 'float', nullable: true)]
-    private ?float $cost = null;
+    #[ORM\Column(type: 'decimal', precision: 10, scale: 3)]
+    private ?string $cost = null;
 
-    public function getCost(): ?float
+    public function getCost(): ?string
     {
         return $this->cost;
     }
 
-    public function setCost(?float $cost): self
+    public function setCost(?string $cost): self
     {
         $this->cost = $cost;
         return $this;
@@ -214,7 +214,7 @@ class Nourriture
         return $this;
     }
 
-    public function getExpiryDate(): ?\DateTime
+    public function getExpiryDate(): ?\DateTimeInterface
     {
         return $this->expiry_date;
     }
@@ -226,7 +226,7 @@ class Nourriture
         return $this;
     }
 
-    public function getDateAdded(): ?\DateTime
+    public function getDateAdded(): ?\DateTimeInterface
     {
         return $this->date_added;
     }

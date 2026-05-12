@@ -1,0 +1,28 @@
+parameters:
+    level: 1
+    paths:
+        - src
+    ignoreErrors:
+        - '#Call to an undefined method#'
+        - identifier: missingType.iterableValue
+        - identifier: missingType.generics
+        - identifier: missingType.return
+        - identifier: missingType.parameter
+        - identifier: missingType.property
+        - identifier: property.onlyWritten
+        - identifier: constructor.unusedParameter
+        - identifier: argument.unresolvableType
+        - identifier: varTag.nativeType
+        - identifier: binaryOp.invalid
+        - identifier: instanceof.alwaysTrue
+        - identifier: property.unusedType
+        - identifier: classConstant.unused
+        - identifier: function.alreadyNarrowedType
+        - identifier: notIdentical.alwaysTrue
+        - identifier: notIdentical.alwaysFalse
+        - identifier: greater.alwaysTrue
+        - identifier: argument.type
+        - identifier: encapsedStringPart.nonString
+        - identifier: cast.string
+        # App\Entity\User est renommée App\Entity\Users dans ce projet
+        - '#App\\Entity\\User#'

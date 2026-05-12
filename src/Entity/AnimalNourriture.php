@@ -101,19 +101,19 @@ class AnimalNourriture
         return $this;
     }
 
-    public function getQuantityFed(): ?string
+    public function getQuantityFed(): ?float
     {
         return $this->quantity_fed;
     }
 
-    public function setQuantityFed(string $quantity_fed): static
+    public function setQuantityFed(float $quantity_fed): static
     {
         $this->quantity_fed = $quantity_fed;
 
         return $this;
     }
 
-    public function getFeedingDate(): ?\DateTime
+    public function getFeedingDate(): ?\DateTimeInterface
     {
         return $this->feeding_date;
     }

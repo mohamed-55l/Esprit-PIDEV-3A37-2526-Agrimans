@@ -112,6 +112,13 @@ class SentimentExtension extends AbstractExtension
         'mgata'
     ];
 
+    private $mlService;
+
+    public function __construct(\App\Service\MachineLearningService $mlService)
+    {
+        $this->mlService = $mlService;
+    }
+
     public function getFilters(): array
     {
         return [
@@ -122,35 +129,8 @@ class SentimentExtension extends AbstractExtension
 
     public function analyzeSentiment(?string $text): string
     {
-        if (empty(trim((string) $text))) {
-            return 'Neutre';
-        }
-
-        // Utiliser mb_strtolower pour préserver les accents en UTF-8
-        $text = mb_strtolower($text, 'UTF-8');
-
-        // Supprimer la ponctuation pour isoler les mots
-        $text = preg_replace('/[^\p{L}\p{N}\s]/u', ' ', $text);
-
-        $words = preg_split('/\s+/', $text, -1, PREG_SPLIT_NO_EMPTY);
-
-        $score = 0;
-
-        foreach ($words as $word) {
-            if (in_array($word, $this->positiveWords, true)) {
-                $score++;
-            } elseif (in_array($word, $this->negativeWords, true)) {
-                $score--;
-            }
-        }
-
-        if ($score > 0) {
-            return 'Positif';
-        } elseif ($score < 0) {
-            return 'Négatif';
-        }
-
-        return 'Neutre';
+        // On utilise le modèle Machine Learning (Python)
+        return $this->mlService->analyzeSentiment($text ?? '');
     }
 
     public function getSentimentBadge(?string $text): string

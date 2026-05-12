@@ -54,7 +54,7 @@
                             {{ productsByCategory|keys|first|default('N/A') }}
                         </h2>
                         <p style="color: rgba(255,255,255,0.5); font-size: 0.9rem; margin: 0.5rem 0 0 0;">
-                            {{ productsByCategory|values|first|default(0) }} produit(s)
+                            {{ productsByCategory|first|default(0) }} produit(s)
                         </p>
                     </div>
                     <div style="font-size: 2.5rem; opacity: 0.3;">
@@ -84,7 +84,13 @@
                             </tr>
                         </thead>
                         <tbody>
-                            {% set totalCat = productsByCategory|length > 0 ? productsByCategory|values|sum : 1 %}
+                            {% set totalCat = 1 %}
+                            {% if productsByCategory|length > 0 %}
+                                {% set totalCat = 0 %}
+                                {% for _count in productsByCategory %}
+                                    {% set totalCat = totalCat + _count %}
+                                {% endfor %}
+                            {% endif %}
                             {% for category, count in productsByCategory %}
                                 <tr>
                                     <td>
@@ -261,7 +267,7 @@
         document.addEventListener('DOMContentLoaded', function() {
             // Data for Category Pie Chart
             const catLabels = {{ productsByCategory|keys|json_encode|raw }};
-            const catData = {{ productsByCategory|values|json_encode|raw }};
+            const catData = Object.values({{ productsByCategory|json_encode|raw }});
             
             const pieCtx = document.getElementById('categoryPieChart').getContext('2d');
             new Chart(pieCtx, {
@@ -284,7 +290,7 @@
 
             // Data for Price Bar Chart
             const priceLabels = {{ avgPriceByCategory|keys|json_encode|raw }};
-            const priceData = {{ avgPriceByCategory|values|json_encode|raw }};
+            const priceData = Object.values({{ avgPriceByCategory|json_encode|raw }});
             
             const barCtx = document.getElementById('priceBarChart').getContext('2d');
             new Chart(barCtx, {

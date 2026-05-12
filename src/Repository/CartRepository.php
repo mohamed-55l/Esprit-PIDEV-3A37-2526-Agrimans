@@ -17,7 +17,7 @@ class CartRepository extends ServiceEntityRepository
     {
         $cart = $this->findOneBy(['user' => $buyerId]);
 
-        if (!$cart) {
+        if (!$cart instanceof Cart) {
             $cart = new Cart();
             // Assign a user reference without requiring a full fetch
             $userReference = $this->getEntityManager()->getReference(\App\Entity\Users::class, $buyerId);

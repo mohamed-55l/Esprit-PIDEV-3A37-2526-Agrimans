@@ -139,7 +139,7 @@ class Culture
         return $this;
     }
 
-    public function getDatePlantation(): ?\DateTime
+    public function getDatePlantation(): ?\DateTimeInterface
     {
         return $this->date_plantation;
     }
@@ -151,7 +151,7 @@ class Culture
         return $this;
     }
 
-    public function getDateRecoltePrevue(): ?\DateTime
+    public function getDateRecoltePrevue(): ?\DateTimeInterface
     {
         return $this->date_recolte_prevue;
     }

@@ -42,13 +42,13 @@ class Users implements UserInterface, PasswordAuthenticatedUserInterface
 
     // ── Marketplace relations ──────────────────────────────────────────────────
 
-    #[ORM\OneToMany(targetEntity: Cart::class, mappedBy: 'user', cascade: ['remove'])]
+    #[ORM\OneToMany(targetEntity: Cart::class, mappedBy: 'user')]
     private Collection $carts;
 
-    #[ORM\OneToMany(targetEntity: Product::class, mappedBy: 'user', cascade: ['remove'])]
+    #[ORM\OneToMany(targetEntity: Product::class, mappedBy: 'user')]
     private Collection $products;
 
-    #[ORM\OneToMany(targetEntity: Review::class, mappedBy: 'user', cascade: ['remove'])]
+    #[ORM\OneToMany(targetEntity: Review::class, mappedBy: 'user')]
     private Collection $reviews;
 
     public function __construct()

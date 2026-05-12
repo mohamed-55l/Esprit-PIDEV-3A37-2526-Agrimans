@@ -70,15 +70,15 @@ class OrderItem
         return $this;
     }
 
-    #[ORM\Column(type: 'float', nullable: false)]
-    private ?float $price_at_purchase = null;
+    #[ORM\Column(type: 'decimal', precision: 10, scale: 3, nullable: false)]
+    private ?string $price_at_purchase = null;
 
-    public function getPrice_at_purchase(): ?float
+    public function getPrice_at_purchase(): ?string
     {
         return $this->price_at_purchase;
     }
 
-    public function setPrice_at_purchase(float $price_at_purchase): self
+    public function setPrice_at_purchase(string $price_at_purchase): self
     {
         $this->price_at_purchase = $price_at_purchase;
         return $this;
@@ -108,12 +108,12 @@ class OrderItem
         return $this;
     }
 
-    public function getPriceAtPurchase(): ?float
+    public function getPriceAtPurchase(): ?string
     {
         return $this->price_at_purchase;
     }
 
-    public function setPriceAtPurchase(float $price_at_purchase): static
+    public function setPriceAtPurchase(string $price_at_purchase): static
     {
         $this->price_at_purchase = $price_at_purchase;
 

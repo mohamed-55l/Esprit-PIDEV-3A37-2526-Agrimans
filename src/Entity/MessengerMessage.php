@@ -125,7 +125,7 @@ class MessengerMessage
         return $this;
     }
 
-    public function getCreatedAt(): ?\DateTime
+    public function getCreatedAt(): ?\DateTimeInterface
     {
         return $this->created_at;
     }
@@ -137,7 +137,7 @@ class MessengerMessage
         return $this;
     }
 
-    public function getAvailableAt(): ?\DateTime
+    public function getAvailableAt(): ?\DateTimeInterface
     {
         return $this->available_at;
     }
@@ -149,7 +149,7 @@ class MessengerMessage
         return $this;
     }
 
-    public function getDeliveredAt(): ?\DateTime
+    public function getDeliveredAt(): ?\DateTimeInterface
     {
         return $this->delivered_at;
     }
