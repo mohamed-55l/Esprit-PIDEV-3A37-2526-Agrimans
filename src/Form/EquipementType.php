@@ -36,22 +36,10 @@ class EquipementType extends AbstractType
                 ],
                 'placeholder' => 'Sélectionnez un statut',
             ])
-            ->add('capacite', NumberType::class, [
-                'label' => 'Capacité (Ha/Heure)',
-                'attr' => ['placeholder' => 'Ex: 0.5, 2.5, 5'],
-                'help' => 'Surface traitée en une heure',
-                'required' => false,
-            ])
-            ->add('consommation', NumberType::class, [
-                'label' => 'Consommation (Litres/Heure)',
-                'attr' => ['placeholder' => 'Ex: 10, 20, 35'],
-                'help' => 'Carburant consommé par heure (utilisé pour calcul TCO)',
-                'required' => false,
-            ])
             ->add('capaciteRendement', NumberType::class, [
-                'label' => 'Capacité de Rendement (Ha/Heure) ⭐',
-                'attr' => ['placeholder' => 'Ex: 0.5, 2.5, 5'],
-                'help' => 'Utilisé par le Matching Intelligent : surface traitée par heure (peut différer de la capacité théorique)',
+                'label'    => 'Capacité de Rendement (Ha/Heure)',
+                'attr'     => ['placeholder' => 'Ex: 0.5, 2.5, 5.0'],
+                'help'     => 'Surface agricole traitée par heure — utilisé par le Matching Intelligent',
                 'required' => false,
             ])
             // On ne met pas (on cache) le champ userId côté frontend car il sera

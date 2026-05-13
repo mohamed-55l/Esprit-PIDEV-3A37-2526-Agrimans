@@ -16,8 +16,8 @@ class SmartMatchingService
      */
     public function analyserCompatibilite(float $surfaceHectares, Equipement $equipement): array
     {
-        $capacite     = $equipement->getCapacite() ?? 1.0;       // Ha/heure
-        $consommation = $equipement->getConsommation() ?? 10.0;  // L/heure
+        $capacite     = $equipement->getCapaciteRendement() ?? 1.0; // Ha/heure
+        $consommation = 10.0; // L/heure (valeur par défaut TCO)
         $prixAchat    = $equipement->getPrix() ?? 0.0;
 
         // ── Calculs de base ──────────────────────────────────────────────────

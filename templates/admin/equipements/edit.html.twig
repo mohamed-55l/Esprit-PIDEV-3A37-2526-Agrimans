@@ -194,30 +194,12 @@
                         <div class="form-error">{{ form_errors(form.disponibilite) }}</div>
                     </div>
 
-                    <div class="section-label">
-                        <i class="fa-solid fa-gears" style="margin-right:6px;"></i>Données Techniques (pour analyses)
-                    </div>
-                    <hr class="section-divider">
-
-                    <div class="form-group">
-                        {{ form_label(form.capacite) }}
-                        {{ form_widget(form.capacite) }}
-                        <div class="form-help">{{ form_help(form.capacite) }}</div>
-                        <div class="form-error">{{ form_errors(form.capacite) }}</div>
-                    </div>
-
-                    <div class="form-group">
-                        {{ form_label(form.consommation) }}
-                        {{ form_widget(form.consommation) }}
-                        <div class="form-help">{{ form_help(form.consommation) }}</div>
-                        <div class="form-error">{{ form_errors(form.consommation) }}</div>
-                    </div>
-
+                    <!-- Capacité de Rendement (champ unique pour Matching Intelligent) -->
                     <div class="form-group highlight-matching full-width">
                         {{ form_label(form.capaciteRendement) }}
                         {{ form_widget(form.capaciteRendement) }}
                         <div class="form-help highlight">
-                            <i class="fa-solid fa-star" style="margin-right:4px;"></i>{{ form_help(form.capaciteRendement) }}
+                            <i class="fa-solid fa-magnifying-glass-chart" style="margin-right:4px;"></i>{{ form_help(form.capaciteRendement) }}
                         </div>
                         <div class="form-error">{{ form_errors(form.capaciteRendement) }}</div>
                     </div>
