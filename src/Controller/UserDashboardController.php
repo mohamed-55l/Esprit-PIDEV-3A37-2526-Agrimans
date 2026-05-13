@@ -3,7 +3,13 @@
 namespace App\Controller;
 
 use App\Entity\User;
+use App\Entity\Review;
+use App\Form\ReviewType;
 use App\Repository\AnimalRepository;
+use App\Repository\EquipementRepository;
+use App\Repository\GarageRepository;
+use App\Repository\ReviewRepository;
+use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
