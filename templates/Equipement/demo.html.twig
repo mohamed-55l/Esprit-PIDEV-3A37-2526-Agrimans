@@ -1,0 +1,538 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}Démonstration - Matching Intelligent d'Équipement{% endblock %}
+
+{% block stylesheets %}
+<style>
+    /* ── Layout ── */
+    .demo-layout {
+        display: grid;
+        grid-template-columns: 280px 1fr;
+        gap: 1.5rem;
+        margin-top: 2rem;
+        align-items: start;
+    }
+
+    /* ── Sidebar Parcelles ── */
+    .parcelle-sidebar {
+        background: rgba(255,255,255,0.03);
+        border: 1px solid rgba(255,255,255,0.08);
+        border-radius: 16px;
+        overflow: hidden;
+        position: sticky;
+        top: 110px;
+    }
+    .parcelle-sidebar-header {
+        background: linear-gradient(135deg, #667eea, #764ba2);
+        padding: 1rem 1.2rem;
+        display: flex;
+        align-items: center;
+        gap: 0.7rem;
+    }
+    .parcelle-sidebar-header h2 {
+        font-size: 0.95rem;
+        font-weight: 700;
+        color: #fff;
+        margin: 0;
+    }
+    .parcelle-list { padding: 0.6rem; }
+    .parcelle-btn {
+        width: 100%;
+        background: transparent;
+        border: 1px solid transparent;
+        border-radius: 10px;
+        padding: 0.75rem 1rem;
+        color: rgba(255,255,255,0.8);
+        cursor: pointer;
+        text-align: left;
+        margin-bottom: 0.4rem;
+        transition: all 0.2s ease;
+        font-family: 'Outfit', sans-serif;
+    }
+    .parcelle-btn:hover {
+        background: rgba(255,255,255,0.05);
+        border-color: rgba(255,255,255,0.1);
+    }
+    .parcelle-btn.active {
+        background: rgba(102,126,234,0.15);
+        border-color: rgba(102,126,234,0.4);
+        color: #fff;
+    }
+    .parcelle-btn .p-name { font-weight: 600; font-size: 0.9rem; display: block; margin-bottom: 0.2rem; }
+    .parcelle-btn .p-loc { font-size: 0.8rem; color: rgba(255,255,255,0.5); }
+    .parcelle-btn .p-badge {
+        display: inline-block;
+        background: rgba(102,126,234,0.25);
+        color: #667eea;
+        border-radius: 20px;
+        padding: 0.15rem 0.6rem;
+        font-size: 0.75rem;
+        font-weight: 700;
+        float: right;
+    }
+    .parcelle-btn.active .p-badge { background: rgba(255,255,255,0.2); color: #fff; }
+    .parcelle-btn.active .p-loc { color: rgba(255,255,255,0.7); }
+
+    /* ── Main Content ── */
+    .demo-main { display: flex; flex-direction: column; gap: 1.5rem; }
+
+    /* ── Dark Card ── */
+    .dark-card {
+        background: rgba(255,255,255,0.03);
+        border: 1px solid rgba(255,255,255,0.08);
+        border-radius: 16px;
+        overflow: hidden;
+    }
+    .dark-card-header {
+        padding: 1rem 1.5rem;
+        border-bottom: 1px solid rgba(255,255,255,0.07);
+        display: flex;
+        align-items: center;
+        gap: 0.7rem;
+    }
+    .dark-card-header h2 { font-size: 1rem; font-weight: 600; color: rgba(255,255,255,0.9); margin: 0; }
+    .dark-card-body { padding: 1.5rem; }
+
+    /* ── Info Grid ── */
+    .info-grid { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 1rem; }
+    .info-item p:first-child { color: rgba(255,255,255,0.5); font-size: 0.78rem; text-transform: uppercase; letter-spacing: 0.5px; margin-bottom: 0.3rem; }
+    .info-item p:last-child { color: #fff; font-weight: 600; font-size: 0.95rem; margin: 0; }
+
+    /* ── Loading ── */
+    .loading-box {
+        text-align: center;
+        padding: 3rem;
+        display: none;
+    }
+    .spinner {
+        width: 40px; height: 40px;
+        border: 3px solid rgba(102,126,234,0.2);
+        border-top-color: #667eea;
+        border-radius: 50%;
+        animation: spin 0.8s linear infinite;
+        margin: 0 auto 1rem;
+    }
+    @keyframes spin { to { transform: rotate(360deg); } }
+
+    /* ── Initial Message ── */
+    .initial-msg {
+        text-align: center;
+        padding: 4rem 2rem;
+        color: rgba(255,255,255,0.5);
+    }
+    .initial-msg .icon { font-size: 3rem; margin-bottom: 1rem; opacity: 0.4; }
+    .initial-msg h3 { color: rgba(255,255,255,0.7); font-size: 1.2rem; margin-bottom: 0.5rem; }
+
+    /* ── Recommendation Cards Grid ── */
+    .rec-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(260px, 1fr)); gap: 1rem; }
+    .rec-card {
+        border-radius: 14px;
+        overflow: hidden;
+        border: 1px solid rgba(255,255,255,0.07);
+        transition: transform 0.25s ease, box-shadow 0.25s ease;
+        cursor: pointer;
+    }
+    .rec-card:hover { transform: translateY(-4px); box-shadow: 0 12px 30px rgba(0,0,0,0.3); }
+    .rec-card-header {
+        padding: 0.9rem 1.1rem;
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+    }
+    .rec-card-header h3 { font-size: 0.85rem; font-weight: 700; color: #fff; margin: 0; }
+    .rec-score {
+        font-size: 0.82rem; font-weight: 800;
+        background: rgba(255,255,255,0.2);
+        border-radius: 20px;
+        padding: 0.2rem 0.6rem;
+        color: #fff;
+    }
+    .rec-card-body { background: rgba(0,0,0,0.25); padding: 1rem 1.1rem; }
+    .rec-card-body h4 { font-size: 0.95rem; font-weight: 700; color: #fff; margin-bottom: 0.2rem; }
+    .rec-card-body .rec-type { font-size: 0.82rem; color: rgba(255,255,255,0.5); margin-bottom: 0.8rem; }
+    .rec-meta { display: flex; flex-direction: column; gap: 0.3rem; margin-bottom: 1rem; }
+    .rec-meta span { font-size: 0.83rem; color: rgba(255,255,255,0.75); }
+    .rec-meta strong { color: #fff; }
+    .btn-analyze {
+        width: 100%;
+        padding: 0.55rem;
+        border-radius: 8px;
+        border: 1px solid rgba(102,126,234,0.4);
+        background: rgba(102,126,234,0.12);
+        color: #667eea;
+        font-size: 0.85rem;
+        font-weight: 600;
+        cursor: pointer;
+        transition: all 0.2s;
+        font-family: 'Outfit', sans-serif;
+    }
+    .btn-analyze:hover { background: rgba(102,126,234,0.25); border-color: #667eea; }
+
+    /* ── Match Detail ── */
+    .match-score-ring {
+        width: 130px; height: 130px; border-radius: 50%;
+        display: flex; flex-direction: column; align-items: center; justify-content: center;
+        margin: 0 auto 1rem;
+        border: 4px solid;
+        transition: all 0.3s;
+    }
+    .match-score-ring .score-val { font-size: 2rem; font-weight: 800; }
+    .match-metrics { display: grid; grid-template-columns: 1fr 1fr; gap: 1rem; margin: 1.2rem 0; }
+    .metric-box {
+        border-radius: 12px;
+        padding: 1rem;
+        text-align: center;
+        border: 1px solid rgba(255,255,255,0.07);
+        background: rgba(255,255,255,0.03);
+    }
+    .metric-box .m-label { font-size: 0.78rem; color: rgba(255,255,255,0.5); margin-bottom: 0.3rem; text-transform: uppercase; letter-spacing: 0.5px; }
+    .metric-box .m-val { font-size: 1.3rem; font-weight: 800; }
+    .reason-box {
+        border-left: 4px solid #667eea;
+        background: rgba(102,126,234,0.07);
+        border-radius: 0 10px 10px 0;
+        padding: 1rem;
+        margin-top: 1rem;
+    }
+    .reason-box .r-label { font-size: 0.75rem; text-transform: uppercase; letter-spacing: 0.5px; color: rgba(255,255,255,0.4); margin-bottom: 0.4rem; }
+    .reason-box p { color: rgba(255,255,255,0.82); font-size: 0.9rem; line-height: 1.6; margin: 0; }
+    .alert-box {
+        border-left: 4px solid #f1c40f;
+        background: rgba(241,196,15,0.07);
+        border-radius: 0 10px 10px 0;
+        padding: 1rem;
+        margin-top: 0.8rem;
+        display: none;
+    }
+    .alert-box p { color: rgba(255,255,255,0.82); font-size: 0.9rem; margin: 0; }
+    .calc-box {
+        background: rgba(255,255,255,0.03);
+        border: 1px solid rgba(255,255,255,0.07);
+        border-radius: 10px;
+        padding: 1rem;
+        margin-top: 1rem;
+        font-family: monospace;
+        font-size: 0.9rem;
+        color: rgba(255,255,255,0.7);
+    }
+    .calc-box strong { color: #667eea; }
+
+    /* ── Eq Details Grid ── */
+    .eq-detail-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 0.8rem; margin-bottom: 1.2rem; }
+    .eq-detail-item .ed-label { font-size: 0.75rem; color: rgba(255,255,255,0.4); text-transform: uppercase; letter-spacing: 0.5px; margin-bottom: 0.2rem; }
+    .eq-detail-item .ed-val { font-size: 0.95rem; font-weight: 600; color: #fff; }
+
+    /* ── Section Title ── */
+    .section-title { display: flex; align-items: center; gap: 0.6rem; margin-bottom: 1rem; }
+    .section-title h2 { font-size: 1.3rem; font-weight: 700; color: #fff; margin: 0; }
+
+    /* ── Empty state ── */
+    .empty-parcelle { padding: 1.5rem; text-align: center; color: rgba(255,255,255,0.4); font-size: 0.9rem; }
+</style>
+{% endblock %}
+
+{% block body %}
+<section class="content-section" style="margin-top: 2rem;">
+
+    <!-- Header -->
+    <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:2rem;">
+        <div>
+            <div style="display:flex; align-items:center; gap:0.8rem; margin-bottom:0.4rem;">
+                <i class="fa-solid fa-magnifying-glass-chart" style="font-size:2rem; color:#667eea;"></i>
+                <h1 style="font-size:2rem; color:#fff; margin:0;">Matching Intelligent</h1>
+            </div>
+            <p style="color:rgba(255,255,255,0.6); margin:0;">Sélectionnez une parcelle pour voir les équipements les plus adaptés.</p>
+        </div>
+        <a href="{{ path('app_equipement_index') }}" class="btn btn-secondary" style="padding:0.7rem 1.3rem;">
+            <i class="fa-solid fa-arrow-left"></i> Retour
+        </a>
+    </div>
+
+    <div class="demo-layout">
+
+        <!-- ── Sidebar Parcelles ── -->
+        <div class="parcelle-sidebar">
+            <div class="parcelle-sidebar-header">
+                <i class="fa-solid fa-map" style="font-size:1rem;"></i>
+                <h2>Sélectionner une Parcelle</h2>
+            </div>
+            <div class="parcelle-list">
+                {% if parcelles is empty %}
+                    <div class="empty-parcelle">
+                        <i class="fa-solid fa-map" style="font-size:2rem; opacity:0.3; margin-bottom:0.5rem; display:block;"></i>
+                        Aucune parcelle trouvée.
+                    </div>
+                {% else %}
+                    {% for parcelle in parcelles %}
+                    <button type="button"
+                            class="parcelle-btn"
+                            data-parcelle-id="{{ parcelle.id }}"
+                            data-parcelle-name="{{ parcelle.nom }}"
+                            data-localisation="{{ parcelle.localisation }}"
+                            data-superficie="{{ parcelle.superficie }}">
+                        <span class="p-badge">{{ parcelle.superficie }} Ha</span>
+                        <span class="p-name">{{ parcelle.nom }}</span>
+                        <span class="p-loc"><i class="fa-solid fa-location-dot" style="margin-right:4px;"></i>{{ parcelle.localisation }}</span>
+                    </button>
+                    {% endfor %}
+                {% endif %}
+            </div>
+        </div>
+
+        <!-- ── Main Content ── -->
+        <div class="demo-main">
+
+            <!-- Message initial -->
+            <div id="initial-message" class="dark-card">
+                <div class="initial-msg">
+                    <div class="icon"><i class="fa-solid fa-hand-pointer"></i></div>
+                    <h3>Sélectionnez une parcelle à gauche</h3>
+                    <p>Le système analysera tous les équipements disponibles et vous affichera les meilleures recommandations.</p>
+                </div>
+            </div>
+
+            <!-- Loading -->
+            <div id="loading" class="dark-card" style="display:none;">
+                <div class="loading-box" style="display:block;">
+                    <div class="spinner"></div>
+                    <p style="color:rgba(255,255,255,0.6);">Analyse en cours...</p>
+                </div>
+            </div>
+
+            <!-- Info Parcelle -->
+            <div id="parcelle-info" class="dark-card" style="display:none;">
+                <div class="dark-card-header">
+                    <i class="fa-solid fa-map-location-dot" style="color:#2ecc71;"></i>
+                    <h2>Parcelle Analysée</h2>
+                </div>
+                <div class="dark-card-body">
+                    <div class="info-grid">
+                        <div class="info-item">
+                            <p>Nom</p>
+                            <p id="info-nom">—</p>
+                        </div>
+                        <div class="info-item">
+                            <p>Localisation</p>
+                            <p id="info-localisation">—</p>
+                        </div>
+                        <div class="info-item">
+                            <p>Surface</p>
+                            <p id="info-superficie" style="color:#f1c40f; font-size:1.2rem;">— Ha</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Recommandations -->
+            <div id="recommendations-container" style="display:none;">
+                <div class="section-title">
+                    <i class="fa-solid fa-star" style="color:#f1c40f; font-size:1.3rem;"></i>
+                    <h2>Recommandations Intelligentes</h2>
+                </div>
+                <div id="recommendations-list" class="rec-grid"></div>
+            </div>
+
+            <!-- Détail du Matching -->
+            <div id="match-detail" class="dark-card" style="display:none;">
+                <div class="dark-card-header">
+                    <i class="fa-solid fa-chart-simple" style="color:#667eea;"></i>
+                    <h2>Analyse Détaillée</h2>
+                </div>
+                <div class="dark-card-body">
+                    <!-- Infos Équipement -->
+                    <div class="eq-detail-grid">
+                        <div class="eq-detail-item">
+                            <div class="ed-label">Équipement</div>
+                            <div class="ed-val" id="match-equipement">—</div>
+                        </div>
+                        <div class="eq-detail-item">
+                            <div class="ed-label">Type</div>
+                            <div class="ed-val" id="match-type">—</div>
+                        </div>
+                        <div class="eq-detail-item">
+                            <div class="ed-label">Capacité</div>
+                            <div class="ed-val" id="match-capacite" style="color:#667eea;">— Ha/h</div>
+                        </div>
+                        <div class="eq-detail-item">
+                            <div class="ed-label">Prix</div>
+                            <div class="ed-val" id="match-prix" style="color:#2ecc71;">—</div>
+                        </div>
+                        <div class="eq-detail-item">
+                            <div class="ed-label">Disponibilité</div>
+                            <div class="ed-val" id="match-disponibilite">—</div>
+                        </div>
+                        <div class="eq-detail-item">
+                            <div class="ed-label">Statut</div>
+                            <div class="ed-val" id="match-status">—</div>
+                        </div>
+                    </div>
+
+                    <!-- Score Ring -->
+                    <div style="text-align:center; margin: 1.5rem 0;">
+                        <div class="match-score-ring" id="match-score-ring">
+                            <span class="score-val" id="match-score">—</span>
+                            <span style="font-size:0.75rem; color:rgba(255,255,255,0.6);">score</span>
+                        </div>
+                        <div id="match-badge" style="font-size:0.95rem; font-weight:700; margin-top:0.5rem;">—</div>
+                    </div>
+
+                    <!-- Métriques -->
+                    <div class="match-metrics">
+                        <div class="metric-box">
+                            <div class="m-label">⏱ Temps Estimé</div>
+                            <div class="m-val" id="match-time" style="color:#667eea;">—h</div>
+                        </div>
+                        <div class="metric-box">
+                            <div class="m-label">📊 Score</div>
+                            <div class="m-val" id="match-score-2" style="color:#7DBF6C;">—%</div>
+                        </div>
+                    </div>
+
+                    <!-- Calcul -->
+                    <div class="calc-box">
+                        <span style="color:rgba(255,255,255,0.4); font-size:0.78rem;">CALCUL : </span>
+                        Temps = Surface / Capacité = <strong id="match-calculation">—</strong>
+                    </div>
+
+                    <!-- Raison -->
+                    <div class="reason-box">
+                        <div class="r-label"><i class="fa-solid fa-circle-info" style="margin-right:4px;"></i>Explication</div>
+                        <p id="match-reason">—</p>
+                    </div>
+
+                    <!-- Alerte -->
+                    <div class="alert-box" id="match-alert">
+                        <div class="r-label" style="color:rgba(241,196,15,0.7);"><i class="fa-solid fa-triangle-exclamation" style="margin-right:4px;"></i>Alerte</div>
+                        <p id="match-alert-text">—</p>
+                    </div>
+                </div>
+            </div>
+
+        </div>{# end demo-main #}
+    </div>{# end demo-layout #}
+
+</section>
+
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    const parcelleList = document.querySelectorAll('.parcelle-btn');
+    const loading = document.getElementById('loading');
+    const initialMessage = document.getElementById('initial-message');
+    const parcelleInfo = document.getElementById('parcelle-info');
+    const recommendationsContainer = document.getElementById('recommendations-container');
+    const recommendationsList = document.getElementById('recommendations-list');
+    const matchDetail = document.getElementById('match-detail');
+
+    function show(el) { el.style.display = ''; }
+    function hide(el) { el.style.display = 'none'; }
+
+    parcelleList.forEach(btn => {
+        btn.addEventListener('click', function() {
+            const parcelleId = this.getAttribute('data-parcelle-id');
+            const superficie = this.getAttribute('data-superficie');
+
+            parcelleList.forEach(b => b.classList.remove('active'));
+            this.classList.add('active');
+
+            show(loading); hide(initialMessage); hide(parcelleInfo);
+            hide(recommendationsContainer); hide(matchDetail);
+
+            fetch(`/equipement/ajax/recommendations/${parcelleId}`)
+                .then(r => r.json())
+                .then(data => {
+                    hide(loading);
+                    show(parcelleInfo);
+                    show(recommendationsContainer);
+
+                    document.getElementById('info-nom').textContent = data.parcelle.nom;
+                    document.getElementById('info-localisation').textContent = data.parcelle.localisation || 'Non définie';
+                    document.getElementById('info-superficie').textContent = data.parcelle.superficie + ' Ha';
+
+                    recommendationsList.innerHTML = '';
+                    data.recommendations.forEach((rec, index) => {
+                        const medal = index === 0 ? '🥇' : index === 1 ? '🥈' : index === 2 ? '🥉' : '#' + (index+1);
+                        const color = rec.badge_color === 'green' ? '#2ecc71' : rec.badge_color === 'yellow' ? '#f1c40f' : '#e74c3c';
+                        const colorRgb = rec.badge_color === 'green' ? '46,204,113' : rec.badge_color === 'yellow' ? '241,196,15' : '231,76,60';
+
+                        const card = document.createElement('div');
+                        card.className = 'rec-card';
+                        card.style.background = `rgba(${colorRgb},0.05)`;
+                        card.innerHTML = `
+                            <div class="rec-card-header" style="background:rgba(${colorRgb},0.18);">
+                                <h3>${medal} ${rec.recommendation}</h3>
+                                <span class="rec-score">${parseFloat(rec.match_score).toFixed(1)}%</span>
+                            </div>
+                            <div class="rec-card-body">
+                                <h4>${rec.equipement_nom}</h4>
+                                <div class="rec-type">${rec.equipement_type}</div>
+                                <div class="rec-meta">
+                                    <span><strong>Capacité :</strong> ${rec.equipement_capacite} Ha/h</span>
+                                    <span><strong>Temps :</strong> ${parseFloat(rec.estimated_time_hours).toFixed(2)}h</span>
+                                </div>
+                                <button class="btn-analyze analyze-btn"
+                                        data-equipement-id="${rec.equipement_id}"
+                                        data-parcelle-id="${parcelleId}">
+                                    <i class="fa-solid fa-magnifying-glass-chart"></i> Analyser
+                                </button>
+                            </div>
+                        `;
+                        recommendationsList.appendChild(card);
+                        card.querySelector('.analyze-btn').addEventListener('click', function() {
+                            analyzeMatch(rec.equipement_id, parcelleId);
+                        });
+                    });
+                })
+                .catch(err => { hide(loading); console.error(err); });
+        });
+    });
+
+    function analyzeMatch(equipementId, parcelleId) {
+        show(loading); hide(matchDetail);
+
+        fetch(`/equipement/ajax/match/${equipementId}/${parcelleId}`)
+            .then(r => r.json())
+            .then(data => {
+                hide(loading); show(matchDetail);
+                const match = data.match;
+                const color = match.badge_color === 'green' ? '#2ecc71' : match.badge_color === 'yellow' ? '#f1c40f' : '#e74c3c';
+                const colorRgb = match.badge_color === 'green' ? '46,204,113' : match.badge_color === 'yellow' ? '241,196,15' : '231,76,60';
+
+                document.getElementById('match-equipement').textContent = match.equipement_nom;
+                document.getElementById('match-type').textContent = match.equipement_type;
+                document.getElementById('match-capacite').textContent = match.equipement_capacite + ' Ha/h';
+                document.getElementById('match-prix').textContent = (match.equipement_prix || 'N/A') + ' DT';
+                document.getElementById('match-disponibilite').textContent = match.equipement_disponibilite || 'N/A';
+                document.getElementById('match-score').textContent = parseFloat(match.match_score).toFixed(1) + '%';
+                document.getElementById('match-score-2').textContent = parseFloat(match.match_score).toFixed(1) + '%';
+                document.getElementById('match-time').textContent = parseFloat(match.estimated_time_hours).toFixed(2) + 'h';
+                document.getElementById('match-calculation').textContent = `${match.terrain_area} / ${match.equipement_capacite} = ${parseFloat(match.estimated_time_hours).toFixed(2)}h`;
+                document.getElementById('match-reason').textContent = match.reason;
+
+                const ring = document.getElementById('match-score-ring');
+                ring.style.borderColor = color;
+                ring.style.background = `rgba(${colorRgb},0.1)`;
+                ring.style.boxShadow = `0 0 25px rgba(${colorRgb},0.2)`;
+                document.getElementById('match-score').style.color = color;
+
+                const badgeEl = document.getElementById('match-badge');
+                badgeEl.textContent = match.recommendation;
+                badgeEl.style.color = color;
+
+                const statusEl = document.getElementById('match-status');
+                statusEl.innerHTML = `<span style="color:${color}; font-weight:700;">${match.recommendation}</span>`;
+
+                const alertBox = document.getElementById('match-alert');
+                if (match.alert_message) {
+                    document.getElementById('match-alert-text').textContent = match.alert_message;
+                    alertBox.style.display = 'block';
+                } else {
+                    alertBox.style.display = 'none';
+                }
+
+                setTimeout(() => matchDetail.scrollIntoView({ behavior: 'smooth', block: 'start' }), 100);
+            })
+            .catch(err => { hide(loading); console.error(err); });
+    }
+});
+</script>
+{% endblock %}

@@ -1,0 +1,205 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}Matching Intelligent - {{ equipement.nom }}{% endblock %}
+
+{% block body %}
+<section class="content-section" style="margin-top: 2rem;">
+
+    <!-- Page Header -->
+    <div style="display: flex; justify-content: space-between; align-items: flex-start; margin-bottom: 2.5rem;">
+        <div>
+            <div style="display: flex; align-items: center; gap: 0.8rem; margin-bottom: 0.5rem;">
+                <i class="fa-solid fa-magnifying-glass-chart" style="font-size: 2rem; color: #667eea;"></i>
+                <h1 style="font-size: 2rem; color: #fff; margin: 0;">Analyse de Matching Intelligent</h1>
+            </div>
+            <p style="color: rgba(255,255,255,0.6); margin: 0;">Évaluation de compatibilité entre l'équipement et la parcelle.</p>
+        </div>
+        <div style="display: flex; gap: 0.8rem; flex-wrap: wrap;">
+            <a href="{{ path('app_equipement_index') }}" class="btn btn-secondary" style="padding: 0.7rem 1.3rem;">
+                <i class="fa-solid fa-arrow-left"></i> Retour
+            </a>
+            <a href="{{ path('app_equipement_show', {id: equipement.id}) }}" class="btn btn-secondary" style="padding: 0.7rem 1.3rem;">
+                <i class="fa-solid fa-eye"></i> Voir l'équipement
+            </a>
+            <a href="{{ path('app_equipement_recommend', {parcelleId: parcelle.id}) }}" class="hero-btn-primary" style="padding: 0.7rem 1.3rem; font-size: 0.9rem;">
+                <i class="fa-solid fa-star"></i> Recommandations
+            </a>
+        </div>
+    </div>
+
+    <!-- Top Cards Row: Equipement + Parcelle -->
+    <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 1.5rem; margin-bottom: 1.5rem;">
+
+        <!-- Card Équipement -->
+        <div style="background: rgba(255,255,255,0.03); border: 1px solid rgba(255,255,255,0.08); border-radius: 16px; padding: 1.8rem;">
+            <div style="display: flex; align-items: center; gap: 0.7rem; margin-bottom: 1.2rem; padding-bottom: 0.8rem; border-bottom: 1px solid rgba(255,255,255,0.07);">
+                <i class="fa-solid fa-tractor" style="color: #f1c40f; font-size: 1.3rem;"></i>
+                <h2 style="font-size: 1.1rem; color: rgba(255,255,255,0.9); margin: 0; font-weight: 600;">Équipement Sélectionné</h2>
+            </div>
+            <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 0.8rem;">
+                <div>
+                    <p style="color: rgba(255,255,255,0.5); font-size: 0.8rem; margin-bottom: 0.2rem; text-transform: uppercase; letter-spacing: 0.5px;">Nom</p>
+                    <p style="color: #fff; font-weight: 600; font-size: 1rem; margin: 0;">{{ equipement.nom }}</p>
+                </div>
+                <div>
+                    <p style="color: rgba(255,255,255,0.5); font-size: 0.8rem; margin-bottom: 0.2rem; text-transform: uppercase; letter-spacing: 0.5px;">Type</p>
+                    <p style="color: rgba(255,255,255,0.85); margin: 0;">{{ equipement.type }}</p>
+                </div>
+                <div>
+                    <p style="color: rgba(255,255,255,0.5); font-size: 0.8rem; margin-bottom: 0.2rem; text-transform: uppercase; letter-spacing: 0.5px;">Prix</p>
+                    <p style="color: #2ecc71; font-weight: 700; margin: 0;">{{ equipement.prix }} DT</p>
+                </div>
+                <div>
+                    <p style="color: rgba(255,255,255,0.5); font-size: 0.8rem; margin-bottom: 0.2rem; text-transform: uppercase; letter-spacing: 0.5px;">Capacité</p>
+                    <p style="color: #667eea; font-weight: 700; margin: 0;">{{ equipement.capaciteRendement }} Ha/h</p>
+                </div>
+                <div style="grid-column: span 2;">
+                    <p style="color: rgba(255,255,255,0.5); font-size: 0.8rem; margin-bottom: 0.4rem; text-transform: uppercase; letter-spacing: 0.5px;">Disponibilité</p>
+                    {% if equipement.disponibilite == 'Disponible' %}
+                        <span class="badge badge-success"><i class="fa-solid fa-check-circle"></i> {{ equipement.disponibilite }}</span>
+                    {% elseif equipement.disponibilite == 'Indisponible' %}
+                        <span class="badge badge-danger"><i class="fa-solid fa-times-circle"></i> {{ equipement.disponibilite }}</span>
+                    {% else %}
+                        <span class="badge badge-warning"><i class="fa-solid fa-wrench"></i> {{ equipement.disponibilite }}</span>
+                    {% endif %}
+                </div>
+            </div>
+        </div>
+
+        <!-- Card Parcelle -->
+        <div style="background: rgba(255,255,255,0.03); border: 1px solid rgba(255,255,255,0.08); border-radius: 16px; padding: 1.8rem;">
+            <div style="display: flex; align-items: center; gap: 0.7rem; margin-bottom: 1.2rem; padding-bottom: 0.8rem; border-bottom: 1px solid rgba(255,255,255,0.07);">
+                <i class="fa-solid fa-map" style="color: #2ecc71; font-size: 1.3rem;"></i>
+                <h2 style="font-size: 1.1rem; color: rgba(255,255,255,0.9); margin: 0; font-weight: 600;">Parcelle Cible</h2>
+            </div>
+            <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 0.8rem;">
+                <div>
+                    <p style="color: rgba(255,255,255,0.5); font-size: 0.8rem; margin-bottom: 0.2rem; text-transform: uppercase; letter-spacing: 0.5px;">Nom</p>
+                    <p style="color: #fff; font-weight: 600; font-size: 1rem; margin: 0;">{{ parcelle.nom }}</p>
+                </div>
+                <div>
+                    <p style="color: rgba(255,255,255,0.5); font-size: 0.8rem; margin-bottom: 0.2rem; text-transform: uppercase; letter-spacing: 0.5px;">Surface</p>
+                    <p style="color: #f1c40f; font-weight: 700; font-size: 1.1rem; margin: 0;">{{ parcelle.superficie }} Ha</p>
+                </div>
+                <div>
+                    <p style="color: rgba(255,255,255,0.5); font-size: 0.8rem; margin-bottom: 0.2rem; text-transform: uppercase; letter-spacing: 0.5px;">Localisation</p>
+                    <p style="color: rgba(255,255,255,0.85); margin: 0;">{{ parcelle.localisation }}</p>
+                </div>
+                <div>
+                    <p style="color: rgba(255,255,255,0.5); font-size: 0.8rem; margin-bottom: 0.2rem; text-transform: uppercase; letter-spacing: 0.5px;">Type de Sol</p>
+                    <p style="color: rgba(255,255,255,0.85); margin: 0;">{{ parcelle.type_sol }}</p>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Score Principal -->
+    <div style="background: rgba(255,255,255,0.03); border: 1px solid rgba(255,255,255,0.08); border-radius: 16px; padding: 2rem; margin-bottom: 1.5rem;">
+
+        <div style="display: flex; align-items: center; gap: 0.7rem; margin-bottom: 1.5rem; padding-bottom: 0.8rem; border-bottom: 1px solid rgba(255,255,255,0.07);">
+            <i class="fa-solid fa-chart-simple" style="color: #667eea; font-size: 1.3rem;"></i>
+            <h2 style="font-size: 1.1rem; color: rgba(255,255,255,0.9); margin: 0; font-weight: 600;">Résultat du Matching</h2>
+        </div>
+
+        <!-- Score + Badge centré -->
+        <div style="display: flex; flex-direction: column; align-items: center; margin-bottom: 2rem;">
+            <!-- Badge Score circulaire -->
+            <div style="
+                width: 140px; height: 140px; border-radius: 50%;
+                background: {% if matchResult.badgeColor == 'green' %}rgba(46,204,113,0.15){% elseif matchResult.badgeColor == 'yellow' %}rgba(241,196,15,0.15){% else %}rgba(231,76,60,0.15){% endif %};
+                border: 4px solid {% if matchResult.badgeColor == 'green' %}#2ecc71{% elseif matchResult.badgeColor == 'yellow' %}#f1c40f{% else %}#e74c3c{% endif %};
+                display: flex; flex-direction: column; align-items: center; justify-content: center;
+                margin-bottom: 1.2rem;
+                box-shadow: 0 0 30px {% if matchResult.badgeColor == 'green' %}rgba(46,204,113,0.25){% elseif matchResult.badgeColor == 'yellow' %}rgba(241,196,15,0.25){% else %}rgba(231,76,60,0.25){% endif %};
+            ">
+                <span style="font-size: 2.2rem; font-weight: 800; color: {% if matchResult.badgeColor == 'green' %}#2ecc71{% elseif matchResult.badgeColor == 'yellow' %}#f1c40f{% else %}#e74c3c{% endif %};">
+                    {{ matchResult.matchScore|round(1) }}%
+                </span>
+            </div>
+
+            <!-- Statut badge texte -->
+            {% if matchResult.recommendation == 'RECOMMENDED' %}
+                <span class="badge badge-success" style="font-size: 1rem; padding: 0.6rem 1.4rem;">
+                    <i class="fa-solid fa-check-circle"></i> RECOMMANDÉ
+                </span>
+            {% elseif matchResult.recommendation == 'ACCEPTABLE' %}
+                <span class="badge badge-warning" style="font-size: 1rem; padding: 0.6rem 1.4rem;">
+                    <i class="fa-solid fa-triangle-exclamation"></i> ACCEPTABLE
+                </span>
+            {% else %}
+                <span class="badge badge-danger" style="font-size: 1rem; padding: 0.6rem 1.4rem;">
+                    <i class="fa-solid fa-times-circle"></i> NON RECOMMANDÉ
+                </span>
+            {% endif %}
+        </div>
+
+        <!-- Métriques clés -->
+        <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 1rem; margin-bottom: 1.5rem;">
+            <div style="background: rgba(102,126,234,0.1); border: 1px solid rgba(102,126,234,0.25); border-radius: 12px; padding: 1.2rem; text-align: center;">
+                <i class="fa-solid fa-clock" style="color: #667eea; font-size: 1.5rem; margin-bottom: 0.5rem;"></i>
+                <p style="color: rgba(255,255,255,0.6); font-size: 0.85rem; margin-bottom: 0.3rem;">Temps Estimé</p>
+                <p style="color: #667eea; font-size: 1.4rem; font-weight: 800; margin: 0;">{{ matchResult.estimatedTimeHours|round(2) }} h</p>
+            </div>
+            <div style="background: rgba(125,191,108,0.1); border: 1px solid rgba(125,191,108,0.25); border-radius: 12px; padding: 1.2rem; text-align: center;">
+                <i class="fa-solid fa-chart-line" style="color: #7DBF6C; font-size: 1.5rem; margin-bottom: 0.5rem;"></i>
+                <p style="color: rgba(255,255,255,0.6); font-size: 0.85rem; margin-bottom: 0.3rem;">Score de Matching</p>
+                <p style="color: #7DBF6C; font-size: 1.4rem; font-weight: 800; margin: 0;">{{ matchResult.matchScore|round(1) }}%</p>
+            </div>
+        </div>
+
+        <!-- Explication -->
+        <div style="background: rgba(102,126,234,0.08); border-left: 4px solid #667eea; border-radius: 0 12px 12px 0; padding: 1.2rem; margin-bottom: 1rem;">
+            <p style="color: rgba(255,255,255,0.5); font-size: 0.8rem; text-transform: uppercase; letter-spacing: 0.5px; margin-bottom: 0.4rem;">
+                <i class="fa-solid fa-circle-info"></i> Explication
+            </p>
+            <p style="color: rgba(255,255,255,0.85); margin: 0; line-height: 1.6;">{{ matchResult.reason }}</p>
+        </div>
+
+        <!-- Alerte si applicable -->
+        {% if matchResult.alertMessage %}
+        <div style="background: rgba(241,196,15,0.1); border-left: 4px solid #f1c40f; border-radius: 0 12px 12px 0; padding: 1.2rem; margin-bottom: 1rem;">
+            <p style="color: rgba(255,255,255,0.5); font-size: 0.8rem; text-transform: uppercase; letter-spacing: 0.5px; margin-bottom: 0.4rem;">
+                <i class="fa-solid fa-triangle-exclamation"></i> Alerte
+            </p>
+            <p style="color: rgba(255,255,255,0.85); margin: 0;">{{ matchResult.alertMessage }}</p>
+        </div>
+        {% endif %}
+
+        <!-- Recommandation finale -->
+        <div style="background: rgba({% if matchResult.badgeColor == 'green' %}46,204,113{% elseif matchResult.badgeColor == 'yellow' %}241,196,15{% else %}231,76,60{% endif %}, 0.1); border: 1px solid rgba({% if matchResult.badgeColor == 'green' %}46,204,113{% elseif matchResult.badgeColor == 'yellow' %}241,196,15{% else %}231,76,60{% endif %}, 0.3); border-radius: 12px; padding: 1.2rem; text-align: center;">
+            <p style="color: {% if matchResult.badgeColor == 'green' %}#2ecc71{% elseif matchResult.badgeColor == 'yellow' %}#f1c40f{% else %}#e74c3c{% endif %}; font-size: 1rem; font-weight: 700; margin: 0;">
+                {% if matchResult.recommendation == 'RECOMMENDED' %}
+                    ✓ Cet équipement est RECOMMANDÉ pour cette parcelle
+                {% elseif matchResult.recommendation == 'ACCEPTABLE' %}
+                    ⚠ Cet équipement est ACCEPTABLE pour cette parcelle
+                {% else %}
+                    ✗ Cet équipement n'est PAS RECOMMANDÉ pour cette parcelle
+                {% endif %}
+            </p>
+        </div>
+    </div>
+
+    <!-- Démonstration Métier (Jury) -->
+    <div style="background: rgba(255,255,255,0.03); border: 1px solid rgba(255,255,255,0.08); border-radius: 16px; padding: 1.8rem;">
+        <div style="display: flex; align-items: center; gap: 0.7rem; margin-bottom: 1.2rem; padding-bottom: 0.8rem; border-bottom: 1px solid rgba(255,255,255,0.07);">
+            <i class="fa-solid fa-graduation-cap" style="color: #f1c40f; font-size: 1.3rem;"></i>
+            <h2 style="font-size: 1.1rem; color: rgba(255,255,255,0.9); margin: 0; font-weight: 600;">Démonstration Métier (Pour la Soutenance)</h2>
+        </div>
+        <p style="color: rgba(255,255,255,0.7); font-weight: 600; margin-bottom: 0.8rem;">Scénario :</p>
+        <ul style="color: rgba(255,255,255,0.75); line-height: 2; padding-left: 1.5rem; margin-bottom: 1rem;">
+            <li>Parcelle de <strong style="color: #f1c40f;">{{ parcelle.superficie }} Ha</strong></li>
+            <li>Équipement : <strong style="color: #fff;">{{ equipement.nom }}</strong> ({{ equipement.capaciteRendement }} Ha/h)</li>
+        </ul>
+        <div style="background: rgba(255,255,255,0.04); border: 1px solid rgba(255,255,255,0.07); border-radius: 10px; padding: 1rem; margin-bottom: 0.8rem;">
+            <p style="color: rgba(255,255,255,0.7); font-weight: 600; margin-bottom: 0.4rem;">Calcul :</p>
+            <p style="color: rgba(255,255,255,0.85); margin: 0; font-family: monospace; font-size: 1rem;">
+                Temps = Surface / Capacité = {{ parcelle.superficie }} / {{ equipement.capaciteRendement }} = 
+                <strong style="color: #667eea;">{{ matchResult.estimatedTimeHours|round(2) }} heures</strong>
+            </p>
+        </div>
+        <p style="color: rgba(255,255,255,0.7); font-weight: 600; margin-bottom: 0.4rem;">Interprétation :</p>
+        <p style="color: rgba(255,255,255,0.75); margin: 0; line-height: 1.7;">{{ matchResult.reason }}</p>
+    </div>
+
+</section>
+{% endblock %}

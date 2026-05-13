@@ -141,12 +141,14 @@ class AdminController extends AbstractController
         $lowStockEquipements = [];
 
         return $this->render('admin/index.html.twig', [
-            'stats' => $stats,
-            'users' => $users,
-            'chartEquipement' => $chartEquipement,
-            'chartReview' => $chartReview,
+            'stats'            => $stats,
+            'users'            => $users,
+            'chartEquipement'  => $chartEquipement,
+            'chartReview'      => $chartReview,
             'chartMarketplace' => $chartMarketplace,
-            'lowStockAlerts' => $lowStockEquipements,
+            'lowStockAlerts'   => $lowStockEquipements,
+            'equipements'      => $equipementRepository->findAllWithUser(),
+            'equip_statistics' => $equipementRepository->getStatistics(),
         ]);
     }
 

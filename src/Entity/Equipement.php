@@ -161,4 +161,48 @@ class Equipement
         return $this;
     }
 
+    #[ORM\Column(type: 'float', nullable: true)]
+    private ?float $capacite_rendement = null;
+
+    public function getCapaciteRendement(): ?float
+    {
+        return $this->capacite_rendement;
+    }
+
+    public function setCapaciteRendement(?float $capacite_rendement): self
+    {
+        $this->capacite_rendement = $capacite_rendement;
+        return $this;
+    }
+
+    /** Capacité de traitement en Hectares/heure (pour le Matching Intelligent) */
+    #[ORM\Column(type: 'float', nullable: true)]
+    private ?float $capacite = null;
+
+    public function getCapacite(): ?float
+    {
+        return $this->capacite;
+    }
+
+    public function setCapacite(?float $capacite): self
+    {
+        $this->capacite = $capacite;
+        return $this;
+    }
+
+    /** Consommation en Litres/heure (pour le calcul TCO) */
+    #[ORM\Column(type: 'float', nullable: true)]
+    private ?float $consommation = null;
+
+    public function getConsommation(): ?float
+    {
+        return $this->consommation;
+    }
+
+    public function setConsommation(?float $consommation): self
+    {
+        $this->consommation = $consommation;
+        return $this;
+    }
+
 }

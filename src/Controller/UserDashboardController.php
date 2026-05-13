@@ -9,6 +9,7 @@ use App\Repository\AnimalRepository;
 use App\Repository\EquipementRepository;
 use App\Repository\GarageRepository;
 use App\Repository\ReviewRepository;
+use App\Service\SmartMatchingService;
 use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Request;
@@ -92,6 +93,35 @@ class UserDashboardController extends AbstractController
             'currentQuery' => $query,
             'chartEquipement' => $chartEquipement,
             'garages' => $garageRepository->findAll(),
+        ]);
+    }
+
+    // ─────────────────────────────────────────────────────────────────────────
+    // MATCHING INTELLIGENT (Démonstration Métier Avancé)
+    // ─────────────────────────────────────────────────────────────────────────
+
+    #[Route('/user/equipements/matching', name: 'user_equipement_matching', methods: ['GET', 'POST'])]
+    public function smartMatching(
+        Request $request,
+        EquipementRepository $equipementRepository,
+        SmartMatchingService $matchingService
+    ): Response {
+        /** @var \App\Entity\User $user */
+        $user = $this->getUser();
+
+        // Récupère tous les équipements de l'utilisateur qui ont une capacité renseignée
+        $equipements = array_filter(
+            $equipementRepository->findByUser($user),
+            fn($eq) => $eq->getCapacite() !== null && $eq->getCapacite() > 0
+        );
+
+        $surface    = (float) $request->get('surface', 10); // valeur par défaut : 10 Ha
+        $resultats  = $matchingService->classerEquipements($surface, array_values($equipements));
+
+        return $this->render('user/equipements/matching.html.twig', [
+            'resultats' => $resultats,
+            'surface'   => $surface,
+            'tous'      => array_values($equipements),
         ]);
     }
 

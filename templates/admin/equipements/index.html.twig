@@ -189,6 +189,7 @@
                             <th>Nom</th>
                             <th>Catégorie</th>
                             <th>Prix</th>
+                            <th>Capacité</th>
                             <th>Statut</th>
                             <th>Assigné à</th>
                             <th style="text-align:right;">Actions</th>
@@ -201,6 +202,13 @@
                             <td><strong>{{ eq.nom }}</strong></td>
                             <td>{{ eq.type }}</td>
                             <td style="font-weight:600;">{{ eq.prix|number_format(2, ',', ' ') }} DT</td>
+                            <td style="text-align:center;">
+                                {% if eq.capaciteRendement %}
+                                    <span style="color:#667eea;font-weight:700;">{{ eq.capaciteRendement }} Ha/h</span>
+                                {% else %}
+                                    <span style="color:var(--text-muted);font-style:italic;font-size:0.8rem;">—</span>
+                                {% endif %}
+                            </td>
                             <td>
                                 {% if eq.disponibilite == 'Disponible' %}
                                     <span class="badge badge-success"><i class="fa-solid fa-check-circle"></i> Disponible</span>
@@ -234,7 +242,7 @@
                         </tr>
                     {% else %}
                         <tr>
-                            <td colspan="7" style="text-align:center;padding:3rem;color:var(--text-muted);">
+                            <td colspan="8" style="text-align:center;padding:3rem;color:var(--text-muted);">
                                 <i class="fa-solid fa-box-open" style="font-size:2.5rem;margin-bottom:1rem;opacity:0.4;display:block;"></i>
                                 Aucun équipement enregistré.
                             </td>
