@@ -36,6 +36,12 @@ class EquipementType extends AbstractType
                 ],
                 'placeholder' => 'Sélectionnez un statut',
             ])
+            ->add('capaciteRendement', NumberType::class, [
+                'label' => 'Capacité de Rendement (Ha/heure)',
+                'attr' => ['placeholder' => 'Ex: 0.5, 2.5, 5'],
+                'help' => 'La surface que l\'équipement peut traiter par heure',
+                'required' => false,
+            ])
             // On ne met pas (on cache) le champ userId côté frontend car il sera
             // normalement géré par l'authentification (l'ID de la personne connectée).
         ;

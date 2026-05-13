@@ -161,4 +161,18 @@ class Equipement
         return $this;
     }
 
+    #[ORM\Column(type: 'float', nullable: true)]
+    private ?float $capacite_rendement = null;
+
+    public function getCapaciteRendement(): ?float
+    {
+        return $this->capacite_rendement;
+    }
+
+    public function setCapaciteRendement(?float $capacite_rendement): self
+    {
+        $this->capacite_rendement = $capacite_rendement;
+        return $this;
+    }
+
 }
