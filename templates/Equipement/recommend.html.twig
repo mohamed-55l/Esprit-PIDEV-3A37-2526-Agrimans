@@ -3,137 +3,186 @@
 {% block title %}Recommandations d'Équipement - {{ parcelle.nom }}{% endblock %}
 
 {% block body %}
-<div class="container mt-5">
-    <h1 class="mb-4">⭐ Recommandations Intelligentes d'Équipement</h1>
+<section class="content-section" style="margin-top: 2rem;">
+
+    <!-- Page Header -->
+    <div style="display: flex; justify-content: space-between; align-items: flex-start; margin-bottom: 2.5rem;">
+        <div>
+            <div style="display: flex; align-items: center; gap: 0.8rem; margin-bottom: 0.5rem;">
+                <i class="fa-solid fa-star" style="font-size: 2rem; color: #f1c40f;"></i>
+                <h1 style="font-size: 2rem; color: #fff; margin: 0;">Recommandations Intelligentes</h1>
+            </div>
+            <p style="color: rgba(255,255,255,0.6); margin: 0;">Classement des équipements les plus adaptés à votre parcelle.</p>
+        </div>
+        <a href="{{ path('app_equipement_index') }}" class="btn btn-secondary" style="padding: 0.7rem 1.3rem;">
+            <i class="fa-solid fa-arrow-left"></i> Retour à la liste
+        </a>
+    </div>
 
     <!-- Info Parcelle -->
-    <div class="card mb-4">
-        <div class="card-header bg-light">
-            <h5>📍 Parcelle Analysée</h5>
+    <div style="background: rgba(255,255,255,0.03); border: 1px solid rgba(255,255,255,0.08); border-radius: 16px; padding: 1.8rem; margin-bottom: 2rem;">
+        <div style="display: flex; align-items: center; gap: 0.7rem; margin-bottom: 1.2rem; padding-bottom: 0.8rem; border-bottom: 1px solid rgba(255,255,255,0.07);">
+            <i class="fa-solid fa-map-location-dot" style="color: #2ecc71; font-size: 1.3rem;"></i>
+            <h2 style="font-size: 1.1rem; color: rgba(255,255,255,0.9); margin: 0; font-weight: 600;">Parcelle Analysée</h2>
         </div>
-        <div class="card-body">
-            <div class="row">
-                <div class="col-md-6">
-                    <p><strong>Nom :</strong> {{ parcelle.nom }}</p>
-                    <p><strong>Localisation :</strong> {{ parcelle.localisation }}</p>
-                </div>
-                <div class="col-md-6">
-                    <p><strong>Surface :</strong> <strong style="font-size: 1.3em;">{{ parcelle.superficie }} Ha</strong></p>
-                    <p><strong>Type de Sol :</strong> {{ parcelle.type_sol }}</p>
-                </div>
+        <div style="display: grid; grid-template-columns: repeat(4, 1fr); gap: 1rem;">
+            <div>
+                <p style="color: rgba(255,255,255,0.5); font-size: 0.8rem; margin-bottom: 0.2rem; text-transform: uppercase; letter-spacing: 0.5px;">Nom</p>
+                <p style="color: #fff; font-weight: 600; margin: 0;">{{ parcelle.nom }}</p>
+            </div>
+            <div>
+                <p style="color: rgba(255,255,255,0.5); font-size: 0.8rem; margin-bottom: 0.2rem; text-transform: uppercase; letter-spacing: 0.5px;">Surface</p>
+                <p style="color: #f1c40f; font-weight: 700; font-size: 1.2rem; margin: 0;">{{ parcelle.superficie }} Ha</p>
+            </div>
+            <div>
+                <p style="color: rgba(255,255,255,0.5); font-size: 0.8rem; margin-bottom: 0.2rem; text-transform: uppercase; letter-spacing: 0.5px;">Localisation</p>
+                <p style="color: rgba(255,255,255,0.85); margin: 0;">{{ parcelle.localisation }}</p>
+            </div>
+            <div>
+                <p style="color: rgba(255,255,255,0.5); font-size: 0.8rem; margin-bottom: 0.2rem; text-transform: uppercase; letter-spacing: 0.5px;">Type de Sol</p>
+                <p style="color: rgba(255,255,255,0.85); margin: 0;">{{ parcelle.type_sol }}</p>
             </div>
         </div>
     </div>
 
-    <!-- Recommandations -->
-    <div class="row">
+    <!-- Grille de Recommandations -->
+    <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(340px, 1fr)); gap: 1.5rem; margin-bottom: 2rem;">
         {% for recommendation in recommendations %}
-        <div class="col-md-6 mb-4">
-            <div class="card h-100 border-{% if recommendation.badgeColor == 'green' %}success{% elseif recommendation.badgeColor == 'yellow' %}warning{% else %}danger{% endif %}">
-                <!-- En-tête avec Badge -->
-                <div class="card-header" style="background-color: 
-                    {% if recommendation.badgeColor == 'green' %}#28a745
-                    {% elseif recommendation.badgeColor == 'yellow' %}#ffc107
-                    {% elseif recommendation.badgeColor == 'red' %}#dc3545
-                    {% else %}#6c757d{% endif %};
-                    color: white;">
-                    <div class="d-flex justify-content-between align-items-center">
-                        <h5 class="mb-0">
-                            {% if loop.index == 1 %}🥇 1er Choix{% elseif loop.index == 2 %}🥈 2e Choix{% else %}🥉 3e Choix{% endif %}
-                        </h5>
-                        <span class="badge bg-light text-dark" style="font-size: 1.1em;">{{ recommendation.matchScore|round(1) }}%</span>
+        <div style="
+            background: rgba(255,255,255,0.03);
+            border: 1px solid rgba({% if recommendation.badgeColor == 'green' %}46,204,113{% elseif recommendation.badgeColor == 'yellow' %}241,196,15{% else %}231,76,60{% endif %}, 0.35);
+            border-radius: 16px;
+            overflow: hidden;
+            display: flex;
+            flex-direction: column;
+            transition: transform 0.3s ease, box-shadow 0.3s ease;
+        " onmouseover="this.style.transform='translateY(-4px)'; this.style.boxShadow='0 12px 30px rgba(0,0,0,0.3)';" 
+           onmouseout="this.style.transform='translateY(0)'; this.style.boxShadow='none';">
+
+            <!-- Card Header avec Rang et Score -->
+            <div style="
+                background: rgba({% if recommendation.badgeColor == 'green' %}46,204,113{% elseif recommendation.badgeColor == 'yellow' %}241,196,15{% else %}231,76,60{% endif %}, 0.12);
+                padding: 1.2rem 1.5rem;
+                display: flex;
+                justify-content: space-between;
+                align-items: center;
+                border-bottom: 1px solid rgba({% if recommendation.badgeColor == 'green' %}46,204,113{% elseif recommendation.badgeColor == 'yellow' %}241,196,15{% else %}231,76,60{% endif %}, 0.2);
+            ">
+                <div style="display: flex; align-items: center; gap: 0.7rem;">
+                    <span style="font-size: 1.5rem;">
+                        {% if loop.index == 1 %}🥇{% elseif loop.index == 2 %}🥈{% elseif loop.index == 3 %}🥉{% else %}#{{ loop.index }}{% endif %}
+                    </span>
+                    <div>
+                        <p style="color: rgba(255,255,255,0.5); font-size: 0.75rem; margin: 0; text-transform: uppercase; letter-spacing: 0.5px;">
+                            {% if loop.index == 1 %}1er Choix{% elseif loop.index == 2 %}2e Choix{% elseif loop.index == 3 %}3e Choix{% else %}Choix #{{ loop.index }}{% endif %}
+                        </p>
+                        <p style="color: #fff; font-weight: 700; font-size: 1rem; margin: 0;">{{ recommendation.equipement.nom }}</p>
                     </div>
                 </div>
+                <!-- Score circulaire -->
+                <div style="
+                    width: 60px; height: 60px; border-radius: 50%;
+                    background: rgba({% if recommendation.badgeColor == 'green' %}46,204,113{% elseif recommendation.badgeColor == 'yellow' %}241,196,15{% else %}231,76,60{% endif %}, 0.15);
+                    border: 2px solid rgba({% if recommendation.badgeColor == 'green' %}46,204,113{% elseif recommendation.badgeColor == 'yellow' %}241,196,15{% else %}231,76,60{% endif %}, 0.6);
+                    display: flex; align-items: center; justify-content: center;
+                    flex-shrink: 0;
+                ">
+                    <span style="font-size: 0.8rem; font-weight: 800; color: {% if recommendation.badgeColor == 'green' %}#2ecc71{% elseif recommendation.badgeColor == 'yellow' %}#f1c40f{% else %}#e74c3c{% endif %};">
+                        {{ recommendation.matchScore|round(0) }}%
+                    </span>
+                </div>
+            </div>
 
-                <div class="card-body">
-                    <!-- Nom et Type -->
-                    <h6 class="card-title">{{ recommendation.equipement.nom }}</h6>
-                    <p class="card-text text-muted">{{ recommendation.equipement.type }}</p>
+            <!-- Card Body -->
+            <div style="padding: 1.5rem; flex-grow: 1; display: flex; flex-direction: column; gap: 1rem;">
 
-                    <!-- Infos Techniques -->
-                    <div class="mb-3">
-                        <p class="mb-1"><strong>Capacité :</strong> {{ recommendation.equipement.capaciteRendement }} Ha/h</p>
-                        <p class="mb-1"><strong>Prix :</strong> {{ recommendation.equipement.prix }} DT</p>
-                        <p class="mb-1">
-                            <strong>Disponibilité :</strong>
-                            <span class="badge {% if recommendation.equipement.disponibilite == 'disponible' %}bg-success{% else %}bg-warning{% endif %}">
-                                {{ recommendation.equipement.disponibilite }}
-                            </span>
-                        </p>
-                    </div>
-
-                    <!-- Résultat du Matching -->
-                    <div class="mb-3 p-3" style="background-color: #f8f9fa; border-left: 4px solid 
-                        {% if recommendation.badgeColor == 'green' %}#28a745
-                        {% elseif recommendation.badgeColor == 'yellow' %}#ffc107
-                        {% else %}#dc3545{% endif %};">
-                        <p class="mb-1"><strong>⏱️ Temps Estimé :</strong> <strong>{{ recommendation.estimatedTimeHours|round(2) }} heures</strong></p>
-                        <p class="mb-0"><strong>Statut :</strong>
-                            {% if recommendation.recommendation == 'RECOMMENDED' %}
-                            <span class="badge bg-success">✓ RECOMMANDÉ</span>
-                            {% elseif recommendation.recommendation == 'ACCEPTABLE' %}
-                            <span class="badge bg-warning text-dark">⚠ ACCEPTABLE</span>
-                            {% else %}
-                            <span class="badge bg-danger">✗ NON RECOMMANDÉ</span>
-                            {% endif %}
-                        </p>
-                    </div>
-
-                    <!-- Raison -->
-                    <div class="alert alert-info mb-0">
-                        <small>{{ recommendation.reason }}</small>
-                    </div>
-
-                    <!-- Alerte si applicable -->
-                    {% if recommendation.alertMessage %}
-                    <div class="alert alert-{% if recommendation.badgeColor == 'red' %}danger{% else %}warning{% endif %} mt-2 mb-0">
-                        <small>{{ recommendation.alertMessage }}</small>
-                    </div>
+                <!-- Type + Disponibilité -->
+                <div style="display: flex; justify-content: space-between; align-items: center;">
+                    <span style="color: rgba(255,255,255,0.6); font-size: 0.9rem;">{{ recommendation.equipement.type }}</span>
+                    {% if recommendation.equipement.disponibilite == 'Disponible' %}
+                        <span class="badge badge-success"><i class="fa-solid fa-check-circle"></i> {{ recommendation.equipement.disponibilite }}</span>
+                    {% elseif recommendation.equipement.disponibilite == 'Indisponible' %}
+                        <span class="badge badge-danger"><i class="fa-solid fa-times-circle"></i> {{ recommendation.equipement.disponibilite }}</span>
+                    {% else %}
+                        <span class="badge badge-warning"><i class="fa-solid fa-wrench"></i> {{ recommendation.equipement.disponibilite }}</span>
                     {% endif %}
                 </div>
 
-                <!-- Boutons d'Action -->
-                <div class="card-footer bg-light">
-                    <a href="{{ path('app_equipement_show', {id: recommendation.equipement.id}) }}" class="btn btn-sm btn-outline-primary">
-                        👁️ Voir Détails
-                    </a>
-                    <a href="{{ path('app_equipement_match', {equipementId: recommendation.equipement.id, parcelleId: parcelle.id}) }}" class="btn btn-sm btn-outline-secondary">
-                        🔍 Analyser
-                    </a>
+                <!-- Métriques -->
+                <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 0.8rem;">
+                    <div style="background: rgba(102,126,234,0.08); border: 1px solid rgba(102,126,234,0.2); border-radius: 10px; padding: 0.8rem; text-align: center;">
+                        <p style="color: rgba(255,255,255,0.5); font-size: 0.75rem; margin-bottom: 0.2rem;">Capacité</p>
+                        <p style="color: #667eea; font-weight: 700; margin: 0;">{{ recommendation.equipement.capaciteRendement }} Ha/h</p>
+                    </div>
+                    <div style="background: rgba(46,204,113,0.08); border: 1px solid rgba(46,204,113,0.2); border-radius: 10px; padding: 0.8rem; text-align: center;">
+                        <p style="color: rgba(255,255,255,0.5); font-size: 0.75rem; margin-bottom: 0.2rem;">Prix</p>
+                        <p style="color: #2ecc71; font-weight: 700; margin: 0;">{{ recommendation.equipement.prix }} DT</p>
+                    </div>
+                    <div style="background: rgba(255,255,255,0.04); border: 1px solid rgba(255,255,255,0.07); border-radius: 10px; padding: 0.8rem; text-align: center;">
+                        <p style="color: rgba(255,255,255,0.5); font-size: 0.75rem; margin-bottom: 0.2rem;">Temps Estimé</p>
+                        <p style="color: #fff; font-weight: 700; margin: 0;">{{ recommendation.estimatedTimeHours|round(2) }} h</p>
+                    </div>
+                    <div style="background: rgba(255,255,255,0.04); border: 1px solid rgba(255,255,255,0.07); border-radius: 10px; padding: 0.8rem; text-align: center;">
+                        <p style="color: rgba(255,255,255,0.5); font-size: 0.75rem; margin-bottom: 0.2rem;">Statut</p>
+                        {% if recommendation.recommendation == 'RECOMMENDED' %}
+                            <span style="color: #2ecc71; font-weight: 700; font-size: 0.8rem;">✓ RECOMMANDÉ</span>
+                        {% elseif recommendation.recommendation == 'ACCEPTABLE' %}
+                            <span style="color: #f1c40f; font-weight: 700; font-size: 0.8rem;">⚠ ACCEPTABLE</span>
+                        {% else %}
+                            <span style="color: #e74c3c; font-weight: 700; font-size: 0.8rem;">✗ NON REC.</span>
+                        {% endif %}
+                    </div>
                 </div>
+
+                <!-- Raison -->
+                <div style="background: rgba(102,126,234,0.07); border-left: 3px solid rgba(102,126,234,0.5); padding: 0.8rem; border-radius: 0 8px 8px 0;">
+                    <p style="color: rgba(255,255,255,0.7); font-size: 0.85rem; margin: 0; line-height: 1.5;">{{ recommendation.reason }}</p>
+                </div>
+
+                <!-- Alerte -->
+                {% if recommendation.alertMessage %}
+                <div style="background: rgba(241,196,15,0.07); border-left: 3px solid rgba(241,196,15,0.5); padding: 0.8rem; border-radius: 0 8px 8px 0;">
+                    <p style="color: rgba(255,255,255,0.7); font-size: 0.85rem; margin: 0; line-height: 1.5;">{{ recommendation.alertMessage }}</p>
+                </div>
+                {% endif %}
+            </div>
+
+            <!-- Card Footer - Actions -->
+            <div style="padding: 1rem 1.5rem; border-top: 1px solid rgba(255,255,255,0.06); display: flex; gap: 0.8rem;">
+                <a href="{{ path('app_equipement_show', {id: recommendation.equipement.id}) }}" class="btn btn-secondary" style="flex: 1; text-align: center; padding: 0.6rem;">
+                    <i class="fa-solid fa-eye"></i> Détails
+                </a>
+                <a href="{{ path('app_equipement_match', {equipementId: recommendation.equipement.id, parcelleId: parcelle.id}) }}" class="hero-btn-primary" style="flex: 1; text-align: center; padding: 0.6rem; font-size: 0.9rem; border: none; cursor: pointer; font-family: inherit;">
+                    <i class="fa-solid fa-magnifying-glass-chart"></i> Analyser
+                </a>
             </div>
         </div>
         {% endfor %}
     </div>
 
-    <!-- Explication pour le jury -->
-    <div class="card mt-5 bg-light">
-        <div class="card-header">
-            <h5>🎓 Démonstration Métier Avancée</h5>
+    <!-- Démonstration Jury -->
+    <div style="background: rgba(255,255,255,0.03); border: 1px solid rgba(255,255,255,0.08); border-radius: 16px; padding: 1.8rem;">
+        <div style="display: flex; align-items: center; gap: 0.7rem; margin-bottom: 1.2rem; padding-bottom: 0.8rem; border-bottom: 1px solid rgba(255,255,255,0.07);">
+            <i class="fa-solid fa-graduation-cap" style="color: #f1c40f; font-size: 1.3rem;"></i>
+            <h2 style="font-size: 1.1rem; color: rgba(255,255,255,0.9); margin: 0; font-weight: 600;">Démonstration Métier Avancée</h2>
         </div>
-        <div class="card-body">
-            <h6>Comment Fonctionne le Matching Intelligent ?</h6>
-            <ol>
-                <li><strong>Analyse de la Parcelle :</strong> Surface = {{ parcelle.superficie }} Ha</li>
-                <li><strong>Évaluation de Chaque Équipement :</strong> Pour chacune des machines, on calcule : Temps = Surface / Capacité</li>
-                <li><strong>Calcul du Score :</strong>
-                    <ul>
-                        <li>Plage Optimale = 2 à 8 heures → Score 100%</li>
-                        <li>Trop rapide (< 2h) → Machine surpuissante, mauvaise rentabilité</li>
-                        <li>Trop lent (> 8h) → Machine sous-dimensionnée, faible productivité</li>
-                    </ul>
-                </li>
-                <li><strong>Recommandation :</strong> Les machines avec les meilleurs scores sont recommandées (vert), les acceptables en jaune, les mauvaises en rouge</li>
-            </ol>
-            <p class="mt-3"><strong>Valeur Métier :</strong> L'agriculteur ne choisit pas à l'aveugle. Le système l'assiste dans sa prise de décision économique en l'alertant sur les mismatches.</p>
+        <p style="color: rgba(255,255,255,0.85); font-weight: 600; margin-bottom: 0.8rem;">Comment Fonctionne le Matching Intelligent ?</p>
+        <ol style="color: rgba(255,255,255,0.75); line-height: 2; padding-left: 1.5rem;">
+            <li><strong style="color:#fff;">Analyse de la Parcelle :</strong> Surface = {{ parcelle.superficie }} Ha</li>
+            <li><strong style="color:#fff;">Évaluation de Chaque Équipement :</strong> Pour chacune des machines, on calcule : Temps = Surface / Capacité</li>
+            <li><strong style="color:#fff;">Calcul du Score :</strong>
+                <ul style="margin-top: 0.3rem;">
+                    <li>Plage Optimale = 2 à 8 heures → Score 100%</li>
+                    <li>Trop rapide (&#60; 2h) → Machine surpuissante, mauvaise rentabilité</li>
+                    <li>Trop lent (&#62; 8h) → Machine sous-dimensionnée, faible productivité</li>
+                </ul>
+            </li>
+            <li><strong style="color:#fff;">Recommandation :</strong> Les machines avec les meilleurs scores sont recommandées (vert), les acceptables en jaune, les mauvaises en rouge</li>
+        </ol>
+        <div style="margin-top: 1rem; background: rgba(125,191,108,0.08); border: 1px solid rgba(125,191,108,0.2); border-radius: 10px; padding: 1rem;">
+            <p style="color: rgba(255,255,255,0.85); margin: 0;"><strong style="color:#7DBF6C;">Valeur Métier :</strong> L'agriculteur ne choisit pas à l'aveugle. Le système l'assiste dans sa prise de décision économique en l'alertant sur les mismatches.</p>
         </div>
     </div>
 
-    <!-- Boutons de Navigation -->
-    <div class="mt-4 mb-5">
-        <a href="{{ path('app_equipement_index') }}" class="btn btn-secondary">
-            ← Retour à la liste des équipements
-        </a>
-    </div>
-</div>
+</section>
 {% endblock %}

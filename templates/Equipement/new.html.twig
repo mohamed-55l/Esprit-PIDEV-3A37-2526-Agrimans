@@ -1,15 +1,18 @@
 {% extends 'base.html.twig' %}
 
-{% block title %}Ajouter un Ã‰quipement{% endblock %}
+{% block title %}Ajouter un Équipement{% endblock %}
 
 {% block body %}
-    <div style="max-width: 600px; margin: 0 auto;" class="glass-card">
-        <h1 style="text-align:center;">Nouvel Ã‰quipement</h1>
-        
-        {{ include('equipement/_form.html.twig') }}
+    <section class="content-section" style="margin-top: 2rem;">
+        <div style="max-width: 800px; margin: 0 auto; background: rgba(255,255,255,0.03); border: 1px solid rgba(255,255,255,0.08); border-radius: 16px; padding: 2.5rem;">
+            <div style="text-align: center; margin-bottom: 2.5rem;">
+                <i class="fa-solid fa-tractor" style="font-size: 3rem; color: #f1c40f; margin-bottom: 1rem;"></i>
+                <h1 style="font-size: 2rem; color: #fff;">Ajouter un Équipement</h1>
+                <p style="color: rgba(255,255,255,0.6);">Saisissez les caractéristiques techniques de la machine.</p>
+            </div>
+            
+            {{ include('equipement/_form.html.twig') }}
 
-        <div style="margin-top: 2rem; text-align: center;">
-            <a href="{{ path('app_equipement_index') }}" style="color: #198B61; text-decoration: underline;">Retour Ã  la liste</a>
         </div>
-    </div>
+    </section>
 {% endblock %}

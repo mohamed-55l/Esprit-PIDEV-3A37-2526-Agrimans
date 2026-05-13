@@ -532,23 +532,174 @@
                         <canvas id="reviewChart"></canvas>
                     </div>
                 </div>
-            </div>
-            
-            <div class="charts-container" style="grid-template-columns: 1fr;">
-                <div class="chart-card" style="margin-top: 20px; cursor: pointer; transition: border-color 0.3s;" onclick="location.href='{{ path('app_statistics_index') }}'" onmouseover="this.style.borderColor='#9b59b6'" onmouseout="this.style.borderColor=''">
-                    <div class="card-header">
-                        <h3 class="card-title"><i class="fa-solid fa-shopping-cart" style="color: #9b59b6;"></i> État des Commandes Marketplace</h3>
-                        <a href="{{ path('app_statistics_index') }}" style="font-size:0.82rem; color:#9b59b6; text-decoration:none; display:flex; align-items:center; gap:5px;">
-                            <i class="fa-solid fa-arrow-right"></i> Voir détails
-                        </a>
+            </div><!-- end charts-container marketplace -->
+
+            <!-- ══════════════════════════════════════════════════════════════
+                 SECTION : GESTION DES ÉQUIPEMENTS (intégrée au dashboard)
+            ════════════════════════════════════════════════════════════════ -->
+            <div style="margin-top:2.5rem;">
+
+                <!-- Header section -->
+                <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:1.5rem;">
+                    <div>
+                        <h2 style="font-size:1.4rem; font-weight:700; color:white; margin:0;">
+                            <i class="fa-solid fa-tractor" style="color:#2ecc71; margin-right:10px;"></i>Gestion des Équipements
+                        </h2>
+                        <p style="color:var(--text-muted); font-size:0.85rem; margin:0.3rem 0 0;">Gérez, assignez et surveillez le parc matériel agricole.</p>
                     </div>
-                    <div style="height: 300px; width: 100%; display: flex; justify-content: center;">
-                        <canvas id="marketplaceChart"></canvas>
+                    <a href="{{ path('admin_equipement_new') }}" style="display:inline-flex; align-items:center; gap:6px; padding:0.6rem 1.2rem; background:var(--primary); color:#fff; border-radius:10px; font-size:0.9rem; font-weight:600; text-decoration:none; transition:all 0.2s;" onmouseover="this.style.background='#147350'" onmouseout="this.style.background='#198B61'">
+                        <i class="fa-solid fa-plus"></i> Nouvel Équipement
+                    </a>
+                </div>
+
+                <!-- Stats rapides équipements -->
+                <div style="display:grid; grid-template-columns:repeat(auto-fit, minmax(160px,1fr)); gap:1rem; margin-bottom:1.5rem;">
+                    <div style="background:var(--dark-card); border:1px solid var(--border); border-radius:12px; padding:1rem 1.2rem; display:flex; align-items:center; gap:0.8rem;">
+                        <div style="width:38px;height:38px;border-radius:9px;background:rgba(46,204,113,0.12);color:#2ecc71;display:flex;align-items:center;justify-content:center;font-size:1.1rem;flex-shrink:0;">
+                            <i class="fa-solid fa-tractor"></i>
+                        </div>
+                        <div>
+                            <div style="font-size:1.6rem;font-weight:700;color:white;line-height:1;">{{ equip_statistics.total|default(0) }}</div>
+                            <div style="font-size:0.78rem;color:var(--text-muted);">Total</div>
+                        </div>
+                    </div>
+                    {% for dispo, count in equip_statistics.repartition|default([]) %}
+                    <div style="background:var(--dark-card); border:1px solid var(--border); border-radius:12px; padding:1rem 1.2rem; display:flex; align-items:center; gap:0.8rem;">
+                        <div style="width:38px;height:38px;border-radius:9px;background:rgba(241,196,15,0.12);color:#f1c40f;display:flex;align-items:center;justify-content:center;font-size:1.1rem;flex-shrink:0;">
+                            <i class="fa-solid fa-tag"></i>
+                        </div>
+                        <div>
+                            <div style="font-size:1.6rem;font-weight:700;color:white;line-height:1;">{{ count }}</div>
+                            <div style="font-size:0.78rem;color:var(--text-muted);">{{ dispo }}</div>
+                        </div>
+                    </div>
+                    {% endfor %}
+                </div>
+
+                <!-- Alerte qualité -->
+                {% set alert_equipements = [] %}
+                {% for eq in equipements %}
+                    {% set negative_count = 0 %}
+                    {% for review in eq.reviews %}
+                        {% if review.commentaire|sentiment == 'Négatif' %}
+                            {% set negative_count = negative_count + 1 %}
+                        {% endif %}
+                    {% endfor %}
+                    {% if negative_count >= 3 %}
+                        {% set alert_equipements = alert_equipements|merge([{'eq': eq, 'count': negative_count}]) %}
+                    {% endif %}
+                {% endfor %}
+                {% if alert_equipements|length > 0 %}
+                <div style="background:rgba(231,76,60,0.08); border-left:4px solid var(--danger); padding:1.2rem 1.5rem; border-radius:0 12px 12px 0; margin-bottom:1.5rem;">
+                    <h4 style="color:var(--danger); font-size:1rem; margin-bottom:0.8rem;">
+                        <i class="fa-solid fa-triangle-exclamation"></i> Alerte Qualité — {{ alert_equipements|length }} équipement(s) à surveiller
+                    </h4>
+                    <div style="display:flex; flex-direction:column; gap:0.4rem;">
+                        {% for alert in alert_equipements %}
+                        <div style="display:flex; justify-content:space-between; align-items:center; background:rgba(0,0,0,0.15); padding:0.6rem 1rem; border-radius:8px;">
+                            <span style="color:white; font-weight:600;">{{ alert.eq.nom }} <span style="color:var(--text-muted); font-weight:400;">({{ alert.eq.type }})</span></span>
+                            <span style="color:var(--danger); font-weight:700; font-size:0.85rem;">{{ alert.count }} avis négatifs <i class="fa-solid fa-thumbs-down"></i></span>
+                        </div>
+                        {% endfor %}
                     </div>
                 </div>
-            </div>
-        </div>
+                {% endif %}
+
+                <!-- Tableau équipements -->
+                <div style="background:var(--dark-card); border:1px solid var(--border); border-radius:16px; overflow:hidden;">
+                    <div style="overflow-x:auto;">
+                        <table style="width:100%; border-collapse:collapse;">
+                            <thead>
+                                <tr style="background:rgba(255,255,255,0.03);">
+                                    <th style="padding:0.9rem 1.2rem; text-align:left; font-size:0.75rem; text-transform:uppercase; letter-spacing:.8px; color:var(--text-muted); font-weight:600; border-bottom:1px solid var(--border);">#</th>
+                                    <th style="padding:0.9rem 1.2rem; text-align:left; font-size:0.75rem; text-transform:uppercase; letter-spacing:.8px; color:var(--text-muted); font-weight:600; border-bottom:1px solid var(--border);">Nom</th>
+                                    <th style="padding:0.9rem 1.2rem; text-align:left; font-size:0.75rem; text-transform:uppercase; letter-spacing:.8px; color:var(--text-muted); font-weight:600; border-bottom:1px solid var(--border);">Catégorie</th>
+                                    <th style="padding:0.9rem 1.2rem; text-align:left; font-size:0.75rem; text-transform:uppercase; letter-spacing:.8px; color:var(--text-muted); font-weight:600; border-bottom:1px solid var(--border);">Prix</th>
+                                    <th style="padding:0.9rem 1.2rem; text-align:center; font-size:0.75rem; text-transform:uppercase; letter-spacing:.8px; color:var(--text-muted); font-weight:600; border-bottom:1px solid var(--border);">Capacité</th>
+                                    <th style="padding:0.9rem 1.2rem; text-align:left; font-size:0.75rem; text-transform:uppercase; letter-spacing:.8px; color:var(--text-muted); font-weight:600; border-bottom:1px solid var(--border);">Statut</th>
+                                    <th style="padding:0.9rem 1.2rem; text-align:left; font-size:0.75rem; text-transform:uppercase; letter-spacing:.8px; color:var(--text-muted); font-weight:600; border-bottom:1px solid var(--border);">Assigné à</th>
+                                    <th style="padding:0.9rem 1.2rem; text-align:right; font-size:0.75rem; text-transform:uppercase; letter-spacing:.8px; color:var(--text-muted); font-weight:600; border-bottom:1px solid var(--border);">Actions</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                            {% for eq in equipements %}
+                                <tr style="border-bottom:1px solid rgba(255,255,255,0.04); transition:background 0.2s;" onmouseover="this.style.background='rgba(255,255,255,0.02)'" onmouseout="this.style.background=''">
+                                    <td style="padding:0.9rem 1.2rem; font-size:0.88rem; color:var(--text-muted);">{{ eq.id }}</td>
+                                    <td style="padding:0.9rem 1.2rem; font-size:0.88rem;"><strong style="color:white;">{{ eq.nom }}</strong></td>
+                                    <td style="padding:0.9rem 1.2rem; font-size:0.88rem; color:var(--text-muted);">{{ eq.type }}</td>
+                                    <td style="padding:0.9rem 1.2rem; font-size:0.88rem; font-weight:600; color:#2ecc71;">{{ eq.prix|number_format(2, ',', ' ') }} DT</td>
+                                    <td style="padding:0.9rem 1.2rem; font-size:0.88rem; text-align:center;">
+                                        {% if eq.capaciteRendement %}
+                                            <span style="color:#667eea; font-weight:700;">{{ eq.capaciteRendement }} Ha/h</span>
+                                        {% else %}
+                                            <span style="color:var(--text-muted); font-style:italic;">—</span>
+                                        {% endif %}
+                                    </td>
+                                    <td style="padding:0.9rem 1.2rem; font-size:0.88rem;">
+                                        {% if eq.disponibilite == 'Disponible' %}
+                                            <span style="display:inline-flex;align-items:center;gap:5px;padding:0.25rem 0.7rem;border-radius:20px;font-size:0.78rem;font-weight:600;background:rgba(46,204,113,0.12);color:#2ecc71;border:1px solid rgba(46,204,113,0.25);">
+                                                <i class="fa-solid fa-check-circle"></i> Disponible
+                                            </span>
+                                        {% elseif eq.disponibilite == 'Indisponible' %}
+                                            <span style="display:inline-flex;align-items:center;gap:5px;padding:0.25rem 0.7rem;border-radius:20px;font-size:0.78rem;font-weight:600;background:rgba(231,76,60,0.12);color:#e74c3c;border:1px solid rgba(231,76,60,0.25);">
+                                                <i class="fa-solid fa-times-circle"></i> Indisponible
+                                            </span>
+                                        {% else %}
+                                            <span style="display:inline-flex;align-items:center;gap:5px;padding:0.25rem 0.7rem;border-radius:20px;font-size:0.78rem;font-weight:600;background:rgba(241,196,15,0.12);color:#f1c40f;border:1px solid rgba(241,196,15,0.25);">
+                                                <i class="fa-solid fa-wrench"></i> {{ eq.disponibilite }}
+                                            </span>
+                                        {% endif %}
+                                    </td>
+                                    <td style="padding:0.9rem 1.2rem; font-size:0.88rem;">
+                                        {% if eq.user %}
+                                            <span style="display:inline-flex;align-items:center;gap:6px;padding:0.25rem 0.65rem;background:rgba(25,139,97,0.1);border:1px solid rgba(25,139,97,0.25);border-radius:20px;font-size:0.82rem;color:var(--primary);">
+                                                <i class="fa-solid fa-user"></i> {{ eq.user.fullName }}
+                                            </span>
+                                        {% else %}
+                                            <span style="color:var(--text-muted);font-style:italic;font-size:0.85rem;"><i class="fa-solid fa-user-slash"></i> Non assigné</span>
+                                        {% endif %}
+                                    </td>
+                                    <td style="padding:0.9rem 1.2rem;">
+                                        <div style="display:flex; gap:0.4rem; justify-content:flex-end;">
+                                            <a href="{{ path('admin_equipement_assign', {id: eq.id}) }}" style="display:inline-flex;align-items:center;gap:5px;padding:0.35rem 0.7rem;border-radius:7px;font-size:0.8rem;font-weight:500;text-decoration:none;background:#2980b9;color:#fff;transition:all 0.2s;" title="Assigner">
+                                                <i class="fa-solid fa-user-plus"></i>
+                                            </a>
+                                            <a href="{{ path('admin_equipement_edit', {id: eq.id}) }}" style="display:inline-flex;align-items:center;gap:5px;padding:0.35rem 0.7rem;border-radius:7px;font-size:0.8rem;font-weight:500;text-decoration:none;background:#e67e22;color:#fff;transition:all 0.2s;" title="Modifier">
+                                                <i class="fa-solid fa-pen"></i>
+                                            </a>
+                                            <form method="post" action="{{ path('admin_equipement_delete', {id: eq.id}) }}" onsubmit="return confirm('Supprimer cet équipement ?');" style="display:inline;">
+                                                <input type="hidden" name="_token" value="{{ csrf_token('delete_eq_' ~ eq.id) }}">
+                                                <button style="display:inline-flex;align-items:center;gap:5px;padding:0.35rem 0.7rem;border-radius:7px;font-size:0.8rem;font-weight:500;background:#e74c3c;color:#fff;border:none;cursor:pointer;transition:all 0.2s;" title="Supprimer">
+                                                    <i class="fa-solid fa-trash"></i>
+                                                </button>
+                                            </form>
+                                        </div>
+                                    </td>
+                                </tr>
+                            {% else %}
+                                <tr>
+                                    <td colspan="8" style="text-align:center;padding:3rem;color:var(--text-muted);">
+                                        <i class="fa-solid fa-box-open" style="font-size:2.5rem;margin-bottom:1rem;opacity:0.4;display:block;"></i>
+                                        Aucun équipement enregistré.
+                                    </td>
+                                </tr>
+                            {% endfor %}
+                            </tbody>
+                        </table>
+                    </div>
+                    <!-- Footer avec lien vers la page dédiée -->
+                    <div style="padding:1rem 1.5rem; border-top:1px solid var(--border); display:flex; justify-content:flex-end;">
+                        <a href="{{ path('admin_equipement_index') }}" style="font-size:0.85rem; color:var(--text-muted); text-decoration:none; display:flex; align-items:center; gap:6px; transition:color 0.2s;" onmouseover="this.style.color='white'" onmouseout="this.style.color=''">
+                            <i class="fa-solid fa-arrow-right"></i> Voir la page dédiée
+                        </a>
+                    </div>
+                </div>
+
+            </div><!-- end section équipements -->
+
+        </div><!-- end dashboard-container -->
     {% endif %}
+
     </main>
 
     <!-- Chart Config -->

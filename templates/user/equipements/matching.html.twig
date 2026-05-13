@@ -1,0 +1,207 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}Matching Intelligent – Équipements{% endblock %}
+
+{% block stylesheets %}
+<style>
+    .matching-hero {
+        background: linear-gradient(135deg, #0f2027, #203a43, #2c5364);
+        border-radius: 16px;
+        padding: 2.5rem;
+        margin-bottom: 2rem;
+        color: #fff;
+    }
+    .matching-hero h1 { font-size: 2rem; font-weight: 700; margin-bottom: .5rem; }
+    .matching-hero p  { color: rgba(255,255,255,.7); font-size: 1.05rem; }
+
+    .surface-form {
+        background: rgba(255,255,255,.06);
+        border: 1px solid rgba(255,255,255,.12);
+        border-radius: 14px;
+        padding: 1.5rem;
+        margin-bottom: 2rem;
+        display: flex;
+        align-items: center;
+        gap: 1rem;
+        flex-wrap: wrap;
+    }
+    .surface-form label  { color: #a8d5a2; font-weight: 600; font-size: 1rem; }
+    .surface-form input  {
+        width: 140px; padding: .6rem 1rem;
+        border-radius: 10px; border: 1px solid rgba(255,255,255,.2);
+        background: rgba(255,255,255,.08); color: #fff; font-size: 1.1rem; font-weight: 700;
+    }
+    .surface-form button {
+        padding: .65rem 1.8rem;
+        background: linear-gradient(135deg, #27ae60, #1abc9c);
+        border: none; border-radius: 10px;
+        color: #fff; font-weight: 700; font-size: .95rem;
+        cursor: pointer; transition: transform .2s;
+    }
+    .surface-form button:hover { transform: scale(1.05); }
+
+    /* Cards */
+    .eq-card {
+        background: rgba(255,255,255,.05);
+        border: 1px solid rgba(255,255,255,.1);
+        border-radius: 16px;
+        padding: 1.5rem;
+        margin-bottom: 1.2rem;
+        transition: transform .2s, box-shadow .2s;
+    }
+    .eq-card:hover { transform: translateY(-3px); box-shadow: 0 8px 24px rgba(0,0,0,.3); }
+    .eq-card.top-pick { border-color: #27ae60; box-shadow: 0 0 20px rgba(39,174,96,.2); }
+
+    .eq-name  { font-size: 1.2rem; font-weight: 700; color: #fff; }
+    .eq-type  { font-size: .85rem; color: rgba(255,255,255,.5); margin-bottom: .8rem; }
+
+    .score-bar-wrap { background: rgba(255,255,255,.08); border-radius: 50px; height: 12px; margin: .5rem 0 1rem; }
+    .score-bar      { height: 12px; border-radius: 50px; transition: width .8s ease; }
+
+    .stat-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(130px, 1fr)); gap: .8rem; margin-top: .8rem; }
+    .stat-box  {
+        background: rgba(255,255,255,.06);
+        border-radius: 10px; padding: .7rem 1rem;
+        text-align: center;
+    }
+    .stat-box .val   { font-size: 1.25rem; font-weight: 700; color: #f1c40f; }
+    .stat-box .lbl   { font-size: .75rem; color: rgba(255,255,255,.5); margin-top: 2px; }
+
+    .raison-box {
+        background: rgba(255,255,255,.04);
+        border-left: 3px solid #3498db;
+        border-radius: 0 8px 8px 0;
+        padding: .6rem 1rem;
+        font-size: .9rem; color: rgba(255,255,255,.75);
+        margin-top: .8rem;
+    }
+
+    .badge-match {
+        display: inline-block; padding: .35rem .9rem;
+        border-radius: 50px; font-size: .8rem; font-weight: 700;
+        text-transform: uppercase; letter-spacing: .5px;
+    }
+    .badge-match.success { background: rgba(39,174,96,.2); color: #27ae60; border: 1px solid #27ae60; }
+    .badge-match.warning { background: rgba(243,156,18,.2); color: #f39c12; border: 1px solid #f39c12; }
+    .badge-match.danger  { background: rgba(231,76,60,.2);  color: #e74c3c; border: 1px solid #e74c3c; }
+
+    .empty-state { text-align: center; padding: 4rem; color: rgba(255,255,255,.4); }
+    .empty-state i { font-size: 3rem; margin-bottom: 1rem; }
+
+    .ranking-badge {
+        width: 36px; height: 36px; border-radius: 50%;
+        display: flex; align-items: center; justify-content: center;
+        font-weight: 800; font-size: .95rem; flex-shrink: 0;
+    }
+    .rank-1 { background: linear-gradient(135deg, #f1c40f, #f39c12); color: #1a1a1a; }
+    .rank-2 { background: rgba(192,192,192,.3); color: #c0c0c0; }
+    .rank-3 { background: rgba(205,127,50,.3);  color: #cd7f32; }
+    .rank-n { background: rgba(255,255,255,.1); color: rgba(255,255,255,.5); }
+</style>
+{% endblock %}
+
+{% block body %}
+<div style="padding: 2rem; max-width: 960px; margin: 0 auto;">
+
+    <!-- Hero -->
+    <div class="matching-hero">
+        <div style="display:flex; align-items:center; gap:1rem; margin-bottom:.5rem;">
+            <i class="fa-solid fa-magnifying-glass-chart" style="font-size:2rem; color:#27ae60;"></i>
+            <h1>Matching Intelligent</h1>
+        </div>
+        <p>
+            Entrez la superficie de votre parcelle et l'algorithme <strong>classe automatiquement</strong>
+            vos équipements du plus adapté au moins adapté, en calculant le 
+            <strong>Coût Réel par Hectare (TCO)</strong> — carburant + main d'œuvre inclus.
+        </p>
+    </div>
+
+    <!-- Formulaire surface -->
+    <form method="GET" action="{{ path('user_equipement_matching') }}" class="surface-form">
+        <label for="surface-input"><i class="fa-solid fa-map"></i> Surface à traiter :</label>
+        <input type="number" id="surface-input" name="surface" value="{{ surface }}" min="0.1" step="0.5">
+        <span style="color:rgba(255,255,255,.5); font-size:1rem;">Hectares</span>
+        <button type="submit"><i class="fa-solid fa-bolt"></i> Analyser</button>
+    </form>
+
+    <!-- Résultats -->
+    {% if resultats is empty %}
+        <div class="empty-state">
+            <i class="fa-solid fa-tractor"></i>
+            <p>Aucun de vos équipements n'a encore de capacité renseignée.<br>
+               Demandez à votre administrateur de compléter les données des équipements.</p>
+        </div>
+    {% else %}
+        <p style="color:rgba(255,255,255,.5); margin-bottom:1.5rem; font-size:.95rem;">
+            <i class="fa-solid fa-list-ol"></i>
+            {{ resultats|length }} équipement(s) analysé(s) pour <strong style="color:#f1c40f;">{{ surface }} Ha</strong> — trié du meilleur au moins adapté
+        </p>
+
+        {% for item in resultats %}
+            {% set eq  = item.equipement %}
+            {% set ana = item.analyse %}
+            {% set rank = loop.index %}
+
+            <div class="eq-card {{ rank == 1 ? 'top-pick' : '' }}">
+                <div style="display:flex; align-items:flex-start; gap:1rem;">
+
+                    <!-- Rang -->
+                    <div class="ranking-badge {{ rank == 1 ? 'rank-1' : (rank == 2 ? 'rank-2' : (rank == 3 ? 'rank-3' : 'rank-n')) }}">
+                        #{{ rank }}
+                    </div>
+
+                    <div style="flex:1;">
+                        <!-- Header -->
+                        <div style="display:flex; align-items:center; justify-content:space-between; flex-wrap:wrap; gap:.5rem;">
+                            <div>
+                                <div class="eq-name">{{ eq.nom }}</div>
+                                <div class="eq-type">{{ eq.type }} · {{ eq.capacite }} Ha/h · {{ eq.consommation }} L/h</div>
+                            </div>
+                            <span class="badge-match {{ ana.badge }}">{{ ana.label }}</span>
+                        </div>
+
+                        <!-- Barre de score -->
+                        <div style="display:flex; align-items:center; gap:.8rem; margin-top:.5rem;">
+                            <div class="score-bar-wrap" style="flex:1;">
+                                <div class="score-bar"
+                                     style="width:{{ ana.score }}%;
+                                            background: {{ ana.score >= 80 ? 'linear-gradient(90deg,#27ae60,#2ecc71)' : (ana.score >= 55 ? 'linear-gradient(90deg,#f39c12,#f1c40f)' : 'linear-gradient(90deg,#c0392b,#e74c3c)') }};">
+                                </div>
+                            </div>
+                            <span style="font-weight:800; color:#fff; min-width:42px; text-align:right;">{{ ana.score }}%</span>
+                        </div>
+
+                        <!-- Stats financières -->
+                        <div class="stat-grid">
+                            <div class="stat-box">
+                                <div class="val">{{ ana.temps_heures }}h</div>
+                                <div class="lbl">Durée estimée</div>
+                            </div>
+                            <div class="stat-box">
+                                <div class="val">{{ ana.jours }}j</div>
+                                <div class="lbl">Jours (8h/j)</div>
+                            </div>
+                            <div class="stat-box">
+                                <div class="val">{{ ana.cout_carburant }} TND</div>
+                                <div class="lbl">Coût carburant</div>
+                            </div>
+                            <div class="stat-box">
+                                <div class="val">{{ ana.cout_main_oeuvre }} TND</div>
+                                <div class="lbl">Main d'œuvre</div>
+                            </div>
+                            <div class="stat-box" style="background:rgba(241,196,15,.08); border:1px solid rgba(241,196,15,.3);">
+                                <div class="val" style="color:#f1c40f;">{{ ana.cout_par_hectare }} TND</div>
+                                <div class="lbl">Coût / Hectare 🔑</div>
+                            </div>
+                        </div>
+
+                        <!-- Raison -->
+                        <div class="raison-box">{{ ana.raison }}</div>
+                    </div>
+                </div>
+            </div>
+        {% endfor %}
+    {% endif %}
+
+</div>
+{% endblock %}

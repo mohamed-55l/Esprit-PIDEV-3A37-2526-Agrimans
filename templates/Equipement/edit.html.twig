@@ -1,17 +1,24 @@
 {% extends 'base.html.twig' %}
 
-{% block title %}Modifier Ã‰quipement{% endblock %}
+{% block title %}Modifier Équipement{% endblock %}
 
 {% block body %}
-    <div style="max-width: 600px; margin: 0 auto;" class="glass-card">
-        <h1 style="text-align:center;">Modifier #{{ equipement.id }}</h1>
-
-        {{ include('equipement/_form.html.twig', {'button_label': 'Mettre Ã  jour'}) }}
-
-        <div style="margin-top: 2rem; display: flex; justify-content: space-between; align-items: center;">
-            <a href="{{ path('app_equipement_index') }}" style="color: #198B61; text-decoration: underline;">Retour Ã  la liste</a>
+    <section class="content-section" style="margin-top: 2rem;">
+        <div style="max-width: 800px; margin: 0 auto; background: rgba(255,255,255,0.03); border: 1px solid rgba(255,255,255,0.08); border-radius: 16px; padding: 2.5rem;">
             
-            {{ include('equipement/_delete_form.html.twig') }}
+            <div style="display: flex; justify-content: space-between; align-items: flex-start; margin-bottom: 2rem;">
+                <div>
+                    <i class="fa-solid fa-pen-to-square" style="font-size: 2.5rem; color: #3498db; margin-bottom: 1rem;"></i>
+                    <h1 style="font-size: 2rem; color: #fff;">Modifier l'Équipement</h1>
+                    <p style="color: rgba(255,255,255,0.6);">Modification de : <strong style="color:#fff;">{{ equipement.nom }}</strong></p>
+                </div>
+                <div>
+                    {{ include('equipement/_delete_form.html.twig') }}
+                </div>
+            </div>
+
+            {{ include('equipement/_form.html.twig', {'button_label': 'Mettre à jour'}) }}
+
         </div>
-    </div>
+    </section>
 {% endblock %}

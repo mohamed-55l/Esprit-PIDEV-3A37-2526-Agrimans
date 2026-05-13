@@ -8,12 +8,17 @@
     <section class="content-section" style="margin-top: 2rem;">
         <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 2rem;">
             <div>
-                <h2 style="font-size: 2rem; margin-bottom: 0.5rem;">Panel des Ã‰quipements</h2>
-                <p style="color: rgba(255,255,255,0.7);">GÃ©rez, assignez et surveillez l'Ã©tat de votre parc matÃ©riel.</p>
+                <h2 style="font-size: 2rem; margin-bottom: 0.5rem;">Panel des Équipements</h2>
+                <p style="color: rgba(255,255,255,0.7);">Gérez, assignez et surveillez l'état de votre parc matériel.</p>
             </div>
-            <a href="{{ path('app_equipement_new') }}" class="hero-btn-primary" style="font-size: 0.9rem;">
-                + Ajouter Ã‰quipement
-            </a>
+            <div style="display: flex; gap: 1rem;">
+                <a href="{{ path('app_equipement_demo') }}" class="hero-btn-primary" style="font-size: 0.9rem; background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); display: flex; align-items: center; gap: 0.5rem;">
+                    ⭐ Démonstration
+                </a>
+                <a href="{{ path('app_equipement_new') }}" class="hero-btn-primary" style="font-size: 0.9rem;">
+                    + Ajouter Équipement
+                </a>
+            </div>
         </div>
 
         <!-- Section de Statistiques Ã‰quipement -->
@@ -69,8 +74,9 @@
                 <thead>
                     <tr>
                         <th>Nom de la Machine</th>
-                        <th>CatÃ©gorie</th>
+                        <th>Catégorie</th>
                         <th>Valeur Dinar</th>
+                        <th>Capacité (Ha/h)</th>
                         <th>Statut Logiciel</th>
                         <th>Actions Rapides</th>
                     </tr>
@@ -81,6 +87,13 @@
                         <td><strong>{{ equipement.nom }}</strong></td>
                         <td>{{ equipement.type }}</td>
                         <td style="font-weight: 600;">{{ equipement.prix|number_format(2, ',', ' ') }} DT</td>
+                        <td style="text-align: center;">
+                            {% if equipement.capaciteRendement %}
+                                <span style="color: #667eea; font-weight: 700;">{{ equipement.capaciteRendement }} Ha/h</span>
+                            {% else %}
+                                <span style="color: rgba(255,255,255,0.3); font-size: 0.85rem;">—</span>
+                            {% endif %}
+                        </td>
                         <td>
                             {% if equipement.disponibilite == 'Disponible' %}
                                 <span class="badge badge-success"><i class="fa-solid fa-check-circle"></i> {{ equipement.disponibilite }}</span>
@@ -91,8 +104,8 @@
                             {% endif %}
                         </td>
                         <td style="display:flex; justify-content: flex-end;">
-                            <a href="{{ path('app_equipement_show', {'id': equipement.id}) }}" class="btn btn-secondary" title="DÃ©tails"><i class="fa-solid fa-eye"></i></a>
-                            <a href="{{ path('app_equipement_edit', {'id': equipement.id}) }}" class="btn btn-primary" style="margin-left: 0.5rem;" title="Ã‰diter"><i class="fa-solid fa-pen"></i></a>
+                            <a href="{{ path('app_equipement_show', {'id': equipement.id}) }}" class="btn btn-secondary" title="Détails"><i class="fa-solid fa-eye"></i></a>
+                            <a href="{{ path('app_equipement_edit', {'id': equipement.id}) }}" class="btn btn-primary" style="margin-left: 0.5rem;" title="Éditer"><i class="fa-solid fa-pen"></i></a>
                             <a href="{{ path('app_review_new', {'eq_id': equipement.id}) }}" class="btn" style="background-color: #f1c40f; color: #1C2D21; margin-left: 0.5rem;" title="Ajouter un avis"><i class="fa-solid fa-star"></i></a>
                         </td>
                     </tr>
