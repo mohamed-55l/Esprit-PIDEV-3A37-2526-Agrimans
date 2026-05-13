@@ -67,6 +67,10 @@ class ParcelleControllerTest extends WebTestCase
 
     // -------------------------------------------------------
     // Test 4 : Soumission du formulaire avec données valides
+   // le formulaire fonctionne
+   //les données passent correctement
+   //le backend traite la requête
+   //il y a une redirection après succès
     //          → redirection HTTP 303
     // -------------------------------------------------------
     public function testNewParcelleSubmitRedirects(): void

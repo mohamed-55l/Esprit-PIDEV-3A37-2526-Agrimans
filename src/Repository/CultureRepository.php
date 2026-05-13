@@ -48,4 +48,15 @@ class CultureRepository extends ServiceEntityRepository
             ->getQuery()
             ->getResult();
     }
+    public function findCulturesToHarvestInExactlyDays(int $days): array
+    {
+        $date = new \DateTime();
+        $date->modify('+' . $days . ' days');
+
+        return $this->createQueryBuilder('c')
+            ->where('c.date_recolte_prevue = :date')
+            ->setParameter('date', $date->format('Y-m-d'))
+            ->getQuery()
+            ->getResult();
+    }
 }
